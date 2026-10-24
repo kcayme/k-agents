@@ -2,18 +2,25 @@
 
 Claude Code agents that take a GitHub/Jira ticket from plan to merged PR.
 
-```
-ticket ──> ticket-planner ──> implementer ──> PR ──> pr-reviewer
-              │                   │
-              ├─ system-architect ├─ qa-backend / qa-frontend
-              └─ qa-backend /     └─ pr-reviewer (local, before PR)
-                 qa-frontend
+```mermaid
+flowchart LR
+    T([Ticket]) --> TP[ticket-planner]
+    TP --> IM[implementer]
+    IM -->|push + PR, only when you say so| PR([PR])
+    PR --> RV[pr-reviewer]
+
+    TP -.->|design-heavy tickets| SA[system-architect]
+    SA -.-> TR[tech-researcher]
+    TP -.->|unfamiliar tools/standards| TR
+    TP -.->|test plan review| QA[qa-backend / qa-frontend]
+    IM -.->|fill test gaps| QA
+    IM -.->|independent review, before PR| RV
 ```
 
 ## Agents
 
 ### ticket-planner
-Plans a ticket before any code is written. It checks the ticket is cleared to start (status, blockers, testable acceptance criteria), asks about anything unclear, creates a dedicated worktree, and writes `plans/<ticket>.md`. The plan maps every acceptance criterion to a change, a test, and a Conventional Commit, following the project's conventions. It brings in `system-architect` for design-heavy tickets and the QA agents to review the test plan.
+Plans a ticket (feature or bug) before any code is written. For bugs it first reproduces the issue and traces the root cause, so the plan fixes the cause with a regression test rather than patching the symptom. It checks the ticket is cleared to start (status, blockers, testable acceptance criteria), asks about anything unclear, creates a dedicated worktree, and writes `plans/<ticket>.md`. The plan maps every acceptance criterion to a change, a test, and a Conventional Commit, following the project's conventions. It brings in `system-architect` for design-heavy tickets and the QA agents to review the test plan.
 
 **Input:** ticket key, issue number, or URL · **Output:** worktree + plan file
 
@@ -21,6 +28,11 @@ Plans a ticket before any code is written. It checks the ticket is cleared to st
 Researches solutions to a design problem, compares 2–4 options (always including "extend what exists") on explicit tradeoffs, and recommends one. Asks for missing requirements and scale numbers instead of guessing, cites sources, and can run throwaway spikes outside the repo.
 
 **Input:** ticket, plan, or design question · **Output:** ADR in the repo's ADR folder
+
+### tech-researcher
+Researches tool and library docs, known solutions, and industry standards and conventions for a technical question, matched to the project's actual stack and versions. Every claim is cited, dated, and marked verified or inferred. Reports findings and implications, not the decision.
+
+**Input:** research question, optionally with ticket or plan · **Output:** cited research report in chat
 
 ### implementer
 Executes a plan in its worktree, one planned commit at a time: test first, then code, then format/lint/type check/tests, then a local commit. Guards against regressions by comparing against a pre-change baseline and testing everything that depends on what it touches. Stops to ask when the plan and code disagree. Finishes with QA and an independent `pr-reviewer` pass on its branch, fixing in-scope findings (up to 2 rounds), and only pushes or opens a PR (changelog-style description) when you explicitly say so.
