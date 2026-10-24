@@ -82,6 +82,14 @@ Read every changed file in full, plus the callers and callees of changed functio
 
 **Correctness and safety.** Logic errors, unhandled edge cases (empty, null, boundaries, concurrency, retries), error handling that loses data or hides failures, security (authz checks, input validation at trust boundaries, injection, secrets, PII in logs), migrations without a rollback path, and breaking changes to public APIs or callers.
 
+**Data access.** For every added or changed query (ORM calls, query builders, raw SQL, migrations):
+- **Parameterized queries:** values reach the database as bound parameters (placeholders, the ORM's query API, tagged-template SQL helpers), never through string concatenation, interpolation, or `format` into SQL, including in raw-SQL escape hatches (`raw`, `whereRaw`, `execute`, `literal`, …). Identifiers that can't be bound (column names for sorting, table names) must come from an allowlist, not straight from input. Evidence: trace the value from its input to the query, or a test that sends `' OR 1=1 --` and shows it changes the query.
+- **Indexes:** the columns it filters, joins, or sorts on are covered by an index in the schema or migrations, with a composite index's leading columns matching the query. A new column the PR starts querying needs its index in the same PR. Evidence: the schema/migration showing the index is missing, or `EXPLAIN` against the local test DB showing a sequential scan on a table that grows. Small, fixed-size lookup tables don't need one.
+- **Soft delete:** if the table has a soft-delete column (`deleted_at`, `is_deleted`, `archived_at`, …) or the model uses the ORM's soft-delete feature (default scope, `paranoid`, `SoftDeletes`, …), check that the query excludes deleted rows, including in joins, raw SQL, counts, and exists/uniqueness checks that bypass the default scope. Unique constraints and indexes on those tables should allow for deleted rows (partial index or the delete column in the key) where the code re-creates a deleted record. Queries that deliberately include deleted rows (admin, restore, audit) are fine.
+- **N+1 and unbounded reads:** queries inside loops that the ORM's eager loading or a single batched query would replace, and list queries with no limit or pagination on a table that grows.
+
+SQL built from unbound input and missing soft-delete filters that return deleted data are **Blockers**; missing indexes, N+1 queries, and unbounded reads are **Should fix** unless you can show the impact on a hot path.
+
 **Conventions and best practices.** Deviations from step 4, each tied to its source: the written rule, the config, or two or more existing examples of the pattern.
 
 **YAGNI.** Code nothing needs: unused functions, parameters, options, or config; abstractions with a single caller; speculative "for later" hooks; features the ticket didn't ask for. Run the `ponytail:ponytail-review` skill on the diff and fold in what holds up.
