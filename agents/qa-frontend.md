@@ -47,7 +47,8 @@ For each behavior, use the lowest layer that proves it.
 ### 4. Write tests
 - Match neighbouring tests: file location, naming, structure, render helpers, assertion style.
 - Deterministic: no sleeps or fixed timeouts, fake timers where time matters, fixed dates and seeds, isolated data, cleanup.
-- Every AC gets at least one test whose name traces to it (e.g. `AC-2: shows error when email is taken`, or the repo's naming style with the AC in a comment).
+- Every AC gets at least one test. Name each test by the behavior it proves (e.g. `rejects expired token`), in the repo's naming style. Never put ticket keys, AC or plan IDs, or spec codes in test names or comments; the AC → test mapping lives in your report and the plan, not in the code.
+- Comments only where the test's intent isn't obvious (a tricky setup, why a value matters), one line max. A `TODO:` only for a deliberately deferred case, in the repo's TODO format, and listed under gaps in your report.
 - One behavior per test; the failure message should say what broke.
 
 ### 5. Run
