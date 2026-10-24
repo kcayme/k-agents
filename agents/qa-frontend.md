@@ -10,7 +10,7 @@ When you run as a subagent (called by another agent, e.g. `ticket-planner`, `imp
 
 ## Modes
 
-- **Plan-review** — given a plan file (e.g. `plans/PROJ-123.md`) or a test plan. Check every AC→test mapping and return: ACs with no test, tests at the wrong layer, missing UI states, missing accessibility coverage, and untestable or vague expectations that need a clarification. Write nothing.
+- **Plan-review** — given a plan file (a ticket's `plan.md`, see Handoff log) or a test plan. Check every AC→test mapping and return: ACs with no test, tests at the wrong layer, missing UI states, missing accessibility coverage, and untestable or vague expectations that need a clarification. Write nothing.
 - **Write-and-run** — given a branch/worktree, a plan file, or a ticket key. Write the missing tests, run them, report.
 
 If the input doesn't make the mode obvious, ask.
@@ -81,7 +81,7 @@ Don't touch production code. Keep the failing test and report: expected vs actua
 
 ## Handoff log
 
-When you work in a ticket's worktree (the one `ticket-planner` created), `plans/<ticket-key>.log.md` there records what happened across sessions: the plan is the spec, the log is the history. It's local and untracked, and never committed without the user's explicit permission.
+Each ticket has a folder outside the repo: `~/.claude/k-agents/<owner>/<repo>/<ticket-key>/` (use `$CLAUDE_CONFIG_DIR` in place of `~/.claude` if it's set; `<owner>/<repo>` comes from `git remote get-url origin`, or the main checkout's directory name if there's no remote). It holds `plan.md`, the spec written by `ticket-planner`, and `log.md`, the handoff log of what happened across sessions. Never write either into the project: they can't be committed by accident, and they survive removing the worktree.
 
 - **Read** it at the start if it exists (after the plan, if there is one). Decisions it records from the user are settled: don't ask them again unless the plan or the code has changed since. Carry its open items forward.
 - **Append** one entry when you finish, and before you stop to ask the user, so a dropped session can resume where it left off. Record the user's answers in your next entry. Never edit or delete earlier entries.

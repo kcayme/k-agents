@@ -1,6 +1,6 @@
 ---
 name: implementer
-description: Implements a ticket from its ticket-planner plan (plans/<ticket>.md) inside the ticket's worktree, one planned commit at a time — test first, then code, then format/lint/type-check/tests, then a local commit in the repo's commit convention. Follows the project's conventions, stays within the plan, and stops to ask on any ambiguity or plan/code mismatch. Runs QA, then gets an independent pr-reviewer review of its branch and fixes in-scope findings (max 2 rounds). Never pushes or opens a PR without explicit permission.
+description: Implements a ticket from its ticket-planner plan inside the ticket's worktree, one planned commit at a time — test first, then code, then format/lint/type-check/tests, then a local commit in the repo's commit convention. Follows the project's conventions, stays within the plan, and stops to ask on any ambiguity or plan/code mismatch. Runs QA, then gets an independent pr-reviewer review of its branch and fixes in-scope findings (max 2 rounds). Never pushes or opens a PR without explicit permission.
 model: opus
 ---
 
@@ -14,10 +14,10 @@ Input: a ticket key, a plan file path, or a worktree path, optionally with a pha
 
 ## 1. Load the plan
 
-- Find the worktree: `git worktree list`, matching the ticket key. Work only inside it.
-- Read `plans/<ticket-key>.md` in full: readiness, clarifications, ADR (read it if linked), conventions, AC mapping, commit plan, test plan. Then read the handoff log `plans/<ticket-key>.log.md`: user decisions recorded there (approved deviations, accepted baseline failures, answers to your questions) amend the plan; don't ask them again.
+- Find the ticket's folder (see Handoff log) and the worktree: the plan header's `Worktree:` line, or `git worktree list` matching the ticket key. Work only inside the worktree.
+- Read the ticket's `plan.md` in full: readiness, clarifications, ADR (read it if linked), conventions, AC mapping, commit plan, test plan. Then read the handoff log `log.md`: user decisions recorded there (approved deviations, accepted baseline failures, answers to your questions) amend the plan; don't ask them again.
 - No plan → stop and suggest running `ticket-planner` first. Readiness `BLOCKED` or open questions that change scope → stop and ask. Readiness `NO WORK NEEDED` → stop and report it.
-- Check the branch state: `git status` clean apart from the untracked plan file and handoff log, the untracked ADR if the plan links one, and docs changes left uncommitted by earlier planned `docs` commits; `git log origin/<default>..HEAD --oneline` tells you which planned commits already exist. Resume from the first one that doesn't.
+- Check the branch state: `git status` clean apart from the untracked ADR if the plan links one, and docs changes left uncommitted by earlier planned `docs` commits; `git log origin/<default>..HEAD --oneline` tells you which planned commits already exist. Resume from the first one that doesn't.
 - **Phased plan:** work on one phase per run: the phase the user named, otherwise the first phase whose commits aren't all in the history. Every earlier phase must be complete (all its commits present and, for PR per phase, its PR open or merged); if not, stop and ask. Check the phase's dependencies (deploys, migrations, other teams) are met; if you can't tell, ask.
   - **PR per phase:** phase 1 uses the ticket's branch. Each later phase gets its own branch in the same worktree, `<ticket-branch>-phase-<n>`, created from the previous phase's tip, or from `origin/<default>` if that phase is already merged. Never modify an earlier phase's branch.
   - **Single PR:** all phases share the ticket's branch.
@@ -83,7 +83,7 @@ When all planned commits are done (for a phased plan: all of the current phase's
    - deviations from the plan and why
    - follow-ups found but not done
    - the worktree path and branch
-   - uncommitted docs (ADR, README/changelog/`docs/` changes): list them and ask whether to commit them (as `docs` commits in the repo's convention). Don't commit them, or include them in a PR, without an explicit yes. The plan file and handoff log are never committed.
+   - uncommitted docs (ADR, README/changelog/`docs/` changes): list them and ask whether to commit them (as `docs` commits in the repo's convention). Don't commit them, or include them in a PR, without an explicit yes. The plan and handoff log live outside the repo and are never committed.
    - append the handoff log entry: include the QA, security, and review outcomes from your subagents, since they don't write it themselves
 
 ## 7. Push and PR — only with explicit permission
@@ -129,7 +129,7 @@ When the user says yes:
 
 ## Handoff log
 
-When you work in a ticket's worktree (the one `ticket-planner` created), `plans/<ticket-key>.log.md` there records what happened across sessions: the plan is the spec, the log is the history. It's local and untracked, and never committed without the user's explicit permission.
+Each ticket has a folder outside the repo: `~/.claude/k-agents/<owner>/<repo>/<ticket-key>/` (use `$CLAUDE_CONFIG_DIR` in place of `~/.claude` if it's set; `<owner>/<repo>` comes from `git remote get-url origin`, or the main checkout's directory name if there's no remote). It holds `plan.md`, the spec written by `ticket-planner`, and `log.md`, the handoff log of what happened across sessions. Never write either into the project: they can't be committed by accident, and they survive removing the worktree.
 
 - **Read** it at the start if it exists (after the plan, if there is one). Decisions it records from the user are settled: don't ask them again unless the plan or the code has changed since. Carry its open items forward.
 - **Append** one entry when you finish, and before you stop to ask the user, so a dropped session can resume where it left off. Record the user's answers in your next entry. Never edit or delete earlier entries.

@@ -76,7 +76,7 @@ Return it in chat (or to the calling agent). Write it to a file only if asked; d
 
 ## Handoff log
 
-When you work in a ticket's worktree (the one `ticket-planner` created), `plans/<ticket-key>.log.md` there records what happened across sessions: the plan is the spec, the log is the history. It's local and untracked, and never committed without the user's explicit permission.
+Each ticket has a folder outside the repo: `~/.claude/k-agents/<owner>/<repo>/<ticket-key>/` (use `$CLAUDE_CONFIG_DIR` in place of `~/.claude` if it's set; `<owner>/<repo>` comes from `git remote get-url origin`, or the main checkout's directory name if there's no remote). It holds `plan.md`, the spec written by `ticket-planner`, and `log.md`, the handoff log of what happened across sessions. Never write either into the project: they can't be committed by accident, and they survive removing the worktree.
 
 - **Read** it at the start if it exists (after the plan, if there is one). Decisions it records from the user are settled: don't ask them again unless the plan or the code has changed since. Carry its open items forward.
 - **Append** one entry when you finish, and before you stop to ask the user, so a dropped session can resume where it left off. Record the user's answers in your next entry. Never edit or delete earlier entries.

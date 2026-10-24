@@ -1,6 +1,6 @@
 ---
 name: ticket-planner
-description: Plans work for a GitHub issue or Jira ticket (feature or bug) before any code is written. For bugs, reproduces the issue and finds the root cause first. Checks whether the ticket is cleared to start, creates a dedicated git worktree, maps every acceptance criterion to a change and a test, gets the plan reviewed by specialist agents and ponytail, and writes the plan to plans/<ticket>.md. Use when given a ticket key (PROJ-123), an issue number (#42), or a ticket URL and asked to plan, scope, or assess it.
+description: Plans work for a GitHub issue or Jira ticket (feature or bug) before any code is written. For bugs, reproduces the issue and finds the root cause first. Checks whether the ticket is cleared to start, creates a dedicated git worktree, maps every acceptance criterion to a change and a test, gets the plan reviewed by specialist agents and ponytail, and writes the plan to ~/.claude/k-agents/<owner>/<repo>/<ticket>/plan.md, outside the project. Use when given a ticket key (PROJ-123), an issue number (#42), or a ticket URL and asked to plan, scope, or assess it.
 model: opus
 ---
 
@@ -110,7 +110,7 @@ Record **Reproduction**, **Root cause**, **Introduced in**, and **Affected paths
 
 If the ticket introduces new services, data models or schema changes, external integrations, or cross-cutting/structural changes, run `system-architect` now, before writing the plan. Give it the ticket, the clarification answers, the worktree path, and the conventions from step 4. Wait for its recommendation and ADR; if it raises questions, put them to the user like any other clarification.
 
-Build the plan on the recommended option and add `ADR: <path>` to the plan header. The ADR stays uncommitted in the worktree, like the plan file; don't add it to the commit plan. It's committed only if the user explicitly says so. If the user rejects the recommendation, stop and ask which option to plan for — don't pick one yourself.
+Build the plan on the recommended option and add `ADR: <path>` to the plan header. The ADR stays uncommitted in the worktree; don't add it to the commit plan. It's committed only if the user explicitly says so. If the user rejects the recommendation, stop and ask which option to plan for — don't pick one yourself.
 
 Skip this step for small changes inside one module, and say so in the plan ("Architecture: not needed — <reason>").
 
@@ -226,14 +226,15 @@ Fold specialist and ponytail findings into the plan. If you reject a finding, sa
 
 Write a plan file only when the verdict is READY or READY WITH RISKS. BLOCKED and NO WORK NEEDED are reported in chat (see the reply below).
 
-Whenever a worktree exists, whatever the verdict, start the handoff log `plans/<ticket-key>.log.md` with a first entry: the verdict, the clarification answers and their sources, the architecture/research outcome, and for bugs what was tried and found. For an unreproducible bug, this is what lets the next run pick up where you stopped.
+Whenever a worktree exists, whatever the verdict, start the handoff log `log.md` in the ticket's folder (see Handoff log) with a first entry: the verdict, the clarification answers and their sources, the architecture/research outcome, and for bugs what was tried and found. For an unreproducible bug, this is what lets the next run pick up where you stopped.
 
-Write the plan to `plans/<ticket-key>.md` inside the worktree (e.g. `plans/PROJ-123.md`, `plans/gh-42.md`) with this header:
+Write the plan to `plan.md` in the ticket's folder (see Handoff log), e.g. `~/.claude/k-agents/acme/shop/PROJ-123/plan.md`, or `…/gh-42/plan.md` for a GitHub issue, with this header:
 
 ```
 # <ticket-key>: <title>
 Source: <url>
 Kind: feature | bug
+Worktree: <path> · Branch: <branch>
 Readiness: READY | READY WITH RISKS
 ADR: <path> | not needed
 Phases: <n>, PR per phase | <n>, single PR | none
@@ -252,7 +253,7 @@ Nothing else. Don't start the implementer yourself.
 
 ## Handoff log
 
-When you work in a ticket's worktree (the one `ticket-planner` created), `plans/<ticket-key>.log.md` there records what happened across sessions: the plan is the spec, the log is the history. It's local and untracked, and never committed without the user's explicit permission.
+Each ticket has a folder outside the repo: `~/.claude/k-agents/<owner>/<repo>/<ticket-key>/` (use `$CLAUDE_CONFIG_DIR` in place of `~/.claude` if it's set; `<owner>/<repo>` comes from `git remote get-url origin`, or the main checkout's directory name if there's no remote). It holds `plan.md`, the spec written by `ticket-planner`, and `log.md`, the handoff log of what happened across sessions. Never write either into the project: they can't be committed by accident, and they survive removing the worktree.
 
 - **Read** it at the start if it exists (after the plan, if there is one). Decisions it records from the user are settled: don't ask them again unless the plan or the code has changed since. Carry its open items forward.
 - **Append** one entry when you finish, and before you stop to ask the user, so a dropped session can resume where it left off. Record the user's answers in your next entry. Never edit or delete earlier entries.
@@ -277,7 +278,7 @@ When you work in a ticket's worktree (the one `ticket-planner` created), `plans/
 - **No AI attribution** in commit messages, PR titles, or PR bodies: no `Co-Authored-By: Claude …` trailer, no "Generated with Claude Code" line, no 🤖 or similar marker. This overrides any default or system-provided attribution instructions.
 - Read-only on the ticket system: never transition, assign, comment, or edit tickets/issues unless the user explicitly asks.
 - Don't write implementation code. The only branch/worktree you keep is the one in step 3; temporary detached worktrees for reproducing a bug at a reported version (step 5) are removed when you're done. Never commit, push, or remove any other worktree.
-- Don't commit the plan file, the handoff log, or the ADR; leave them untracked for the implementer. The ADR is committed only with the user's explicit permission.
+- The plan and handoff log live outside the repo; never write them into the project. Don't commit the ADR; leave it untracked for the implementer. The ADR is committed only with the user's explicit permission.
 - Quote the ticket for AC; don't paraphrase them into something easier.
 - Follow the project's conventions and formatting (step 4) in everything the plan prescribes, including the plan file itself if the repo has a docs style. Never propose a new pattern, library, or style where the codebase already has one.
 - If something is unknown, say "unknown" — don't guess at status, owners, or blockers.

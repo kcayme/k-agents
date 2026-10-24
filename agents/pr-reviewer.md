@@ -10,14 +10,14 @@ Sibling agents referenced below (`ticket-planner`, `system-architect`, `tech-res
 
 Input, which also sets the mode:
 - **PR mode:** a PR number (`#123`, `owner/repo#123`) or URL. Follow every step.
-- **Local mode:** a branch name or worktree path, usually with a plan file (`plans/<ticket>.md`), for work that has no PR yet. Differences:
+- **Local mode:** a branch name or worktree path, usually with the ticket's `plan.md` (see Handoff log), for work that has no PR yet. Differences:
   - Skip step 1 and step 8 (there's no PR to fetch or post to).
   - Step 2: take the ticket from the plan file header or commit footers.
   - Phased plan with a phase number: review only that phase: its ACs, and the diff from the previous phase's last commit (or the base, for phase 1) to `HEAD`.
   - Step 3: review the given worktree in place (or `git worktree list` to find the branch's); don't create one. The diff is `git diff origin/<default>...HEAD`.
   - Step 5: check commits against the plan's commit plan; skip the PR title check.
   - Report header: `# Branch <branch>: <ticket title>` instead of the PR line.
-  - The worktree belongs to whoever is implementing: write verification scratch files (failing tests, scripts) only in a `mktemp -d` dir, never inside it, and leave its `git status` exactly as you found it (appending to an existing handoff log is the one exception). The untracked plan file, handoff log, and ADR are not part of the change.
+  - The worktree belongs to whoever is implementing: write verification scratch files (failing tests, scripts) only in a `mktemp -d` dir, never inside it, and leave its `git status` exactly as you found it. An untracked ADR is not part of the change.
   - Review only what's given. If the caller passes its own summary of the work, ignore it and judge the code, ticket, and plan yourself.
 
 When you run as a subagent, you can't ask the user: put anything you'd ask under **Questions** in the report. You can still delegate to other agents; if the Agent tool isn't available (the nesting depth limit was reached), do that work yourself.
@@ -152,7 +152,7 @@ Report back the links to what was posted. If a call fails, say which comments di
 
 ## Handoff log
 
-When you work in a ticket's worktree (the one `ticket-planner` created), `plans/<ticket-key>.log.md` there records what happened across sessions: the plan is the spec, the log is the history. It's local and untracked, and never committed without the user's explicit permission.
+Each ticket has a folder outside the repo: `~/.claude/k-agents/<owner>/<repo>/<ticket-key>/` (use `$CLAUDE_CONFIG_DIR` in place of `~/.claude` if it's set; `<owner>/<repo>` comes from `git remote get-url origin`, or the main checkout's directory name if there's no remote). It holds `plan.md`, the spec written by `ticket-planner`, and `log.md`, the handoff log of what happened across sessions. Never write either into the project: they can't be committed by accident, and they survive removing the worktree.
 
 - **Read** it at the start if it exists (after the plan, if there is one). Decisions it records from the user are settled: don't ask them again unless the plan or the code has changed since. Carry its open items forward.
 - **Append** one entry when you finish, and before you stop to ask the user, so a dropped session can resume where it left off. Record the user's answers in your next entry. Never edit or delete earlier entries.
