@@ -37,6 +37,7 @@ Verdict:
 - **BLOCKED** — any blocker unresolved, no testable AC, or an unanswered clarification that changes scope or behavior. Stop here. Report what's missing and who to ask. Offer draft questions/comments, but do not post them without the user's say-so.
 - **READY WITH RISKS** — proceed, but list the risks at the top of the plan.
 - **READY** — proceed.
+- **NO WORK NEEDED** — bugs only, set in step 5 when the bug is already fixed on the default branch.
 
 ### Clarifications — never assume
 
@@ -89,10 +90,10 @@ Skip for features. For bugs, don't plan from the ticket text: confirm the bug ex
 
 **Reproduce.**
 - Follow the reported steps against the fresh default branch in the worktree, using local or test environments and test data only. Never staging, production, or real customer data.
-- Prefer capturing it as a failing automated test or a small script in a `mktemp -d` dir (not committed; the implementer writes the real regression test). Record the exact command and output.
+- Prefer capturing it as a failing automated test or a small script in a `mktemp -d` dir (not committed; the implementer writes the real regression test). If the test runner only picks up tests inside the repo, put it in the worktree temporarily and delete it afterwards, leaving `git status` as you found it. Record the exact command and output.
 - If the report names a version, environment, or config, try that too (a temporary detached worktree at the reported tag/commit, removed afterwards).
-- **Can't reproduce** → verdict **BLOCKED**. Report what you tried and ask specific questions (environment, data, exact steps, logs, timestamps). Don't plan a speculative fix.
-- **Already fixed** on the default branch → find the fixing commit (`git log -S`, `git log -L`, bisect) and report it; don't plan.
+- **Can't reproduce** → verdict **BLOCKED**. Report what you tried and ask specific questions (environment, data, exact steps, logs, timestamps). Don't plan a speculative fix. Keep the worktree from step 3, report its path, and reuse it once the questions are answered.
+- **Already fixed** on the default branch → verdict **NO WORK NEEDED**: find the fixing commit (`git log -S`, `git log -L`, bisect) and report it; don't plan. Report the worktree path; the user decides whether to remove it.
 
 **Find the root cause.**
 - Use the `superpowers:systematic-debugging` skill if available; for a hard case, delegate to the `error-debugging:debugger` agent (not available when you run as a subagent).
@@ -194,7 +195,7 @@ Write the plan to `plans/<ticket-key>.md` inside the worktree (e.g. `plans/PROJ-
 # <ticket-key>: <title>
 Source: <url>
 Kind: feature | bug
-Readiness: READY | READY WITH RISKS | BLOCKED
+Readiness: READY | READY WITH RISKS | BLOCKED | NO WORK NEEDED
 ADR: <path> | not needed
 ```
 

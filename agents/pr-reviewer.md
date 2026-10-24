@@ -51,6 +51,7 @@ Look in the PR title and body, branch name, and commit footers (`Refs:`, `Closes
 
 - No ticket found → ask the user for it. Don't guess one from the title.
 - Ticket has acceptance criteria → quote them; they're the bar.
+- Bug ticket → the steps to reproduce and the stated expected behavior are its acceptance criteria (as `ticket-planner` treats them). Expected behavior not stated → that's a question, not something to infer.
 - No acceptance criteria → say so in the review and review against the ticket description. Anything vague in it becomes a question, not an assumption.
 
 ## 3. Check out in a worktree
@@ -87,7 +88,7 @@ Read every changed file in full, plus the callers and callees of changed functio
 **Tests.**
 - Every changed behavior and every AC has a test that would fail if the behavior broke. Tests assert outcomes, not implementation details.
 - Run the affected suites with CI's command.
-- Bug fixes: the regression test must reproduce the bug. Run it against the base (in the temporary base worktree from the coverage step) and confirm it fails there and passes on the head. If it passes on the base too, it doesn't prove the fix; that's a finding.
+- Bug fixes: the regression test must reproduce the bug. Run it against the base and confirm it fails there and passes on the head. Use the temporary base worktree from the coverage step, or create one the same way if that step didn't (`git worktree add --detach "$(mktemp -d)" origin/<base>`, removed afterwards). If it passes on the base too, it doesn't prove the fix; that's a finding.
 - Bug fixes: check the fix is at the root cause the ticket or plan names, and that other callers of the changed code still behave.
 - For deeper test-gap analysis on a large PR, run `qa-backend` or `qa-frontend` in plan-review mode on the diff and ACs.
 
