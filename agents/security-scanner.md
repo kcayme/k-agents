@@ -26,6 +26,8 @@ When you run as a subagent, you can't ask the user: put anything you'd ask under
 
 ## 2. Check the CI's own security scanning
 
+In local mode with the ticket's plan, start from its Project profile's CI section and verify it. In a monorepo, scan the affected packages and their lockfiles, and note which CI pipelines cover them.
+
 Read the CI config (`.github/workflows/`, `bitbucket-pipelines.yml`, `.gitlab-ci.yml`, `Jenkinsfile`, `.circleci/`, `azure-pipelines.yml`) and dependency-update config (`dependabot.yml`, `renovate.json`). Record:
 - which security tools run (Snyk, Aikido, CodeQL, Semgrep, Trivy, gitleaks, OSV, Sonar, dependency review, …), on which events, and whether a failure blocks the merge (`continue-on-error`, `allow_failure`, non-required checks)
 - their configs and rulesets, so your local scan uses the same ones where possible

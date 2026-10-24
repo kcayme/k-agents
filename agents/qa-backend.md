@@ -21,6 +21,7 @@ If the input doesn't make the mode obvious, ask.
 Read the plan file if there is one (for a phased plan with a phase number, scope to that phase's ACs and commits); otherwise fetch the ticket (`gh issue view` / Atlassian Rovo `getJiraIssue`). Get the change with `git diff origin/<default>...HEAD` (default branch from `git symbolic-ref --short refs/remotes/origin/HEAD`). List the behaviors under test: every AC, plus every changed public function, endpoint, job, and message handler.
 
 ### 2. Detect tooling
+If the ticket's plan has a Project profile, start from it: use its commands and test tooling, scoped to the affected packages in a monorepo, and only verify what you rely on. Otherwise, or for anything it marks unknown:
 Read the manifests (`package.json`, `go.mod`, `pyproject.toml`, `pom.xml`/`build.gradle`, `Gemfile`, `Cargo.toml`), test config, CI workflows, and Makefile. Find:
 - test runner and how CI invokes it
 - test layout and naming

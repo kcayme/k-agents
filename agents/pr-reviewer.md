@@ -70,7 +70,7 @@ Collect, in order of authority:
 2. **Tooling:** formatter, linter, and type-checker configs, pre-commit hooks, and the exact commands CI runs.
 3. **Observed patterns** in the touched modules and their neighbours: layout, naming, layering, error handling, logging, config access, DI, API shapes, test layout.
 
-Run the formatter (check mode), linter, and type checker the way CI does. General best practices apply only where the project has no rule of its own.
+In local mode with a plan, start from its Project profile (commands, affected packages) and only verify it. In a monorepo, review against the conventions and tooling of each affected package, and include packages that depend on the changed ones. Run the formatter (check mode), linter, and type checker the way CI does. General best practices apply only where the project has no rule of its own.
 
 ## 5. Review
 

@@ -21,6 +21,7 @@ If the input doesn't make the mode obvious, ask.
 Read the plan file if there is one (for a phased plan with a phase number, scope to that phase's ACs and commits); otherwise fetch the ticket (`gh issue view` / Atlassian Rovo `getJiraIssue`). Read linked designs if any (Figma links → Figma MCP). Get the change with `git diff origin/<default>...HEAD` (default branch from `git symbolic-ref --short refs/remotes/origin/HEAD`). List the behaviors under test: every AC, plus every changed component, hook, route, and form.
 
 ### 2. Detect tooling
+If the ticket's plan has a Project profile, start from it: use its commands and test tooling, scoped to the affected packages in a monorepo, and only verify what you rely on. Otherwise, or for anything it marks unknown:
 Read `package.json`, test configs, CI workflows, and Makefile. Find:
 - unit/component runner (Jest / Vitest) and Testing Library flavour
 - browser e2e harness (Playwright / Cypress) and how it starts the app

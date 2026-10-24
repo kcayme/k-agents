@@ -86,6 +86,17 @@ The plan must fit the codebase as it is, not how you'd write it from scratch. Co
 
 Written rules beat observed patterns; observed patterns beat general best practice. Where the codebase is inconsistent, follow the dominant pattern in the module being changed and note it. If the conventions conflict with each other or with the ticket and it matters, raise it as a clarification — don't pick one silently.
 
+### Project profile
+
+Record how this project is actually built and checked, so the agents after you work from the same facts instead of rediscovering them:
+- **Layout:** single package or monorepo. For a monorepo: the workspace tool (npm/pnpm/yarn workspaces, Nx, Turborepo, Lerna, Go workspaces, Cargo workspaces, Gradle or Maven multi-module, uv/Poetry workspaces, Bazel), the packages this ticket touches, and the packages that depend on them. Each package can have its own tooling; record it per package.
+- **Stack:** languages, runtimes, and framework versions per affected package, from manifests and lockfiles.
+- **Commands**, exactly as CI runs them, scoped to the affected packages where the tool supports it (e.g. `pnpm --filter`, `nx affected`, `turbo run --filter`, `go test ./pkg/...`): install from the lockfile, format check, lint, type check, tests per layer, coverage, starting the app and its dependencies locally, and test database setup.
+- **Test tooling** per layer: frameworks, helpers, fixtures, and where tests live.
+- **CI:** the pipelines that run for this change, their required checks, and their security steps.
+
+Cite the file each fact comes from. Write "unknown" for anything you can't confirm; don't guess. Where it's cheap and safe (`--version`, listing tests), confirm a command actually runs; don't run full suites while planning.
+
 ## 5. Reproduce and find the root cause (bugs only)
 
 Skip for features. For bugs, don't plan from the ticket text: confirm the bug exists and find out why, in the worktree.
@@ -108,7 +119,7 @@ Record **Reproduction**, **Root cause**, **Introduced in**, and **Affected paths
 
 ## 6. Architecture decision (when needed)
 
-If the ticket introduces new services, data models or schema changes, external integrations, or cross-cutting/structural changes, run `system-architect` now, before writing the plan. Give it the ticket, the clarification answers, the worktree path, and the conventions from step 4. Wait for its recommendation and ADR; if it raises questions, put them to the user like any other clarification.
+If the ticket introduces new services, data models or schema changes, external integrations, or cross-cutting/structural changes, run `system-architect` now, before writing the plan. Give it the ticket, the clarification answers, the worktree path, and the conventions and project profile from step 4. Wait for its recommendation and ADR; if it raises questions, put them to the user like any other clarification.
 
 Build the plan on the recommended option and add `ADR: <path>` to the plan header. The ADR stays uncommitted in the worktree; don't add it to the commit plan. It's committed only if the user explicitly says so. If the user rejects the recommendation, stop and ask which option to plan for — don't pick one yourself.
 
@@ -138,8 +149,9 @@ Then:
 - **Commit plan** (see below), grouped by phase when the plan is phased
 - **Phases** (see below), for large tickets
 - **Diagrams** (see below), when the change involves a flow, a state lifecycle, the data model, or phases
-- **Conventions:** the rules and patterns from step 4 that this change must follow, each with the file it comes from (e.g. "errors wrapped with `AppError` — `src/lib/errors.ts`"), plus the format/lint/type-check commands
-- **Test plan:** commands to run (format, lint, and type checks included), new tests, existing tests that must still pass, edge cases (empty, error, permissions, concurrency, migration/rollback if data changes)
+- **Conventions:** the rules and patterns from step 4 that this change must follow, each with the file it comes from (e.g. "errors wrapped with `AppError` — `src/lib/errors.ts`")
+- **Project profile** (from step 4): layout and affected packages, stack, commands, test tooling, CI
+- **Test plan:** which profile commands to run (format, lint, and type checks included), new tests, existing tests that must still pass, edge cases (empty, error, permissions, concurrency, migration/rollback if data changes)
 - **Risks & unknowns**
 - **Not doing**
 
