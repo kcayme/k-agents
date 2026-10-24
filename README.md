@@ -23,9 +23,11 @@ PR ──> pr-reviewer
 
 Agents are symlinked into `~/.claude/agents/` so they work in every repo:
 
-```fish
-for f in (pwd)/.claude/agents/*.md; ln -sf $f ~/.claude/agents/; end
+```sh
+./install.sh
 ```
+
+Safe to re-run. Existing symlinks are updated; real files with the same name are left alone.
 
 ## Use
 
