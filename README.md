@@ -22,13 +22,13 @@ flowchart LR
 
 ### ticket-planner
 
-Plans a ticket (feature or bug) before any code is written. For bugs it first reproduces the issue and traces the root cause, so the plan fixes the cause with a regression test rather than patching the symptom. It checks the ticket is cleared to start (status, blockers, testable acceptance criteria), asks about anything unclear, creates a dedicated worktree, and writes `plans/<ticket>.md`. The plan maps every acceptance criterion to a change, a test, and a Conventional Commit, following the project's conventions. Large tickets are split into phases, each independently mergeable, delivered as one PR per phase or a single PR (your call). It brings in `system-architect` for design-heavy tickets and the QA agents to review the test plan.
+Plans a ticket (feature or bug) before any code is written. For bugs it first reproduces the issue and traces the root cause, so the plan fixes the cause with a regression test rather than patching the symptom. Plans include diagrams (Mermaid, with ASCII in chat) when a flow, state lifecycle, data model, or phasing changes. It checks the ticket is cleared to start (status, blockers, testable acceptance criteria), asks about anything unclear, creates a dedicated worktree, and writes `plans/<ticket>.md`. The plan maps every acceptance criterion to a change, a test, and a Conventional Commit, following the project's conventions. Large tickets are split into phases, each independently mergeable, delivered as one PR per phase or a single PR (your call). It brings in `system-architect` for design-heavy tickets and the QA agents to review the test plan.
 
 **Input:** ticket key, issue number, or URL · **Output:** worktree + plan file
 
 ### system-architect
 
-Researches solutions to a design problem, compares 2–4 options (always including "extend what exists") on explicit tradeoffs, and recommends one. Asks for missing requirements and scale numbers instead of guessing, cites sources, and can run throwaway spikes outside the repo.
+Researches solutions to a design problem, compares 2–4 options (always including "extend what exists") on explicit tradeoffs, and recommends one, with current-state and proposed diagrams in the ADR. Asks for missing requirements and scale numbers instead of guessing, cites sources, and can run throwaway spikes outside the repo.
 
 **Input:** ticket, plan, or design question · **Output:** ADR in the repo's ADR folder
 
