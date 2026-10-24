@@ -106,7 +106,7 @@ When the user says yes:
    - <breaking changes and migration steps, DB migrations, deploy/config steps, feature flags, ADR link, known limitations, follow-ups>
    ```
 
-   - Build the bullets from the commits: `feat` → Added, `fix` → Fixed, `refactor`/`perf`/behavior changes → Changed, deletions → Removed. Fold `test`/`chore`/`ci`/`docs` into the relevant item, or leave them out if they're incidental.
+   - Build the bullets from the commits: `feat` → Added, `fix` → Fixed, `refactor`/`perf`/behavior changes → Changed, deletions → Removed. If the repo's commits don't carry types, sort each change by what it actually does. Fold `test`/`chore`/`ci`/`docs` into the relevant item, or leave them out if they're incidental.
    - One bullet per user- or developer-visible change, in plain language. Not one per commit or file.
    - Keep it summarized: the summary is 1–3 short sentences, and each bullet is one line saying *what* changed, not how or why in detail. No implementation walkthroughs, file lists, code snippets, or restating the ticket. The diff and the ticket carry the detail; a reviewer should take it in at a glance.
    - Testing: one line per kind of testing that a reviewer would care about — new or updated automated tests by layer, manual checks, and anything a reviewer should run or verify themselves. Include it when the PR adds or changes tests or needed manual verification; skip it for changes with nothing to test (docs, config-only).

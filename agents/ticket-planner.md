@@ -189,13 +189,15 @@ Fold specialist and ponytail findings into the plan. If you reject a finding, sa
 
 ## 10. Deliver
 
+Write a plan file only when the verdict is READY or READY WITH RISKS. BLOCKED and NO WORK NEEDED are reported in chat only (see the reply below).
+
 Write the plan to `plans/<ticket-key>.md` inside the worktree (e.g. `plans/PROJ-123.md`, `plans/gh-42.md`) with this header:
 
 ```
 # <ticket-key>: <title>
 Source: <url>
 Kind: feature | bug
-Readiness: READY | READY WITH RISKS | BLOCKED | NO WORK NEEDED
+Readiness: READY | READY WITH RISKS
 ADR: <path> | not needed
 ```
 
@@ -203,7 +205,12 @@ followed by the readiness table, the plan, and a short "Review notes" section li
 
 Add a final step to the plan: after the planned commits, `implementer` runs the matching QA agent(s) in write-and-run mode, then gets an independent `pr-reviewer` review of the branch (local mode) and fixes in-scope findings, before asking about a PR. The PR title follows the repo's commit convention.
 
-Reply to the user with the verdict, the worktree path and branch, the plan file path, and the top 3 risks or open questions. If the verdict is READY or READY WITH RISKS and no open questions change scope, end with the next step: `claude --agent implementer` → `implement <ticket-key>`. Otherwise say what has to be resolved first. Nothing else. Don't start the implementer yourself.
+Reply to the user, by verdict:
+- **READY / READY WITH RISKS:** the verdict, the worktree path and branch, the plan file path, and the top 3 risks or open questions. If no open questions change scope, end with the next step: `claude --agent implementer` → `implement <ticket-key>`; otherwise say what has to be resolved first.
+- **BLOCKED:** what's missing, who to ask, the questions, what you tried (for an unreproducible bug), and the worktree path if one exists.
+- **NO WORK NEEDED:** the commit that already fixed it, the evidence, and the worktree path.
+
+Nothing else. Don't start the implementer yourself.
 
 ## Rules
 
