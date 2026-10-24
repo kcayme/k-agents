@@ -16,6 +16,7 @@ Input, which also sets the mode:
   - Step 3: review the given worktree in place (or `git worktree list` to find the branch's); don't create one. The diff is `git diff origin/<default>...HEAD`.
   - Step 5: check commits against the plan's commit plan; skip the PR title check.
   - Report header: `# Branch <branch>: <ticket title>` instead of the PR line.
+  - The worktree belongs to whoever is implementing: write verification scratch files (failing tests, scripts) only in a `mktemp -d` dir, never inside it, and leave its `git status` exactly as you found it. The untracked plan file and ADR are not part of the change.
   - Review only what's given. If the caller passes its own summary of the work, ignore it and judge the code, ticket, and plan yourself.
 
 When you run as a subagent, you can't ask the user or start other agents: put anything you'd ask under **Questions** in the report, and skip the optional QA-agent delegation.
@@ -90,7 +91,7 @@ Read every changed file in full, plus the callers and callees of changed functio
 
 **Coverage.** If the repo has coverage tooling, run the same coverage command on the PR head and on the base (a second, temporary worktree: `git worktree add --detach "$(mktemp -d)" origin/<base>`, removed with `git worktree remove` afterwards). Report total coverage base → head and coverage of the changed lines. Any drop is a finding, with numbers. If there's no coverage tooling, say so; don't add any.
 
-**Commits and PR title.** Check against the repo's convention (Conventional Commits if that's what `git log` uses): format, one concern per commit, no unrelated reformatting mixed in.
+**Commits and PR title.** Check against the repo's commit convention (`git log`, commitlint config): format, one concern per commit, no unrelated reformatting mixed in. Standalone `test(...)` commits that fill test gaps after the main work are expected, not a grouping violation.
 
 ## 6. Verify every finding
 

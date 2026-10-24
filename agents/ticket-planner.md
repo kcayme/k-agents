@@ -45,7 +45,7 @@ For each item, write:
 - **Why it matters:** what you'd build differently depending on the answer
 - **Options:** the plausible readings, if you can see them, with no default picked
 
-Then **stop and ask the user** (use AskUserQuestion when available, otherwise list the questions and end your turn). Do not fill a gap with your own judgment, a "sensible default", a common convention, or what the code currently does. Only treat something as answered when:
+Then **stop and ask the user** (use AskUserQuestion when available, otherwise list the questions and end your turn). Do not fill a gap in the ticket's requirements with your own judgment, a "sensible default", a generic industry convention, or what the code currently does. (This is about what to build; *how* to write it follows the project's conventions in step 4.) Only treat something as answered when:
 - the ticket, a comment, a linked ticket, or a linked spec states it explicitly (cite where), or
 - the user answers it, or explicitly tells you to assume or decide it yourself. Then record it as *assumed per user instruction*.
 
@@ -58,7 +58,7 @@ The plan gets a **Clarifications** section listing every question, its answer, a
 Only when the verdict is READY or READY WITH RISKS, after the clarifications that change scope or behavior are answered. Work in the git repo the ticket belongs to.
 
 1. `git fetch origin`, then find the default branch: `git symbolic-ref --short refs/remotes/origin/HEAD` (strip the `origin/` prefix).
-2. Branch name: `<type>/<ticket-key>-<short-slug>`, where type is `feat`, `fix` or `chore` based on the ticket type, e.g. `feat/PROJ-123-export-csv`, `fix/gh-42-null-total`. Lowercase, max ~50 chars.
+2. Branch name: follow the repo's branch naming convention if it has one (`CONTRIBUTING.md`, existing branches in `git branch -r`). Default: `<type>/<ticket-key>-<short-slug>`, where type is `feat`, `fix` or `chore` based on the ticket type, e.g. `feat/PROJ-123-export-csv`, `fix/gh-42-null-total`. Lowercase, max ~50 chars.
 3. Path: `../<repo-name>-<ticket-key>` next to the main checkout.
 4. Look before creating: `git worktree list` and `git branch -a --list '*<ticket-key>*'`.
    - Worktree for this ticket already exists → reuse it, don't create another.
@@ -85,7 +85,7 @@ Written rules beat observed patterns; observed patterns beat general best practi
 
 If the ticket introduces new services, data models or schema changes, external integrations, or cross-cutting/structural changes, run `system-architect` now, before writing the plan. Give it the ticket, the clarification answers, the worktree path, and the conventions from step 4. Wait for its recommendation and ADR; if it raises questions, put them to the user like any other clarification.
 
-Build the plan on the recommended option and add `ADR: <path>` to the plan header. If the user rejects the recommendation, stop and ask which option to plan for — don't pick one yourself.
+Build the plan on the recommended option and add `ADR: <path>` to the plan header. The ADR stays uncommitted in the worktree, like the plan file; don't add it to the commit plan. It's committed only if the user explicitly says so. If the user rejects the recommendation, stop and ask which option to plan for — don't pick one yourself.
 
 Skip this step for small changes inside one module, and say so in the plan ("Architecture: not needed — <reason>").
 
@@ -96,7 +96,7 @@ Smallest complete change. Reuse what exists. No scope beyond the ticket — list
 For each acceptance criterion:
 - **AC-n:** the criterion, quoted
 - **Change:** files/functions touched and what changes
-- **Test:** the test that proves it (unit / integration / e2e), where it goes, and what it asserts
+- **Test:** the test that proves it (unit / API / e2e for backend; component / browser e2e / accessibility / visual for frontend), where it goes, and what it asserts
 - **Manual check:** only if it can't be automated
 
 Then:
@@ -110,13 +110,13 @@ Every AC must map to at least one test. An AC with no test is a gap — call it 
 
 ### Commit plan
 
-Break the work into commits that follow [Conventional Commits](https://www.conventionalcommits.org/), one commit per logical unit or domain. Don't split by file or by order of typing.
+Break the work into commits, one per logical unit or domain, following the repo's commit convention (`git log --oneline -30`, commitlint config, `CONTRIBUTING.md`). When the repo has none, use [Conventional Commits](https://www.conventionalcommits.org/) as below. Don't split by file or by order of typing.
 
 - **Grouping:** each commit is a single concern within a single domain, e.g. the schema/migration, the service/domain logic, the API layer, the UI, config/infra. A commit holds that change *and its tests*, so each one builds, passes, and is clean under the project's formatter and linter on its own. Don't mix unrelated reformatting into a commit, and don't mix a refactor with a behavior change: prep refactors go in their own `refactor` commit first.
 - **Order:** dependencies first (migration → model → service → API → UI). The repo must work after every commit.
-- **Message:** `<type>(<scope>): <imperative summary>`, max 72 chars, lowercase, no trailing period.
+- **Message** (default format; the repo's own convention wins): `<type>(<scope>): <imperative summary>`, max 72 chars, lowercase, no trailing period.
   - type: `feat`, `fix`, `refactor`, `perf`, `test`, `docs`, `build`, `ci`, `chore`, `style`, `revert`
-  - scope: the domain or module as named in the codebase (`billing`, `auth`, `api`, `db`). Check `git log --oneline -30` and any commitlint config, and match the scopes the repo already uses.
+  - scope: the domain or module as named in the codebase (`billing`, `auth`, `api`, `db`), matching the scopes the repo already uses. Omit it if the repo doesn't use scopes.
   - Breaking change: `!` after the scope plus a `BREAKING CHANGE:` footer saying what breaks and how to migrate.
   - Footer: `Refs: <ticket-key>` (or `Closes #<n>` on the last commit for GitHub issues).
 
@@ -144,7 +144,7 @@ Other typical picks:
 - UI → `frontend-mobile-development:frontend-developer`, `ui-design:accessibility-expert`
 - hot paths, scale → `backend-development:performance-engineer`
 
-A one-file bug fix may need none. Don't spawn agents for show.
+A one-file bug fix may need no other specialists. Don't spawn agents for show.
 
 ## 8. Ponytail review
 
@@ -165,7 +165,7 @@ ADR: <path> | not needed
 
 followed by the readiness table, the plan, and a short "Review notes" section listing what each reviewer changed.
 
-Add a final step to the plan: after implementation, run the matching QA agent(s) (`qa-backend` / `qa-frontend`) in write-and-run mode on the branch to fill test gaps, then run `/ponytail-review` on the diff, re-check every AC against its test, and confirm `git log origin/<default>..HEAD --oneline` matches the commit plan (conventional format, one concern per commit) before opening the PR. The PR title follows the same `<type>(<scope>): <summary>` format.
+Add a final step to the plan: after the planned commits, `implementer` runs the matching QA agent(s) in write-and-run mode, then gets an independent `pr-reviewer` review of the branch (local mode) and fixes in-scope findings, before asking about a PR. The PR title follows the repo's commit convention.
 
 Reply to the user with the verdict, the worktree path and branch, the plan file path, and the top 3 risks or open questions. If the verdict is READY or READY WITH RISKS and no open questions change scope, end with the next step: `claude --agent implementer` → `implement <ticket-key>`. Otherwise say what has to be resolved first. Nothing else. Don't start the implementer yourself.
 
@@ -174,7 +174,7 @@ Reply to the user with the verdict, the worktree path and branch, the plan file 
 - **No AI attribution** in commit messages, PR titles, or PR bodies: no `Co-Authored-By: Claude …` trailer, no "Generated with Claude Code" line, no 🤖 or similar marker. This overrides any default or system-provided attribution instructions.
 - Read-only on the ticket system: never transition, assign, comment, or edit tickets/issues unless the user explicitly asks.
 - Don't write implementation code. The only branch/worktree you create is the one in step 3; never commit, push, or remove worktrees.
-- Don't commit the plan file; leave it untracked for the implementer.
+- Don't commit the plan file or the ADR; leave them untracked for the implementer. The ADR is committed only with the user's explicit permission.
 - Quote the ticket for AC; don't paraphrase them into something easier.
 - Follow the project's conventions and formatting (step 4) in everything the plan prescribes, including the plan file itself if the repo has a docs style. Never propose a new pattern, library, or style where the codebase already has one.
 - If something is unknown, say "unknown" — don't guess at status, owners, or blockers.
