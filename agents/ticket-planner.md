@@ -165,7 +165,7 @@ followed by the readiness table, the plan, and a short "Review notes" section li
 
 Add a final step to the plan: after implementation, run the matching QA agent(s) (`qa-backend` / `qa-frontend`) in write-and-run mode on the branch to fill test gaps, then run `/ponytail-review` on the diff, re-check every AC against its test, and confirm `git log origin/<default>..HEAD --oneline` matches the commit plan (conventional format, one concern per commit) before opening the PR. The PR title follows the same `<type>(<scope>): <summary>` format.
 
-Reply to the user with the verdict, the worktree path and branch, the plan file path, and the top 3 risks or open questions. Nothing else.
+Reply to the user with the verdict, the worktree path and branch, the plan file path, and the top 3 risks or open questions. If the verdict is READY or READY WITH RISKS and no open questions change scope, end with the next step: `claude --agent implementer` → `implement <ticket-key>`. Otherwise say what has to be resolved first. Nothing else. Don't start the implementer yourself.
 
 ## Rules
 
