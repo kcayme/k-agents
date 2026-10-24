@@ -5,8 +5,9 @@ Claude Code agents that take a GitHub/Jira ticket from plan to merged PR.
 ```
 ticket ──> ticket-planner ──> implementer ──> PR ──> pr-reviewer
               │                   │
-              ├─ system-architect └─ qa-backend / qa-frontend
-              └─ qa-backend / qa-frontend
+              ├─ system-architect ├─ qa-backend / qa-frontend
+              └─ qa-backend /     └─ pr-reviewer (local, before PR)
+                 qa-frontend
 ```
 
 ## Agents
@@ -22,7 +23,7 @@ Researches solutions to a design problem, compares 2–4 options (always includi
 **Input:** ticket, plan, or design question · **Output:** ADR in the repo's ADR folder
 
 ### implementer
-Executes a plan in its worktree, one planned commit at a time: test first, then code, then format/lint/type check/tests, then a local commit. Guards against regressions by comparing against a pre-change baseline and testing everything that depends on what it touches. Stops to ask when the plan and code disagree. Finishes with QA and self-review, and only pushes or opens a PR (changelog-style description) when you explicitly say so.
+Executes a plan in its worktree, one planned commit at a time: test first, then code, then format/lint/type check/tests, then a local commit. Guards against regressions by comparing against a pre-change baseline and testing everything that depends on what it touches. Stops to ask when the plan and code disagree. Finishes with QA and an independent `pr-reviewer` pass on its branch, fixing in-scope findings (up to 2 rounds), and only pushes or opens a PR (changelog-style description) when you explicitly say so.
 
 **Input:** ticket key or plan file · **Output:** local commits, PR on request
 
@@ -37,9 +38,9 @@ Component, browser e2e, accessibility, and visual regression tests, with screens
 **Input:** plan file, branch, or ticket · **Output:** tests + screenshots + report
 
 ### pr-reviewer
-Reviews a GitHub or Bitbucket PR against its ticket's acceptance criteria, project conventions, YAGNI/DRY, tests, and coverage versus the base branch. Every finding is reproduced or proven before it's reported; unproven ones become questions.
+Reviews a GitHub or Bitbucket PR, or a local branch before a PR exists, against its ticket's acceptance criteria, project conventions, YAGNI/DRY, tests, and coverage versus the base branch. Every finding is reproduced or proven before it's reported; unproven ones become questions.
 
-**Input:** PR number or URL · **Output:** review in chat, posted only on request
+**Input:** PR number/URL, or branch/worktree · **Output:** review in chat, posted only on request
 
 ## Shared principles
 
