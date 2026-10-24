@@ -15,6 +15,7 @@ flowchart LR
     TP -.->|test plan review| QA[qa-backend / qa-frontend]
     IM -.->|fill test gaps| QA
     IM -.->|independent review, before PR| RV
+    RV -.->|security scan| SS[security-scanner]
 ```
 
 ## Agents
@@ -54,6 +55,11 @@ Reviews a GitHub or Bitbucket PR, or a local branch before a PR exists, against 
 
 **Input:** PR number/URL, or branch/worktree · **Output:** review in chat, posted only on request
 
+### security-scanner
+Snyk/Aikido-style security scan of a PR or branch using open-source scanners (osv-scanner, semgrep, gitleaks, trivy, plus language-native auditors). Reports only what the change introduces, checks the CI's own security pipeline and its results on the PR, and verifies each finding (reachability, exploitability, real vs test secret). Secrets are always masked. Runs standalone or from `pr-reviewer`.
+
+**Input:** PR number/URL, or branch/worktree · **Output:** security report in chat
+
 ## Shared principles
 
 - **Never assume.** Unclear details become questions.
@@ -85,7 +91,7 @@ claude --agent k-agents:pr-reviewer      # then: review #42
 
 With the symlink install, drop the `k-agents:` prefix.
 
-**Models:** planning, implementing, and reviewing agents (`ticket-planner`, `system-architect`, `implementer`, `pr-reviewer`) run on Opus. `qa-backend`, `qa-frontend`, and `tech-researcher` run on Sonnet. Agent files can't declare a fallback model; when running a Sonnet agent directly, add one per session with `--fallback-model opus` (used only if Sonnet is overloaded or unavailable).
+**Models:** planning, implementing, and reviewing agents (`ticket-planner`, `system-architect`, `implementer`, `pr-reviewer`) and `security-scanner` run on Opus. `qa-backend`, `qa-frontend`, and `tech-researcher` run on Sonnet. Agent files can't declare a fallback model; when running a Sonnet agent directly, add one per session with `--fallback-model opus` (used only if Sonnet is overloaded or unavailable).
 
 ## Requirements
 
@@ -94,3 +100,4 @@ With the symlink install, drop the `k-agents:` prefix.
 - `bkt` CLI, or `BITBUCKET_EMAIL` + `BITBUCKET_API_TOKEN`, for Bitbucket Cloud
 - ponytail plugin (`ponytail-review` skill)
 - Hurl, for backend API tests
+- `osv-scanner`, `semgrep`, `gitleaks`, `trivy` for `security-scanner` (missing ones are reported as not scanned); `snyk`/`aikido` CLIs optional
