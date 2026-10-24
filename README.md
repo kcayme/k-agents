@@ -93,15 +93,24 @@ Or, to edit the agents and see changes immediately, symlink them into `~/.claude
 
 ## Use
 
-Run an agent as the main session so it can delegate to the others:
+Each agent has a matching slash command that runs it and relays its questions to you:
+
+```
+/k-agents:ticket-planner PROJ-123        # symlink install: /ticket-planner PROJ-123
+/k-agents:implementer PROJ-123 phase 2
+/k-agents:pr-reviewer #42
+/k-agents:security-scanner #42
+```
+
+You can also mention an agent (`@agent-k-agents:pr-reviewer review #42`) or ask for it by name. Called these ways, an agent runs as a subagent: it can still delegate to other agents (up to Claude Code's nesting limit, three layers by default), but it can't prompt you directly, so its questions come back through your session.
+
+For the interactive agents, `ticket-planner` and `implementer`, you can instead run the agent as the session itself, so it asks you directly:
 
 ```
 claude --agent k-agents:ticket-planner   # then: plan PROJ-123
-claude --agent k-agents:implementer      # then: implement PROJ-123
-claude --agent k-agents:pr-reviewer      # then: review #42
 ```
 
-With the symlink install, drop the `k-agents:` prefix.
+With the symlink install, drop the `k-agents:` prefix everywhere.
 
 **Models:** planning, implementing, and reviewing agents (`ticket-planner`, `system-architect`, `implementer`, `pr-reviewer`) and `security-scanner` run on Opus. `qa-backend`, `qa-frontend`, and `tech-researcher` run on Sonnet. Agent files can't declare a fallback model; when running a Sonnet agent directly, add one per session with `--fallback-model opus` (used only if Sonnet is overloaded or unavailable).
 
