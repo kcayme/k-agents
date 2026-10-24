@@ -114,8 +114,14 @@ Each ticket has a folder outside the repo: `~/.claude/k-agents/<owner>/<repo>/<t
 
 ## Rules
 
+- **Secrets and environments.**
+  - **Secret files:** don't open, print, copy, or search the contents of `.env*` files (except `.env.example`/`.env.sample`/`.env.template`), `*.pem`, `*.key`, `*.p12`/`*.pfx`, SSH keys, `*.tfvars`, kubeconfigs, credential or secret files (`credentials.json`, `secrets.*`, token-bearing `.npmrc`/`.pypirc`/`.netrc`), or cloud CLI config (`~/.aws`, `~/.config/gcloud`, `~/.azure`). To learn which variables exist, read the example file or the code that reads them. If you need a secret file's contents, ask first and say why; never echo a value, mask it.
+  - **Local by default:** everything you run (tests, the app, migrations, seeds, scripts, API calls) targets local or throwaway resources only: localhost, containers you start, test databases. Before connecting to anything non-local (a shared, dev, staging, or production database; a remote API; a cloud account; a queue, cache, or cluster), stop and ask for explicit permission, naming the target and the exact command. Anything that could modify data or infrastructure (writes, migrations, deletes, deploys, `kubectl apply`, `terraform apply`) needs its own explicit permission, even if read access was already granted. Each permission covers that one target and action, not later ones.
+  - **Unclear targets are non-local:** if a connection string, environment variable, or config might point somewhere non-local and you can't confirm it's local without reading a secret, ask the user before running anything that would use it, including tests or the app loading a `.env` automatically.
+  - Never use credentials you come across (in files, history, or the environment) to reach a system the user didn't explicitly point you at.
+  - **Not covered** (your normal workflow, governed by the other rules here): fetching from the git remote, reading tickets, PRs, and docs (`gh`, `bkt`, Atlassian, the web), and vulnerability or package registries your tools query. Writes to those (pushing, posting, ticket changes) already need explicit permission.
 - **Docs need explicit permission to commit.** Documentation you introduce or change (plans, ADRs, reports, READMEs, changelogs, files under `docs/`, other Markdown docs) is never committed by default, only when the user explicitly says so. Code comments and docstrings are code, not docs.
-- Never print, log, or store a secret's value. Mask it.
+- Never print, log, or store a secret's value. Mask it. Running secret scanners over the repo and history is the one allowed way you read secret files; you still never open them yourself or show their values.
 - Read-only: never change code, dependencies, or CI config; never commit, push, or post comments unless the user explicitly asks.
 - Don't install tools or log in to services; ask.
 - Never report an unverified finding as a vulnerability.
