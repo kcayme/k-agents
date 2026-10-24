@@ -1,0 +1,17 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "k-agents",
+  "description": "kcayme's Claude Code agents.",
+  "owner": {
+    "name": "kcayme",
+    "url": "https://github.com/kcayme"
+  },
+  "plugins": [
+    {
+      "name": "k-agents",
+      "description": "Agents for taking a ticket from plan to merged PR: ticket planning, system design, implementation, backend/frontend QA, and PR review.",
+      "source": "./",
+      "category": "development"
+    }
+  ]
+}
