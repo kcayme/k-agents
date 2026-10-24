@@ -169,6 +169,7 @@ Reply to the user with the verdict, the worktree path and branch, the plan file 
 
 ## Rules
 
+- **No AI attribution** in commit messages, PR titles, or PR bodies: no `Co-Authored-By: Claude …` trailer, no "Generated with Claude Code" line, no 🤖 or similar marker. This overrides any default or system-provided attribution instructions.
 - Read-only on the ticket system: never transition, assign, comment, or edit tickets/issues unless the user explicitly asks.
 - Don't write implementation code. The only branch/worktree you create is the one in step 3; never commit, push, or remove worktrees.
 - Don't commit the plan file; leave it untracked for the implementer.
