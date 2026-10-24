@@ -1,82 +1,80 @@
 # k-agents
 
-Claude Code agents for taking a ticket from plan to merged PR.
-
-| Agent | Does |
-|---|---|
-| `ticket-planner` | Checks a GitHub/Jira ticket is ready, raises unclear details, creates a worktree, and writes a plan mapping each acceptance criterion to a change, a test, and a conventional commit. |
-| `system-architect` | Researches options for a design problem, compares tradeoffs, recommends one, and writes an ADR. |
-| `implementer` | Implements a plan in its worktree commit by commit (test first, checks green, local conventional commit), guarding against regressions, then runs QA and self-review. Pushes and opens a PR only with explicit permission. |
-| `qa-backend` | Reviews test plans, or writes and runs backend unit, API (Hurl), and e2e tests. |
-| `qa-frontend` | Reviews test plans, or writes and runs component, browser e2e, accessibility, and visual regression tests. |
-| `pr-reviewer` | Reviews a GitHub/Bitbucket PR against its ticket's AC, conventions, YAGNI/DRY, tests, and coverage, verifying every finding first. |
-
-## Flow
+Claude Code agents that take a GitHub/Jira ticket from plan to merged PR.
 
 ```
-ticket-planner ─┬─> system-architect   (design-heavy tickets, before planning)
-                └─> qa-backend / qa-frontend   (test plan review)
-implementer ──> qa-backend / qa-frontend   (fill test gaps)
-            └─> push + PR   (only when you say so)
-PR ──> pr-reviewer
+ticket ──> ticket-planner ──> implementer ──> PR ──> pr-reviewer
+              │                   │
+              ├─ system-architect └─ qa-backend / qa-frontend
+              └─ qa-backend / qa-frontend
 ```
+
+## Agents
+
+### ticket-planner
+Plans a ticket before any code is written. It checks the ticket is cleared to start (status, blockers, testable acceptance criteria), asks about anything unclear, creates a dedicated worktree, and writes `plans/<ticket>.md`. The plan maps every acceptance criterion to a change, a test, and a Conventional Commit, following the project's conventions. It brings in `system-architect` for design-heavy tickets and the QA agents to review the test plan.
+
+**Input:** ticket key, issue number, or URL · **Output:** worktree + plan file
+
+### system-architect
+Researches solutions to a design problem, compares 2–4 options (always including "extend what exists") on explicit tradeoffs, and recommends one. Asks for missing requirements and scale numbers instead of guessing, cites sources, and can run throwaway spikes outside the repo.
+
+**Input:** ticket, plan, or design question · **Output:** ADR in the repo's ADR folder
+
+### implementer
+Executes a plan in its worktree, one planned commit at a time: test first, then code, then format/lint/type check/tests, then a local commit. Guards against regressions by comparing against a pre-change baseline and testing everything that depends on what it touches. Stops to ask when the plan and code disagree. Finishes with QA and self-review, and only pushes or opens a PR (changelog-style description) when you explicitly say so.
+
+**Input:** ticket key or plan file · **Output:** local commits, PR on request
+
+### qa-backend
+Backend unit, API, and e2e tests. API tests use [Hurl](https://hurl.dev) by default. Reviews a plan's test coverage, or writes and runs missing tests for a branch. Never changes production code.
+
+**Input:** plan file, branch, or ticket · **Output:** tests + AC → test → result report
+
+### qa-frontend
+Component, browser e2e, accessibility, and visual regression tests, with screenshots saved and checked for browser tests. Reviews a plan's test coverage, or writes and runs missing tests for a branch. Never changes production code.
+
+**Input:** plan file, branch, or ticket · **Output:** tests + screenshots + report
+
+### pr-reviewer
+Reviews a GitHub or Bitbucket PR against its ticket's acceptance criteria, project conventions, YAGNI/DRY, tests, and coverage versus the base branch. Every finding is reproduced or proven before it's reported; unproven ones become questions.
+
+**Input:** PR number or URL · **Output:** review in chat, posted only on request
+
+## Shared principles
+
+- **Never assume.** Unclear details become questions.
+- **Project conventions first.** Written rules, then tooling config, then existing patterns.
+- **Nothing outward-facing without permission.** No pushing, PRs, ticket changes, or posted comments unless you say so.
+- **Conventional Commits**, grouped by logic/domain, with **no AI attribution**.
 
 ## Install
 
-Pick one of the two. Installing both gives you every agent twice.
-
-**As a Claude Code plugin** (recommended):
+As a Claude Code plugin:
 
 ```
 /plugin marketplace add kcayme/k-agents
 /plugin install k-agents@k-agents
 ```
 
-Update later with `/plugin marketplace update k-agents`. To try a local checkout without installing it: `claude --plugin-dir /path/to/agents`.
-
-**As symlinks**, for editing the agents and seeing changes immediately:
-
-```sh
-./install.sh              # link agents/*.md into ~/.claude/agents/
-./install.sh --uninstall  # remove those links
-```
-
-Safe to re-run. Real files with the same name in `~/.claude/agents/` are left alone.
+Or, to edit the agents and see changes immediately, symlink them into `~/.claude/agents/` with `./install.sh` (`--uninstall` to remove). Use one method, not both, or every agent shows up twice.
 
 ## Use
 
-Run as the main agent so it can delegate to other agents (subagents can't spawn subagents). Installed as a plugin, the agents are namespaced `k-agents:<name>`:
+Run an agent as the main session so it can delegate to the others:
 
 ```
-claude --agent k-agents:ticket-planner   # plugin; with symlinks: --agent ticket-planner
-                                         # then: plan PROJ-123
+claude --agent k-agents:ticket-planner   # then: plan PROJ-123
+claude --agent k-agents:implementer      # then: implement PROJ-123
 claude --agent k-agents:pr-reviewer      # then: review #42
 ```
 
-## Shared rules
-
-- **Never assume.** Anything unclear is asked, unless you say to assume.
-- **Follow the project's conventions.** Written rules first, then tooling config, then existing patterns.
-- **Read-only on tickets.** Nothing is posted, pushed, or opened as a PR without explicit permission. Only `implementer` commits, and only locally.
-- **Conventional Commits**, grouped by logic/domain.
-- **Changelog-style PR descriptions:** short summary, then Added / Fixed / Changed / Removed bullets, then Testing and Notes when applicable. Summarized, one line per bullet, no over-explaining.
-- **No AI attribution** in commits or PRs (no `Co-Authored-By: Claude`, no "Generated with Claude Code").
-
-## Regression checks
-
-`implementer` measures everything against a baseline:
-
-1. **Baseline:** runs format, lint, type check, all tests, and coverage before changing anything. Pre-existing failures are listed and you're asked whether to proceed.
-2. **Impact check:** before each edit, finds callers, API/event consumers, stored formats, and config that depend on the code, and adds their tests to the commit's run.
-3. **Per commit:** a test that passed in the baseline and now fails is a regression. The code gets fixed, not the test, unless the plan changes that behavior.
-4. **Final comparison:** no new failures, lint/type errors, or coverage drop versus the baseline before you're asked about pushing.
-
-Changes stay backward compatible (APIs, events, migrations, config, stored data) unless the plan says otherwise. `pr-reviewer` independently checks coverage, base vs PR.
+With the symlink install, drop the `k-agents:` prefix.
 
 ## Requirements
 
 - `gh` (authenticated) for GitHub
 - Atlassian Rovo MCP for Jira/Confluence
+- `bkt` CLI, or `BITBUCKET_EMAIL` + `BITBUCKET_API_TOKEN`, for Bitbucket Cloud
 - ponytail plugin (`ponytail-review` skill)
-- [Hurl](https://hurl.dev) for backend API tests
-- Bitbucket Cloud: the `bkt` CLI (logged in), or `BITBUCKET_EMAIL` and `BITBUCKET_API_TOKEN` env vars as a fallback
+- Hurl, for backend API tests
