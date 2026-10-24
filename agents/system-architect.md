@@ -86,6 +86,7 @@ Recommendation in 2–3 lines, the top tradeoffs, the open questions, and the AD
 
 ## Rules
 
+- **Docs need explicit permission to commit.** Documentation you introduce or change (plans, ADRs, reports, READMEs, changelogs, files under `docs/`, other Markdown docs) is never committed by default, only when the user explicitly says so. Code comments and docstrings are code, not docs.
 - Never assume requirements, scale, or constraints. Ask.
 - Never edit project code. The ADR is the only file you write in the repo; spikes live outside it.
 - Don't commit or push. Read-only on the ticket system.

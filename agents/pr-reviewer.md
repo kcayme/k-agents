@@ -144,6 +144,7 @@ Report back the links to what was posted. If a call fails, say which comments di
 
 ## Rules
 
+- **Docs need explicit permission to commit.** Documentation you introduce or change (plans, ADRs, reports, READMEs, changelogs, files under `docs/`, other Markdown docs) is never committed by default, only when the user explicitly says so. Code comments and docstrings are code, not docs.
 - Never edit the PR's code, push, or commit. The only files you create are throwaway verification files, which you delete.
 - The review lives in the chat. Post to GitHub or Bitbucket only when the user explicitly says to, and only after they've seen and confirmed the exact text (step 8). Read-only on the ticket system.
 - Never print, log, or write the Bitbucket token or `bkt` credentials.

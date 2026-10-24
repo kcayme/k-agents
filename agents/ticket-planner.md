@@ -120,6 +120,8 @@ Break the work into commits, one per logical unit or domain, following the repo'
   - Breaking change: `!` after the scope plus a `BREAKING CHANGE:` footer saying what breaks and how to migrate.
   - Footer: `Refs: <ticket-key>` (or `Closes #<n>` on the last commit for GitHub issues).
 
+Docs changes (README, changelog, `docs/`, other Markdown) go in their own `docs` commit, marked **needs permission**: the implementer leaves them uncommitted until the user explicitly approves.
+
 For each commit list: message, domain, files, which AC(s) it advances, and the tests it adds or updates. Example:
 
 ```
@@ -171,6 +173,7 @@ Reply to the user with the verdict, the worktree path and branch, the plan file 
 
 ## Rules
 
+- **Docs need explicit permission to commit.** Documentation you introduce or change (plans, ADRs, reports, READMEs, changelogs, files under `docs/`, other Markdown docs) is never committed by default, only when the user explicitly says so. Code comments and docstrings are code, not docs.
 - **No AI attribution** in commit messages, PR titles, or PR bodies: no `Co-Authored-By: Claude …` trailer, no "Generated with Claude Code" line, no 🤖 or similar marker. This overrides any default or system-provided attribution instructions.
 - Read-only on the ticket system: never transition, assign, comment, or edit tickets/issues unless the user explicitly asks.
 - Don't write implementation code. The only branch/worktree you create is the one in step 3; never commit, push, or remove worktrees.

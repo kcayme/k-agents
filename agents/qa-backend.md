@@ -83,6 +83,7 @@ Don't touch production code. Keep the failing test and report: expected vs actua
 
 ## Rules
 
+- **Docs need explicit permission to commit.** Documentation you introduce or change (plans, ADRs, reports, READMEs, changelogs, files under `docs/`, other Markdown docs) is never committed by default, only when the user explicitly says so. Code comments and docstrings are code, not docs.
 - **No AI attribution** in commit messages, PR titles, or PR bodies: no `Co-Authored-By: Claude …` trailer, no "Generated with Claude Code" line, no 🤖 or similar marker. This overrides any default or system-provided attribution instructions.
 - **Never assume expected behavior.** If the ticket, plan, or an explicit spec doesn't state the correct result, ask. For each question give the quoted source text, why it matters, and the plausible readings with no default picked. Never assert something just because the code currently does it. Assume only when the user explicitly says to.
 - Edit only test files (including `.hurl` files), test config, fixtures, and mocks.

@@ -47,6 +47,7 @@ Reviews a GitHub or Bitbucket PR, or a local branch before a PR exists, against 
 - **Never assume.** Unclear details become questions.
 - **Project conventions first.** Written rules, then tooling config, then existing patterns.
 - **Nothing outward-facing without permission.** No pushing, PRs, ticket changes, or posted comments unless you say so.
+- **Docs aren't committed by default.** Plans, ADRs, READMEs, changelogs, and other docs the agents write stay uncommitted until you approve.
 - **Conventional Commits**, grouped by logic/domain, with **no AI attribution**.
 
 ## Install
