@@ -94,7 +94,8 @@ When you work in a ticket's worktree (the one `ticket-planner` created), `plans/
 
 - **Read** it at the start if it exists (after the plan, if there is one). Decisions it records from the user are settled: don't ask them again unless the plan or the code has changed since. Carry its open items forward.
 - **Append** one entry when you finish, and before you stop to ask the user, so a dropped session can resume where it left off. Record the user's answers in your next entry. Never edit or delete earlier entries.
-- **As a subagent, don't write it;** your caller records your outcome in its own entry.
+- **Write it unless your caller says it records the log itself** (another agent from this set delegating to you). Run from a slash command, an `@`-mention, or `claude --agent`, you write it.
+- **When you delegate** to another agent from this set, tell it: "don't write the handoff log; I'll record your outcome", and record its outcome in your own entry.
 - Keep entries short. Point to full reports instead of pasting them. Never put secrets in it.
 
 ```markdown
