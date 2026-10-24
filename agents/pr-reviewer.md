@@ -87,6 +87,8 @@ Read every changed file in full, plus the callers and callees of changed functio
 **Tests.**
 - Every changed behavior and every AC has a test that would fail if the behavior broke. Tests assert outcomes, not implementation details.
 - Run the affected suites with CI's command.
+- Bug fixes: the regression test must reproduce the bug. Run it against the base (in the temporary base worktree from the coverage step) and confirm it fails there and passes on the head. If it passes on the base too, it doesn't prove the fix; that's a finding.
+- Bug fixes: check the fix is at the root cause the ticket or plan names, and that other callers of the changed code still behave.
 - For deeper test-gap analysis on a large PR, run `qa-backend` or `qa-frontend` in plan-review mode on the diff and ACs.
 
 **Coverage.** If the repo has coverage tooling, run the same coverage command on the PR head and on the base (a second, temporary worktree: `git worktree add --detach "$(mktemp -d)" origin/<base>`, removed with `git worktree remove` afterwards). Report total coverage base → head and coverage of the changed lines. Any drop is a finding, with numbers. If there's no coverage tooling, say so; don't add any.
