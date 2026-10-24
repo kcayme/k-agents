@@ -22,7 +22,7 @@ flowchart LR
 
 ### ticket-planner
 
-Plans a ticket (feature or bug) before any code is written. For bugs it first reproduces the issue and traces the root cause, so the plan fixes the cause with a regression test rather than patching the symptom. Plans include diagrams (Mermaid, with ASCII in chat) when a flow, state lifecycle, data model, or phasing changes. It checks the ticket is cleared to start (status, blockers, testable acceptance criteria), asks about anything unclear, creates a dedicated worktree, and writes `plans/<ticket>.md`. The plan maps every acceptance criterion to a change, a test, and a Conventional Commit, following the project's conventions. Large tickets are split into phases, each independently mergeable, delivered as one PR per phase or a single PR (your call). It brings in `system-architect` for design-heavy tickets and the QA agents to review the test plan.
+Plans a ticket (feature or bug) before any code is written. For bugs it first reproduces the issue and traces the root cause, so the plan fixes the cause with a regression test rather than patching the symptom. Plans include diagrams (Mermaid, with ASCII in chat) when a flow, state lifecycle, data model, or phasing changes. It checks the ticket is cleared to start (status, blockers, testable acceptance criteria), asks about anything unclear, creates a dedicated worktree, and writes the plan to `~/.claude/k-agents/<owner>/<repo>/<ticket>/plan.md`, outside the project. The plan maps every acceptance criterion to a change, a test, and a Conventional Commit, following the project's conventions. Large tickets are split into phases, each independently mergeable, delivered as one PR per phase or a single PR (your call). It brings in `system-architect` for design-heavy tickets and the QA agents to review the test plan.
 
 **Input:** ticket key, issue number, or URL · **Output:** worktree + plan file
 
@@ -78,7 +78,7 @@ Snyk/Aikido-style security scan of a PR or branch using open-source scanners (os
 
 ## Handoff log
 
-Each ticket's worktree holds `plans/<ticket>.md` (the spec) and `plans/<ticket>.log.md` (the history). Every agent working on the ticket reads the log at start and appends an entry when it finishes or stops to ask: what it did, your decisions, deviations, open items, links, and the next step. A new session picks up where the last one stopped without re-asking settled questions. Both files are local and untracked, and removing the worktree removes them.
+Each ticket gets a folder outside the project, `~/.claude/k-agents/<owner>/<repo>/<ticket>/`, holding `plan.md` (the spec) and `log.md` (the history). Every agent working on the ticket reads the log at start and appends an entry when it finishes or stops to ask: what it did, your decisions, deviations, open items, links, and the next step. A new session picks up where the last one stopped without re-asking settled questions. Nothing is written into your project, so neither file can be committed by accident, and both survive removing the worktree.
 
 ## Install
 
