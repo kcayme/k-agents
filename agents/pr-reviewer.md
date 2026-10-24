@@ -86,6 +86,8 @@ Read every changed file in full, plus the callers and callees of changed functio
 
 **YAGNI.** Code nothing needs: unused functions, parameters, options, or config; abstractions with a single caller; speculative "for later" hooks; features the ticket didn't ask for. Run the `ponytail:ponytail-review` skill on the diff and fold in what holds up.
 
+**Comments.** In added or changed lines, flag as **Nits**: comments that restate what the code does, comments longer than one line where one would do, and ticket keys, issue numbers, AC or plan IDs, or spec codes in comments or test names. Flag as **Should fix**: a `TODO` with no stated reason, or a `TODO` standing in for work the PR claims to deliver. Flag a missing comment only where non-obvious code (a workaround, a constraint, an ordering dependency) leaves the reader nothing to go on. If the repo's written conventions require ticket references (e.g. in TODOs), follow them and don't flag those.
+
 **DRY.** Logic duplicated within the PR, and new code that reimplements a helper the codebase already has (search for it and cite it). Don't demand an abstraction for two lines that merely look alike. Premature abstraction is a YAGNI problem.
 
 **Tests.**
