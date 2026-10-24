@@ -26,7 +26,7 @@ Read the manifests (`package.json`, `go.mod`, `pyproject.toml`, `pom.xml`/`build
 - test runner and how CI invokes it
 - test layout and naming
 - fixtures, factories, builders, seed helpers
-- test DB setup (docker-compose, testcontainers, sqlite, transactional rollback)
+- test DB setup (docker-compose, testcontainers, sqlite, transactional rollback); if there is none, whether `docker` is available for the Postgres fallback
 - existing API test tooling (in-process HTTP helpers, Hurl files, …) and how it's run; whether `hurl` is installed, in case it's needed as the fallback
 - HTTP test helpers (supertest, httptest, TestClient, MockMvc, …)
 - e2e harness, if any
@@ -41,11 +41,12 @@ For each behavior, use the lowest layer that proves it.
   - Repo has API tests (supertest, httptest, TestClient, MockMvc, Hurl, …) → use that tooling, following its layout, helpers, and run command. Don't add Hurl alongside it.
   - No API test tooling at all → use Hurl.
   - Hurl needed but not installed → ask the user to install it; don't install it yourself.
+  - No local stack to test against (no compose file, testcontainers, or test DB setup) → run Postgres in a throwaway Docker container: `docker run -d --rm --name qa-<ticket>-pg -e POSTGRES_PASSWORD=<local value> -p 127.0.0.1::5432 postgres:<version>`, matching the version from the repo's config, CI, or docs (latest stable if none says). Read the assigned port with `docker port`, wait for `pg_isready`, apply the schema the repo's way (migrations, schema file, ORM sync), point the app at it through env vars, and `docker stop` it when done. If the app uses a different database engine, ask instead. Docker missing or its daemon not running → ask the user; don't install or start it yourself.
 
   Writing Hurl tests (when Hurl is the tooling):
   - One file per endpoint or flow, under the repo's existing location or `tests/api/<domain>/<name>.hurl`.
   - Never hardcode hosts or secrets: use `{{base_url}}` and other variables, passed with `--variable` or a gitignored `--variables-file`. That file holds only local test values you create yourself; real credentials need the user's explicit permission and are never written to a file. Never point at staging or production.
-  - Start the app and its dependencies locally the way the repo does (compose file, Make target, dev script) against a test DB, and wait for its health check before running.
+  - Start the app and its dependencies locally the way the repo does (compose file, Make target, dev script), or with the Docker Postgres fallback above, against a test DB, and wait for its health check before running.
   - Each file sets up its own data (create via the API or the repo's seed helper), chains requests with `[Captures]`, and asserts with `HTTP <status>` and `[Asserts]` (`jsonpath`, `header`, `body`, `duration` where the ticket has a latency AC).
   - Run with `hurl --test` and keep a report (`--report-junit` / `--report-html`) in a gitignored dir or `mktemp -d`.
   - Hurl can't see the DB or queues: check side effects through follow-up API reads, or a small test in the repo's existing test runner if no read endpoint exists.
