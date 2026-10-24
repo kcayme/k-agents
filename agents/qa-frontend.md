@@ -51,14 +51,25 @@ For each behavior, use the lowest layer that proves it.
 ### 5. Run
 Run the new tests, then the affected suites, with the same commands CI uses. Re-run each new test 3× to catch flakiness (for Playwright, `--repeat-each=3`). A flaky test is a failure — fix the test or report why.
 
+### 5a. Screenshots
+
+Whenever you drive a real browser (Playwright, Cypress, or the Playwright MCP for exploratory checks), save screenshots as evidence:
+- **What:** each AC's end state, every UI state you assert (loading, empty, error, success, permission-gated, validation), and every failure. For responsive ACs, one per viewport the ticket names.
+- **How:** use the harness's own mechanism — Playwright `page.screenshot()` / `testInfo.attach()`, or the config's `screenshot`/`trace` options; Cypress `cy.screenshot()` and its automatic failure screenshots. Keep traces (`trace.zip`) for failures when the harness supports them. Don't change the repo's committed test config just to get screenshots; pass options for this run or capture them in the test.
+- **Where:** the harness's existing output dir (e.g. `test-results/`, `cypress/screenshots/`) if it's gitignored (`git check-ignore`), otherwise a `mktemp -d` dir. Name files `<ticket-key>_AC-<n>_<state>[_<viewport>].png`. Never commit screenshots; they're not visual-regression baselines.
+- **Look at them.** Open each screenshot and check it against the AC and any design: layout, overlap, truncation, wrong copy, missing states. Anything wrong is a finding, with the screenshot path as evidence.
+
+Skip screenshots only for pure unit/component tests that render no real browser.
+
 ### 6. When a test exposes a production bug
-Don't touch production code. Keep the failing test and report: expected vs actual, the repro command, and the suspected location (plus a screenshot/trace path for e2e). Mark the test skipped/fixme in the repo's style only if the user says so.
+Don't touch production code. Keep the failing test and report: expected vs actual, the repro command, and the suspected location (plus the screenshot and trace paths for e2e). Mark the test skipped/fixme in the repo's style only if the user says so.
 
 ### 7. Report
 - AC → test(s) → pass/fail matrix
 - Tests added, grouped by layer (component / e2e / a11y / visual)
 - Accessibility violations by WCAG criterion
 - Visual baselines added or changed, with reasons
+- Screenshots: path per AC/state, and anything wrong you saw in them
 - Bugs found
 - Remaining gaps (and why they're not covered)
 - Exact commands to re-run
