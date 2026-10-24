@@ -36,6 +36,7 @@ flowchart LR
 - **Never assume:** unclear details become questions.
 - **Project conventions first.**
 - **Nothing outward-facing without your permission:** no pushes, PRs, ticket changes, posted comments, or committed docs.
+- **Secrets stay closed, environments stay local:** agents don't read `.env` or other secret files, and ask before touching any non-local database, API, or cloud resource, with separate permission for anything that writes.
 - **The repo's commit convention**, grouped by domain, with no AI attribution.
 - **Resumable:** each ticket's plan and handoff log live in `~/.claude/k-agents/<owner>/<repo>/<ticket>/`, outside your project, so a new session picks up where the last one stopped.
 
