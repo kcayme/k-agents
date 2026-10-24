@@ -13,9 +13,9 @@ Input: a ticket key, a plan file path, or a worktree path, optionally with a pha
 ## 1. Load the plan
 
 - Find the worktree: `git worktree list`, matching the ticket key. Work only inside it.
-- Read `plans/<ticket-key>.md` in full: readiness, clarifications, ADR (read it if linked), conventions, AC mapping, commit plan, test plan.
+- Read `plans/<ticket-key>.md` in full: readiness, clarifications, ADR (read it if linked), conventions, AC mapping, commit plan, test plan. Then read the handoff log `plans/<ticket-key>.log.md`: user decisions recorded there (approved deviations, accepted baseline failures, answers to your questions) amend the plan; don't ask them again.
 - No plan → stop and suggest running `ticket-planner` first. Readiness `BLOCKED` or open questions that change scope → stop and ask. Readiness `NO WORK NEEDED` → stop and report it.
-- Check the branch state: `git status` clean apart from the untracked plan file, the untracked ADR if the plan links one, and docs changes left uncommitted by earlier planned `docs` commits; `git log origin/<default>..HEAD --oneline` tells you which planned commits already exist. Resume from the first one that doesn't.
+- Check the branch state: `git status` clean apart from the untracked plan file and handoff log, the untracked ADR if the plan links one, and docs changes left uncommitted by earlier planned `docs` commits; `git log origin/<default>..HEAD --oneline` tells you which planned commits already exist. Resume from the first one that doesn't.
 - **Phased plan:** work on one phase per run: the phase the user named, otherwise the first phase whose commits aren't all in the history. Every earlier phase must be complete (all its commits present and, for PR per phase, its PR open or merged); if not, stop and ask. Check the phase's dependencies (deploys, migrations, other teams) are met; if you can't tell, ask.
   - **PR per phase:** phase 1 uses the ticket's branch. Each later phase gets its own branch in the same worktree, `<ticket-branch>-phase-<n>`, created from the previous phase's tip, or from `origin/<default>` if that phase is already merged. Never modify an earlier phase's branch.
   - **Single PR:** all phases share the ticket's branch.
@@ -78,7 +78,8 @@ When all planned commits are done (for a phased plan: all of the current phase's
    - deviations from the plan and why
    - follow-ups found but not done
    - the worktree path and branch
-   - uncommitted docs (ADR, README/changelog/`docs/` changes): list them and ask whether to commit them (as `docs` commits in the repo's convention). Don't commit them, or include them in a PR, without an explicit yes. The plan file is never committed.
+   - uncommitted docs (ADR, README/changelog/`docs/` changes): list them and ask whether to commit them (as `docs` commits in the repo's convention). Don't commit them, or include them in a PR, without an explicit yes. The plan file and handoff log are never committed.
+   - append the handoff log entry: include the QA, security, and review outcomes from your subagents, since they don't write it themselves
 
 ## 7. Push and PR — only with explicit permission
 
@@ -119,7 +120,27 @@ When the user says yes:
    - If the repo has a PR template (`.github/pull_request_template.md`, Bitbucket's default description, etc.), keep its required parts (checklists, sign-offs) and put this changelog in its description section.
 2. Wait for confirmation, then push with `git push -u origin <branch>` (never `--force` unless the user asks; prefer `--force-with-lease` if they do).
 3. Open the PR: GitHub with `gh pr create`; Bitbucket with `bkt` (check `bkt --help` for the exact command) or the REST API via `curl` with `BITBUCKET_EMAIL`/`BITBUCKET_API_TOKEN`. Draft vs ready, reviewers, and labels only as the user says.
-4. Return the PR link.
+4. Return the PR link, and record it in a handoff log entry.
+
+## Handoff log
+
+When you work in a ticket's worktree (the one `ticket-planner` created), `plans/<ticket-key>.log.md` there records what happened across sessions: the plan is the spec, the log is the history. It's local and untracked, and never committed without the user's explicit permission.
+
+- **Read** it at the start if it exists (after the plan, if there is one). Decisions it records from the user are settled: don't ask them again unless the plan or the code has changed since. Carry its open items forward.
+- **Append** one entry when you finish, and before you stop to ask the user, so a dropped session can resume where it left off. Record the user's answers in your next entry. Never edit or delete earlier entries.
+- **As a subagent, don't write it;** your caller records your outcome in its own entry.
+- Keep entries short. Point to full reports instead of pasting them. Never put secrets in it.
+
+```markdown
+## <YYYY-MM-DD HH:MM> · <agent> · phase <n> | — · done | stopped | waiting
+- Did: …
+- Decisions: <decision> — <source: user, ticket, plan, reviewer>
+- Deviations from plan: …
+- Open: findings, questions, follow-ups
+- Pending docs: files awaiting commit permission
+- Links: PR, ADR, report paths
+- Next: …
+```
 
 ## Rules
 

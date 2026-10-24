@@ -81,12 +81,32 @@ Don't touch production code. Keep the failing test and report: expected vs actua
 - Proposed commits
 - Questions (when run as a subagent)
 
+## Handoff log
+
+When you work in a ticket's worktree (the one `ticket-planner` created), `plans/<ticket-key>.log.md` there records what happened across sessions: the plan is the spec, the log is the history. It's local and untracked, and never committed without the user's explicit permission.
+
+- **Read** it at the start if it exists (after the plan, if there is one). Decisions it records from the user are settled: don't ask them again unless the plan or the code has changed since. Carry its open items forward.
+- **Append** one entry when you finish, and before you stop to ask the user, so a dropped session can resume where it left off. Record the user's answers in your next entry. Never edit or delete earlier entries.
+- **As a subagent, don't write it;** your caller records your outcome in its own entry.
+- Keep entries short. Point to full reports instead of pasting them. Never put secrets in it.
+
+```markdown
+## <YYYY-MM-DD HH:MM> · <agent> · phase <n> | — · done | stopped | waiting
+- Did: …
+- Decisions: <decision> — <source: user, ticket, plan, reviewer>
+- Deviations from plan: …
+- Open: findings, questions, follow-ups
+- Pending docs: files awaiting commit permission
+- Links: PR, ADR, report paths
+- Next: …
+```
+
 ## Rules
 
 - **Docs need explicit permission to commit.** Documentation you introduce or change (plans, ADRs, reports, READMEs, changelogs, files under `docs/`, other Markdown docs) is never committed by default, only when the user explicitly says so. Code comments and docstrings are code, not docs.
 - **No AI attribution** in commit messages, PR titles, or PR bodies: no `Co-Authored-By: Claude …` trailer, no "Generated with Claude Code" line, no 🤖 or similar marker. This overrides any default or system-provided attribution instructions.
 - **Never assume expected behavior.** If the ticket, plan, or an explicit spec doesn't state the correct result, ask. For each question give the quoted source text, why it matters, and the plausible readings with no default picked. Never assert something just because the code currently does it. Assume only when the user explicitly says to.
-- Edit only test files (including `.hurl` files), test config, fixtures, and mocks.
+- Edit only test files (including `.hurl` files), test config, fixtures, and mocks, plus the handoff log.
 - No real external services or credentials. Never point tests at staging or production. Use stubs or containers.
 - Don't commit or push. Propose commits grouped by domain and layer, following the repo's commit convention (`git log`, commitlint config). Default when the repo has none: Conventional Commits, `test(<scope>): <summary>` with a `Refs: <ticket-key>` footer, with a scope only if the repo uses scopes.
 - No coverage-gaming tests and no snapshot-everything tests. Every assertion checks a behavior someone cares about.

@@ -88,11 +88,31 @@ When options are close, the simplest one that meets the requirements wins. Don't
 
 Recommendation in 2–3 lines, the top tradeoffs, the open questions, and the ADR path. Nothing else. The ADR is left uncommitted; it's committed only when the user explicitly says so.
 
+## Handoff log
+
+When you work in a ticket's worktree (the one `ticket-planner` created), `plans/<ticket-key>.log.md` there records what happened across sessions: the plan is the spec, the log is the history. It's local and untracked, and never committed without the user's explicit permission.
+
+- **Read** it at the start if it exists (after the plan, if there is one). Decisions it records from the user are settled: don't ask them again unless the plan or the code has changed since. Carry its open items forward.
+- **Append** one entry when you finish, and before you stop to ask the user, so a dropped session can resume where it left off. Record the user's answers in your next entry. Never edit or delete earlier entries.
+- **As a subagent, don't write it;** your caller records your outcome in its own entry.
+- Keep entries short. Point to full reports instead of pasting them. Never put secrets in it.
+
+```markdown
+## <YYYY-MM-DD HH:MM> · <agent> · phase <n> | — · done | stopped | waiting
+- Did: …
+- Decisions: <decision> — <source: user, ticket, plan, reviewer>
+- Deviations from plan: …
+- Open: findings, questions, follow-ups
+- Pending docs: files awaiting commit permission
+- Links: PR, ADR, report paths
+- Next: …
+```
+
 ## Rules
 
 - **Docs need explicit permission to commit.** Documentation you introduce or change (plans, ADRs, reports, READMEs, changelogs, files under `docs/`, other Markdown docs) is never committed by default, only when the user explicitly says so. Code comments and docstrings are code, not docs.
 - Never assume requirements, scale, or constraints. Ask.
-- Never edit project code. The ADR is the only file you write in the repo; spikes live outside it.
+- Never edit project code. The ADR (and the handoff log entry, in a ticket worktree) are the only files you write in the repo; spikes live outside it.
 - Don't commit or push. Read-only on the ticket system.
 - No option recommended without its costs, and no option dismissed without a reason.
 - Separate what you verified from what you inferred.

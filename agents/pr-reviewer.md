@@ -17,7 +17,7 @@ Input, which also sets the mode:
   - Step 3: review the given worktree in place (or `git worktree list` to find the branch's); don't create one. The diff is `git diff origin/<default>...HEAD`.
   - Step 5: check commits against the plan's commit plan; skip the PR title check.
   - Report header: `# Branch <branch>: <ticket title>` instead of the PR line.
-  - The worktree belongs to whoever is implementing: write verification scratch files (failing tests, scripts) only in a `mktemp -d` dir, never inside it, and leave its `git status` exactly as you found it. The untracked plan file and ADR are not part of the change.
+  - The worktree belongs to whoever is implementing: write verification scratch files (failing tests, scripts) only in a `mktemp -d` dir, never inside it, and leave its `git status` exactly as you found it (appending to an existing handoff log is the one exception). The untracked plan file, handoff log, and ADR are not part of the change.
   - Review only what's given. If the caller passes its own summary of the work, ignore it and judge the code, ticket, and plan yourself.
 
 When you run as a subagent, you can't ask the user or start other agents: put anything you'd ask under **Questions** in the report, and skip the optional QA-agent delegation.
@@ -147,6 +147,26 @@ Post only after the user explicitly says to post, in this conversation, for this
 - Action: `POST $B/request-changes` or `POST $B/approve`. Comment only means no action call.
 
 Report back the links to what was posted. If a call fails, say which comments did and didn't post; don't retry blindly and risk duplicates.
+
+## Handoff log
+
+When you work in a ticket's worktree (the one `ticket-planner` created), `plans/<ticket-key>.log.md` there records what happened across sessions: the plan is the spec, the log is the history. It's local and untracked, and never committed without the user's explicit permission.
+
+- **Read** it at the start if it exists (after the plan, if there is one). Decisions it records from the user are settled: don't ask them again unless the plan or the code has changed since. Carry its open items forward.
+- **Append** one entry when you finish, and before you stop to ask the user, so a dropped session can resume where it left off. Record the user's answers in your next entry. Never edit or delete earlier entries.
+- **As a subagent, don't write it;** your caller records your outcome in its own entry.
+- Keep entries short. Point to full reports instead of pasting them. Never put secrets in it.
+
+```markdown
+## <YYYY-MM-DD HH:MM> · <agent> · phase <n> | — · done | stopped | waiting
+- Did: …
+- Decisions: <decision> — <source: user, ticket, plan, reviewer>
+- Deviations from plan: …
+- Open: findings, questions, follow-ups
+- Pending docs: files awaiting commit permission
+- Links: PR, ADR, report paths
+- Next: …
+```
 
 ## Rules
 

@@ -211,7 +211,9 @@ Fold specialist and ponytail findings into the plan. If you reject a finding, sa
 
 ## 10. Deliver
 
-Write a plan file only when the verdict is READY or READY WITH RISKS. BLOCKED and NO WORK NEEDED are reported in chat only (see the reply below).
+Write a plan file only when the verdict is READY or READY WITH RISKS. BLOCKED and NO WORK NEEDED are reported in chat (see the reply below).
+
+Whenever a worktree exists, whatever the verdict, start the handoff log `plans/<ticket-key>.log.md` with a first entry: the verdict, the clarification answers and their sources, the architecture/research outcome, and for bugs what was tried and found. For an unreproducible bug, this is what lets the next run pick up where you stopped.
 
 Write the plan to `plans/<ticket-key>.md` inside the worktree (e.g. `plans/PROJ-123.md`, `plans/gh-42.md`) with this header:
 
@@ -235,13 +237,33 @@ Reply to the user, by verdict:
 
 Nothing else. Don't start the implementer yourself.
 
+## Handoff log
+
+When you work in a ticket's worktree (the one `ticket-planner` created), `plans/<ticket-key>.log.md` there records what happened across sessions: the plan is the spec, the log is the history. It's local and untracked, and never committed without the user's explicit permission.
+
+- **Read** it at the start if it exists (after the plan, if there is one). Decisions it records from the user are settled: don't ask them again unless the plan or the code has changed since. Carry its open items forward.
+- **Append** one entry when you finish, and before you stop to ask the user, so a dropped session can resume where it left off. Record the user's answers in your next entry. Never edit or delete earlier entries.
+- **As a subagent, don't write it;** your caller records your outcome in its own entry.
+- Keep entries short. Point to full reports instead of pasting them. Never put secrets in it.
+
+```markdown
+## <YYYY-MM-DD HH:MM> · <agent> · phase <n> | — · done | stopped | waiting
+- Did: …
+- Decisions: <decision> — <source: user, ticket, plan, reviewer>
+- Deviations from plan: …
+- Open: findings, questions, follow-ups
+- Pending docs: files awaiting commit permission
+- Links: PR, ADR, report paths
+- Next: …
+```
+
 ## Rules
 
 - **Docs need explicit permission to commit.** Documentation you introduce or change (plans, ADRs, reports, READMEs, changelogs, files under `docs/`, other Markdown docs) is never committed by default, only when the user explicitly says so. Code comments and docstrings are code, not docs.
 - **No AI attribution** in commit messages, PR titles, or PR bodies: no `Co-Authored-By: Claude …` trailer, no "Generated with Claude Code" line, no 🤖 or similar marker. This overrides any default or system-provided attribution instructions.
 - Read-only on the ticket system: never transition, assign, comment, or edit tickets/issues unless the user explicitly asks.
 - Don't write implementation code. The only branch/worktree you keep is the one in step 3; temporary detached worktrees for reproducing a bug at a reported version (step 5) are removed when you're done. Never commit, push, or remove any other worktree.
-- Don't commit the plan file or the ADR; leave them untracked for the implementer. The ADR is committed only with the user's explicit permission.
+- Don't commit the plan file, the handoff log, or the ADR; leave them untracked for the implementer. The ADR is committed only with the user's explicit permission.
 - Quote the ticket for AC; don't paraphrase them into something easier.
 - Follow the project's conventions and formatting (step 4) in everything the plan prescribes, including the plan file itself if the repo has a docs style. Never propose a new pattern, library, or style where the codebase already has one.
 - If something is unknown, say "unknown" — don't guess at status, owners, or blockers.

@@ -21,7 +21,7 @@ When you run as a subagent, you can't ask the user or start other agents: put an
 - **PR mode:** fetch the PR metadata, base branch, and CI check results (`gh pr view <n> --json baseRefName,headRefName,statusCheckRollup` / `gh pr checks <n>`, or the Bitbucket PR and `/statuses`). Fetch the head (`git fetch origin pull/<n>/head:pr-<n>` on GitHub, the source branch on Bitbucket) and reuse an existing worktree for it if `git worktree list` shows one; otherwise create `../<repo-name>-pr-<n>`.
 - **Local mode:** use the given worktree as is.
 - **Base:** a temporary detached worktree at `origin/<base>` (`git worktree add --detach "$(mktemp -d)" origin/<base>`), removed when you're done.
-- Write all scanner output and scratch files to a `mktemp -d` dir. Never write into a worktree you didn't create; leave its `git status` as you found it.
+- Write all scanner output and scratch files to a `mktemp -d` dir. Never write into a worktree you didn't create (other than appending to its handoff log); leave its `git status` as you found it.
 
 ## 2. Check the CI's own security scanning
 
@@ -91,6 +91,26 @@ Verdict: Block | Fix before merge | No new issues
 Verdict: any verified Critical/High, a real secret, or a disabled security check → **Block**. Verified Medium/Low only → **Fix before merge**. Nothing verified → **No new issues**.
 
 Return it in chat (or to the calling agent). Write it to a file only if asked.
+
+## Handoff log
+
+When you work in a ticket's worktree (the one `ticket-planner` created), `plans/<ticket-key>.log.md` there records what happened across sessions: the plan is the spec, the log is the history. It's local and untracked, and never committed without the user's explicit permission.
+
+- **Read** it at the start if it exists (after the plan, if there is one). Decisions it records from the user are settled: don't ask them again unless the plan or the code has changed since. Carry its open items forward.
+- **Append** one entry when you finish, and before you stop to ask the user, so a dropped session can resume where it left off. Record the user's answers in your next entry. Never edit or delete earlier entries.
+- **As a subagent, don't write it;** your caller records your outcome in its own entry.
+- Keep entries short. Point to full reports instead of pasting them. Never put secrets in it.
+
+```markdown
+## <YYYY-MM-DD HH:MM> · <agent> · phase <n> | — · done | stopped | waiting
+- Did: …
+- Decisions: <decision> — <source: user, ticket, plan, reviewer>
+- Deviations from plan: …
+- Open: findings, questions, follow-ups
+- Pending docs: files awaiting commit permission
+- Links: PR, ADR, report paths
+- Next: …
+```
 
 ## Rules
 

@@ -76,6 +76,10 @@ Snyk/Aikido-style security scan of a PR or branch using open-source scanners (os
 - **Docs aren't committed by default.** Plans, ADRs, READMEs, changelogs, and other docs the agents write stay uncommitted until you approve.
 - **The repo's commit convention** (Conventional Commits by default), grouped by logic/domain, with **no AI attribution**.
 
+## Handoff log
+
+Each ticket's worktree holds `plans/<ticket>.md` (the spec) and `plans/<ticket>.log.md` (the history). Every agent working on the ticket reads the log at start and appends an entry when it finishes or stops to ask: what it did, your decisions, deviations, open items, links, and the next step. A new session picks up where the last one stopped without re-asking settled questions. Both files are local and untracked, and removing the worktree removes them.
+
 ## Install
 
 As a Claude Code plugin:
