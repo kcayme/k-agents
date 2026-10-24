@@ -85,6 +85,8 @@ claude --agent k-agents:pr-reviewer      # then: review #42
 
 With the symlink install, drop the `k-agents:` prefix.
 
+**Models:** planning, implementing, and reviewing agents (`ticket-planner`, `system-architect`, `implementer`, `pr-reviewer`) run on Opus. `qa-backend`, `qa-frontend`, and `tech-researcher` run on Sonnet. Agent files can't declare a fallback model; when running a Sonnet agent directly, add one per session with `--fallback-model opus` (used only if Sonnet is overloaded or unavailable).
+
 ## Requirements
 
 - `gh` (authenticated) for GitHub
