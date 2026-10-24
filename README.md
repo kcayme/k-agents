@@ -28,7 +28,7 @@ Pick one of the two. Installing both gives you every agent twice.
 **As a Claude Code plugin** (recommended):
 
 ```
-/plugin marketplace add kcayme/agents
+/plugin marketplace add kcayme/k-agents
 /plugin install k-agents@k-agents
 ```
 

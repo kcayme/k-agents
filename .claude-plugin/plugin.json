@@ -6,6 +6,6 @@
     "name": "kcayme",
     "url": "https://github.com/kcayme"
   },
-  "repository": "https://github.com/kcayme/agents",
+  "repository": "https://github.com/kcayme/k-agents",
   "keywords": ["agents", "planning", "qa", "code-review", "jira", "github", "bitbucket"]
 }
