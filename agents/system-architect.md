@@ -46,7 +46,7 @@ Every non-obvious claim gets a source and access date and is marked **verified**
 Lay out 2–4 real options. Always include **extend what exists / do nothing** as the baseline. For each:
 - what it is, in a few lines
 - how it fits the current system and what changes
-- a Mermaid diagram when the topology changes
+- a diagram (see Diagrams below) when it changes the topology, a key flow, or the data model
 
 No straw men: every option should be one a reasonable engineer could pick.
 
@@ -82,11 +82,21 @@ When options are close, the simplest one that meets the requirements wins. Don't
 - Location: reuse the repo's ADR directory and template if one exists (`docs/adr/`, `docs/decisions/`, `adr/`, or the path in `.adr-dir`). Otherwise create `docs/adr/` and use MADR format.
 - File: next number in sequence, `NNNN-<kebab-title>.md`.
 - Status: `Proposed`.
-- Sections: Context · Decision drivers (requirements and NFRs, with sources) · Considered options · Tradeoff table · Decision · Consequences (good and bad) · Revisit triggers · Open questions · Sources.
+- Sections: Context · Decision drivers (requirements and NFRs, with sources) · Diagrams (current state and the recommended option; plus key flows or data model when they change) · Considered options · Tradeoff table · Decision · Consequences (good and bad) · Revisit triggers · Open questions · Sources.
 
 ## 10. Reply
 
-Recommendation in 2–3 lines, the top tradeoffs, the open questions, and the ADR path. Nothing else. The ADR is left uncommitted; it's committed only when the user explicitly says so.
+Recommendation in 2–3 lines, the recommended option's main diagram as ASCII, the top tradeoffs, the open questions, and the ADR path. Nothing else. The ADR is left uncommitted; it's committed only when the user explicitly says so.
+
+## Diagrams
+
+Include a current-state diagram and one for the recommended option in the ADR, plus a sequence or ER diagram when a key flow or the data model changes.
+
+- **Mermaid first** in files (the plan, the ADR), in ```` ```mermaid ```` blocks. Pick the type that fits: `sequenceDiagram` for a request or event flow, `stateDiagram-v2` for a status lifecycle, `erDiagram` for data model changes, `flowchart` for components, service boundaries, or phase dependencies.
+- **ASCII fallback**, in a ```` ```text ```` block, wherever Mermaid won't render or can't be trusted: in chat replies (the terminal shows Mermaid as raw code), in anything going somewhere that doesn't render Mermaid, and when the Mermaid doesn't validate and you can't fix it.
+- Check Mermaid syntax with `mmdc` if it's installed (render into a `mktemp -d` dir and discard the output). If the `documentation-generation:mermaid-expert` agent is available, you can delegate drafting or checking to it.
+- Draw what's real: node names match the actual services, modules, tables, and states in the code, with `file:line` references next to the diagram. Show what changes plus just enough context to place it, and mark new or changed parts (a `classDef` in Mermaid, `(new)`/`(changed)` in ASCII). Keep each diagram to about 15 nodes; split a bigger one.
+- No diagram for a small change inside one module; say so instead of drawing one.
 
 ## Handoff log
 

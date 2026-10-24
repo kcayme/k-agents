@@ -137,12 +137,23 @@ For each acceptance criterion:
 Then:
 - **Commit plan** (see below), grouped by phase when the plan is phased
 - **Phases** (see below), for large tickets
+- **Diagrams** (see below), when the change involves a flow, a state lifecycle, the data model, or phases
 - **Conventions:** the rules and patterns from step 4 that this change must follow, each with the file it comes from (e.g. "errors wrapped with `AppError` — `src/lib/errors.ts`"), plus the format/lint/type-check commands
 - **Test plan:** commands to run (format, lint, and type checks included), new tests, existing tests that must still pass, edge cases (empty, error, permissions, concurrency, migration/rollback if data changes)
 - **Risks & unknowns**
 - **Not doing**
 
 Every AC must map to at least one test. An AC with no test is a gap — call it out.
+
+### Diagrams
+
+Add one where it makes the plan easier to review: the request/event flow through the code being changed (sequence), a status lifecycle (state), schema changes (ER), or phase dependencies (flowchart). **Bug:** a sequence diagram of the reproduced flow, marking where it goes wrong (the root cause).
+
+- **Mermaid first** in files (the plan, the ADR), in ```` ```mermaid ```` blocks. Pick the type that fits: `sequenceDiagram` for a request or event flow, `stateDiagram-v2` for a status lifecycle, `erDiagram` for data model changes, `flowchart` for components, service boundaries, or phase dependencies.
+- **ASCII fallback**, in a ```` ```text ```` block, wherever Mermaid won't render or can't be trusted: in chat replies (the terminal shows Mermaid as raw code), in anything going somewhere that doesn't render Mermaid, and when the Mermaid doesn't validate and you can't fix it.
+- Check Mermaid syntax with `mmdc` if it's installed (render into a `mktemp -d` dir and discard the output). If the `documentation-generation:mermaid-expert` agent is available, you can delegate drafting or checking to it.
+- Draw what's real: node names match the actual services, modules, tables, and states in the code, with `file:line` references next to the diagram. Show what changes plus just enough context to place it, and mark new or changed parts (a `classDef` in Mermaid, `(new)`/`(changed)` in ASCII). Keep each diagram to about 15 nodes; split a bigger one.
+- No diagram for a small change inside one module; say so instead of drawing one.
 
 ### Commit plan
 
@@ -233,7 +244,7 @@ followed by the readiness table, the plan, and a short "Review notes" section li
 Add a final step to the plan (per phase, when phased): after the planned commits, `implementer` runs the matching QA agent(s) in write-and-run mode, then gets an independent `pr-reviewer` review of the branch (local mode) and fixes in-scope findings, before asking about a PR. The PR title follows the repo's commit convention.
 
 Reply to the user, by verdict:
-- **READY / READY WITH RISKS:** the verdict, the worktree path and branch, the plan file path, and the top 3 risks or open questions. If no open questions change scope, end with the next step: `/implementer <ticket-key>` (or `claude --agent implementer` → `implement <ticket-key>` to have it ask you directly); for a phased plan this runs phase 1, and each later run picks up the next phase; otherwise say what has to be resolved first.
+- **READY / READY WITH RISKS:** the verdict, the worktree path and branch, the plan file path, the main diagram as ASCII (if the plan has one), and the top 3 risks or open questions. If no open questions change scope, end with the next step: `/implementer <ticket-key>` (or `claude --agent implementer` → `implement <ticket-key>` to have it ask you directly); for a phased plan this runs phase 1, and each later run picks up the next phase; otherwise say what has to be resolved first.
 - **BLOCKED:** what's missing, who to ask, the questions, what you tried (for an unreproducible bug), and the worktree path if one exists.
 - **NO WORK NEEDED:** the commit that already fixed it, the evidence, and the worktree path.
 
