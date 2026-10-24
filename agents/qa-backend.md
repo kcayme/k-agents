@@ -24,6 +24,7 @@ Read the manifests (`package.json`, `go.mod`, `pyproject.toml`, `pom.xml`/`build
 - test layout and naming
 - fixtures, factories, builders, seed helpers
 - test DB setup (docker-compose, testcontainers, sqlite, transactional rollback)
+- Hurl files (`*.hurl`) and how they're run, plus whether `hurl` is installed (`hurl --version`)
 - HTTP test helpers (supertest, httptest, TestClient, MockMvc, …)
 - e2e harness, if any
 
@@ -33,7 +34,22 @@ Reuse all of it. Don't add a framework or library when one already covers the ne
 For each behavior, use the lowest layer that proves it.
 
 - **Unit** — pure logic, branches, edge cases (empty, null, boundaries, overflow, unicode, time zones). Mock only at process boundaries (network, clock, randomness, filesystem); never mock the code under test or its in-process collaborators just to make a test easy.
-- **API** — run the app in-process through real routing, middleware, validation, and serialization against a test DB. Assert:
+- **API** — exercise real routing, middleware, validation, and serialization against a test DB. **Use [Hurl](https://hurl.dev) by default:**
+  - Repo already has `.hurl` files → follow their layout, variables, and run command.
+  - No API test harness at all → use Hurl.
+  - Repo already has in-process API tests (supertest, httptest, TestClient, MockMvc, …) but no Hurl → ask the user once: add Hurl alongside, or use the existing harness.
+  - `hurl` not installed → ask the user to install it; don't install it yourself.
+
+  Writing Hurl tests:
+  - One file per endpoint or flow, under the repo's existing location or `tests/api/<domain>/<name>.hurl`.
+  - Never hardcode hosts or secrets: use `{{base_url}}` and other variables, passed with `--variable` or a gitignored `--variables-file`. Never point at staging or production.
+  - Start the app and its dependencies locally the way the repo does (compose file, Make target, dev script) against a test DB, and wait for its health check before running.
+  - Each file sets up its own data (create via the API or the repo's seed helper), chains requests with `[Captures]`, and asserts with `HTTP <status>` and `[Asserts]` (`jsonpath`, `header`, `body`, `duration` where the ticket has a latency AC).
+  - Run with `hurl --test` and keep a report (`--report-junit` / `--report-html`) in a gitignored dir or `mktemp -d`.
+  - Hurl can't see the DB or queues: check side effects through follow-up API reads, or a small in-process test if no read endpoint exists.
+  - If CI should run the new Hurl tests, propose the CI change in the report; don't edit CI config without asking.
+
+  Assert:
   - status codes and response shape; validate against the OpenAPI/JSON schema if the repo has one
   - authn/authz: no token, expired token, wrong role, another tenant's/user's resource
   - input validation and error body format
@@ -65,7 +81,7 @@ Don't touch production code. Keep the failing test and report: expected vs actua
 ## Rules
 
 - **Never assume expected behavior.** If the ticket, plan, or an explicit spec doesn't state the correct result, ask. For each question give the quoted source text, why it matters, and the plausible readings with no default picked. Never assert something just because the code currently does it. Assume only when the user explicitly says to.
-- Edit only test files, test config, fixtures, and mocks.
+- Edit only test files (including `.hurl` files), test config, fixtures, and mocks.
 - No real external services or credentials. Never point tests at staging or production. Use stubs or containers.
 - Don't commit or push. Propose commits as Conventional Commits grouped by domain and layer: `test(<scope>): <summary>` with a `Refs: <ticket-key>` footer, scopes matching what `git log` already uses.
 - No coverage-gaming tests and no snapshot-everything tests. Every assertion checks a behavior someone cares about.
