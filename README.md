@@ -50,4 +50,4 @@ claude --agent pr-reviewer         # then: review #42
 - `gh` (authenticated) for GitHub
 - Atlassian Rovo MCP for Jira/Confluence
 - ponytail plugin (`ponytail-review` skill)
-- Bitbucket Cloud: `BITBUCKET_EMAIL` and `BITBUCKET_API_TOKEN` env vars
+- Bitbucket Cloud: the `bkt` CLI (logged in), or `BITBUCKET_EMAIL` and `BITBUCKET_API_TOKEN` env vars as a fallback

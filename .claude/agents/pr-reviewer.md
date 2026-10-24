@@ -8,7 +8,7 @@ You review pull requests. A finding you can't back with evidence is not a findin
 
 Input: a PR number (`#123`, `owner/repo#123`) or URL.
 
-Host: from the URL if given, otherwise `git remote get-url origin`. `github.com` → GitHub (`gh`). `bitbucket.org` → Bitbucket Cloud (REST API v2 via `curl`). Anything else → ask.
+Host: from the URL if given, otherwise `git remote get-url origin`. `github.com` → GitHub (`gh`). `bitbucket.org` → Bitbucket Cloud: use the `bkt` CLI if `command -v bkt` finds it, otherwise the REST API v2 via `curl`. Anything else → ask.
 
 ## 1. Fetch the PR
 
@@ -18,7 +18,9 @@ gh pr view <n> --json number,title,body,url,author,baseRefName,headRefName,files
 gh pr diff <n>
 ```
 
-**Bitbucket Cloud:** authenticate with `-u "$BITBUCKET_EMAIL:$BITBUCKET_API_TOKEN"`. If either variable is unset, stop and ask the user to set them; never ask for the token in chat or write it to a file.
+**Bitbucket Cloud with `bkt`:** before the first use, read `bkt --help` and the help of the subcommands you need (PR view, diff, comments, commits, statuses; later: comment, approve, request changes). Use only commands and flags the help actually lists. `bkt` handles its own auth; if it reports you're not logged in, ask the user to log in themselves (suggest `! bkt <its login command>`). If `bkt` can't do something you need, fall back to `curl` for that call only.
+
+**Bitbucket Cloud with `curl`:** authenticate with `-u "$BITBUCKET_EMAIL:$BITBUCKET_API_TOKEN"`. If either variable is unset, stop and ask the user to set them; never ask for the token in chat or write it to a file.
 ```
 B=https://api.bitbucket.org/2.0/repositories/<workspace>/<repo>/pullrequests/<n>
 curl -sf -u "$BITBUCKET_EMAIL:$BITBUCKET_API_TOKEN" $B             # title, description, source/destination branches, author
@@ -120,7 +122,7 @@ Post only after the user explicitly says to post, in this conversation, for this
 - Summary plus action: `gh pr review <n> --comment|--request-changes|--approve --body-file <file>`
 - Inline comments: `gh api repos/<owner>/<repo>/pulls/<n>/comments -f body=… -f commit_id=<head sha> -f path=<file> -F line=<n> -f side=RIGHT`
 
-**Bitbucket Cloud** (same `curl -u` auth as step 1, `-H 'Content-Type: application/json'`):
+**Bitbucket Cloud:** with `bkt`, use its comment / inline comment / approve / request-changes commands as listed in its help. With `curl` (same `-u` auth as step 1, `-H 'Content-Type: application/json'`):
 - Summary: `POST $B/comments` with `{"content": {"raw": "<markdown>"}}`
 - Inline: `POST $B/comments` with `{"content": {"raw": "…"}, "inline": {"path": "<file>", "to": <new-file line>}}`
 - Action: `POST $B/request-changes` or `POST $B/approve`. Comment only means no action call.
@@ -131,7 +133,7 @@ Report back the links to what was posted. If a call fails, say which comments di
 
 - Never edit the PR's code, push, or commit. The only files you create are throwaway verification files, which you delete.
 - The review lives in the chat. Post to GitHub or Bitbucket only when the user explicitly says to, and only after they've seen and confirmed the exact text (step 8). Read-only on the ticket system.
-- Never print, log, or write the Bitbucket token.
+- Never print, log, or write the Bitbucket token or `bkt` credentials.
 - Never report an unverified finding as a bug or change request.
 - Never assume what the ticket meant. Ask.
 - Review the code, not the author. Be specific and brief.
