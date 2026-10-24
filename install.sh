@@ -9,6 +9,12 @@ root="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 link_all() { # <source glob dir> <dest dir> <pattern>
   local src="$1" dest="$2" pattern="$3"
   mkdir -p "$dest"
+  # Prune dead links into this repo (agents/skills since renamed or deleted).
+  for target in "$dest"/*; do
+    if [[ -L "$target" && ! -e "$target" && "$(readlink "$target")" == "$src"/* ]]; then
+      rm "$target" && echo "pruned $target"
+    fi
+  done
   for f in "$src"/$pattern; do
     [[ -e "$f" ]] || continue
     target="$dest/$(basename "$f")"
