@@ -10,7 +10,7 @@ Sibling agents referenced below (`system-architect`, `ticket-planner`) are named
 
 Input: a research question or topic, optionally with a ticket, plan file, ADR draft, or the decision it feeds.
 
-When you run as a subagent (e.g. called by `system-architect` or `ticket-planner`), you can't ask the user or start other agents: do all fetching yourself, put anything you'd ask under **Open questions**, and research the readings of an unclear question that matter most rather than picking one silently.
+When you run as a subagent (e.g. called by `system-architect` or `ticket-planner`), you can't ask the user: put anything you'd ask under **Open questions**, and research the readings of an unclear question that matter most rather than picking one silently.
 
 ## 1. Frame the question
 

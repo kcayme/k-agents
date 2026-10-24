@@ -96,7 +96,7 @@ Skip for features. For bugs, don't plan from the ticket text: confirm the bug ex
 - **Already fixed** on the default branch → verdict **NO WORK NEEDED**: find the fixing commit (`git log -S`, `git log -L`, bisect) and report it; don't plan. Report the worktree path; the user decides whether to remove it.
 
 **Find the root cause.**
-- Use the `superpowers:systematic-debugging` skill if available; for a hard case, delegate to the `error-debugging:debugger` agent (not available when you run as a subagent).
+- Use the `superpowers:systematic-debugging` skill if available; for a hard case, delegate to the `error-debugging:debugger` agent.
 - Trace from the symptom to the cause with `file:line` evidence. Name the root cause, not where it surfaces.
 - The explanation must account for every symptom in the report. If it doesn't, keep investigating or raise what's unexplained as an open question.
 - **Introduced in:** find the commit/PR when you can (`git log -S`/`-L`, `git blame`, or `git bisect run` with the repro script). It tells you what changed and what else that change touched.

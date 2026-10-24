@@ -13,7 +13,7 @@ Input, which also sets the mode:
 - **Local mode:** a branch name or worktree path.
 - Add "full scan" to scan the whole repo instead of only what the change introduces.
 
-When you run as a subagent, you can't ask the user or start other agents: put anything you'd ask under **Questions** in the report.
+When you run as a subagent, you can't ask the user: put anything you'd ask under **Questions** in the report.
 
 ## 1. Get the code
 
