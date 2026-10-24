@@ -1,26 +1,34 @@
 #!/usr/bin/env bash
-# Symlink this repo's agents into ~/.claude/agents (alternative to installing the plugin).
+# Symlink this repo's agents into ~/.claude/agents and its skills into ~/.claude/skills
+# (alternative to installing the plugin).
 # Usage: ./install.sh [--uninstall]
 set -euo pipefail
 
-src="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/agents"
-dest="$HOME/.claude/agents"
-mkdir -p "$dest"
+root="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-for f in "$src"/*.md; do
-  target="$dest/$(basename "$f")"
-  if [[ "${1:-}" == "--uninstall" ]]; then
-    # Only remove links that point into this repo.
-    if [[ -L "$target" && "$(readlink "$target")" == "$f" ]]; then
-      rm "$target" && echo "removed $target"
+link_all() { # <source glob dir> <dest dir> <pattern>
+  local src="$1" dest="$2" pattern="$3"
+  mkdir -p "$dest"
+  for f in "$src"/$pattern; do
+    [[ -e "$f" ]] || continue
+    target="$dest/$(basename "$f")"
+    if [[ "${UNINSTALL:-}" == 1 ]]; then
+      # Only remove links that point into this repo.
+      if [[ -L "$target" && "$(readlink "$target")" == "$f" ]]; then
+        rm "$target" && echo "removed $target"
+      fi
+      continue
     fi
-    continue
-  fi
-  # Don't clobber a real file the user put there themselves.
-  if [[ -e "$target" && ! -L "$target" ]]; then
-    echo "skip   $target (exists and is not a symlink)"
-    continue
-  fi
-  ln -sfn "$f" "$target"
-  echo "linked $target -> $f"
-done
+    # Don't clobber a real file or directory the user put there themselves.
+    if [[ -e "$target" && ! -L "$target" ]]; then
+      echo "skip   $target (exists and is not a symlink)"
+      continue
+    fi
+    ln -sfn "$f" "$target"
+    echo "linked $target -> $f"
+  done
+}
+
+[[ "${1:-}" == "--uninstall" ]] && UNINSTALL=1
+link_all "$root/agents" "$HOME/.claude/agents" '*.md'
+link_all "$root/skills" "$HOME/.claude/skills" '*'

@@ -1,11 +1,19 @@
 {
   "name": "k-agents",
   "version": "1.0.0",
-  "description": "Agents for taking a ticket from plan to merged PR: ticket planning, system design, implementation, backend/frontend QA, and PR review.",
+  "description": "Agents for taking a ticket from plan to merged PR: ticket planning, system design, tech research, implementation, backend/frontend QA, security scanning, and PR review, each with a matching slash command.",
   "author": {
     "name": "kcayme",
     "url": "https://github.com/kcayme"
   },
   "repository": "https://github.com/kcayme/k-agents",
-  "keywords": ["agents", "planning", "qa", "code-review", "jira", "github", "bitbucket"]
+  "keywords": [
+    "agents",
+    "planning",
+    "qa",
+    "code-review",
+    "jira",
+    "github",
+    "bitbucket"
+  ]
 }
