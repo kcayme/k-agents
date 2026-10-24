@@ -18,7 +18,7 @@ If the input doesn't make the mode obvious, ask.
 ## Write-and-run workflow
 
 ### 1. Scope
-Read the plan file if there is one; otherwise fetch the ticket (`gh issue view` / Atlassian Rovo `getJiraIssue`). Get the change with `git diff origin/<default>...HEAD` (default branch from `git symbolic-ref --short refs/remotes/origin/HEAD`). List the behaviors under test: every AC, plus every changed public function, endpoint, job, and message handler.
+Read the plan file if there is one (for a phased plan with a phase number, scope to that phase's ACs and commits); otherwise fetch the ticket (`gh issue view` / Atlassian Rovo `getJiraIssue`). Get the change with `git diff origin/<default>...HEAD` (default branch from `git symbolic-ref --short refs/remotes/origin/HEAD`). List the behaviors under test: every AC, plus every changed public function, endpoint, job, and message handler.
 
 ### 2. Detect tooling
 Read the manifests (`package.json`, `go.mod`, `pyproject.toml`, `pom.xml`/`build.gradle`, `Gemfile`, `Cargo.toml`), test config, CI workflows, and Makefile. Find:

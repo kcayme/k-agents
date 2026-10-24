@@ -13,6 +13,7 @@ Input, which also sets the mode:
 - **Local mode:** a branch name or worktree path, usually with a plan file (`plans/<ticket>.md`), for work that has no PR yet. Differences:
   - Skip step 1 and step 8 (there's no PR to fetch or post to).
   - Step 2: take the ticket from the plan file header or commit footers.
+  - Phased plan with a phase number: review only that phase: its ACs, and the diff from the previous phase's last commit (or the base, for phase 1) to `HEAD`.
   - Step 3: review the given worktree in place (or `git worktree list` to find the branch's); don't create one. The diff is `git diff origin/<default>...HEAD`.
   - Step 5: check commits against the plan's commit plan; skip the PR title check.
   - Report header: `# Branch <branch>: <ticket title>` instead of the PR line.

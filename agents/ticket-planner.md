@@ -133,7 +133,8 @@ For each acceptance criterion:
 - **Manual check:** only if it can't be automated
 
 Then:
-- **Commit plan** (see below)
+- **Commit plan** (see below), grouped by phase when the plan is phased
+- **Phases** (see below), for large tickets
 - **Conventions:** the rules and patterns from step 4 that this change must follow, each with the file it comes from (e.g. "errors wrapped with `AppError` — `src/lib/errors.ts`"), plus the format/lint/type-check commands
 - **Test plan:** commands to run (format, lint, and type checks included), new tests, existing tests that must still pass, edge cases (empty, error, permissions, concurrency, migration/rollback if data changes)
 - **Risks & unknowns**
@@ -166,6 +167,27 @@ For each commit list: message, domain, files, which AC(s) it advances, and the t
    files: src/billing/… · AC: AC-1, AC-2 · tests: invoice.test.ts (+3 cases)
 ```
 
+### Phases (large tickets)
+
+When the work is too large to implement and review well in one pass, split the commit plan into phases. Signals:
+- more than roughly 6–8 planned commits, or a diff too large to review in one sitting
+- it spans several domains, services, or teams' code
+- it needs an ordered rollout: expand → migrate → contract schema changes, backfills, API versioning, feature-flagged release
+- parts carry very different risk, or need different reviewers
+
+Each phase:
+- has a one-line **goal** and the **ACs** it delivers (in part or full)
+- holds its own commits from the commit plan, in order
+- leaves the default branch working and deployable if merged on its own: unfinished user-facing behavior stays behind a flag or unwired
+- has **exit criteria**: its tests, the full check suite green, and what must be verified before the next phase starts
+- lists what it **depends on** (earlier phases, other teams, deploys, data migrations finishing)
+
+Aim for phases of a few commits each, ordered so the riskiest or most foundational work comes first. Every AC must land in some phase.
+
+**Delivery** is the user's choice; ask when the plan is phased: **PR per phase** (smaller reviews; later phases stack on earlier ones until those merge) or **single PR** (phases are checkpoints inside one branch). Record the answer.
+
+If even phased this is several tickets' worth of work (independent deliverables, separate owners), say so and suggest splitting the ticket. Don't edit the ticket yourself.
+
 ## 8. Specialist review
 
 Pick only the specialists the ticket actually needs and run them in parallel via the Agent tool, giving each the ticket text and the draft plan (not your conclusions about it). Ask each for concrete problems, not general advice.
@@ -183,7 +205,7 @@ A one-file bug fix may need no other specialists. Don't spawn agents for show.
 
 ## 9. Ponytail review
 
-Run the `ponytail:ponytail-review` skill on the draft plan: is every commit needed, is each commit grouped by a single concern, is anything reinventing what the codebase already has, does every change follow the project's conventions and layering, is risky logic tested. Cut what it rightly flags.
+Run the `ponytail:ponytail-review` skill on the draft plan: is every commit needed, is each commit grouped by a single concern, are the phases (if any) necessary and is each one independently mergeable, is anything reinventing what the codebase already has, does every change follow the project's conventions and layering, is risky logic tested. Cut what it rightly flags.
 
 Fold specialist and ponytail findings into the plan. If you reject a finding, say why in one line.
 
@@ -199,14 +221,15 @@ Source: <url>
 Kind: feature | bug
 Readiness: READY | READY WITH RISKS
 ADR: <path> | not needed
+Phases: <n>, PR per phase | <n>, single PR | none
 ```
 
 followed by the readiness table, the plan, and a short "Review notes" section listing what each reviewer changed.
 
-Add a final step to the plan: after the planned commits, `implementer` runs the matching QA agent(s) in write-and-run mode, then gets an independent `pr-reviewer` review of the branch (local mode) and fixes in-scope findings, before asking about a PR. The PR title follows the repo's commit convention.
+Add a final step to the plan (per phase, when phased): after the planned commits, `implementer` runs the matching QA agent(s) in write-and-run mode, then gets an independent `pr-reviewer` review of the branch (local mode) and fixes in-scope findings, before asking about a PR. The PR title follows the repo's commit convention.
 
 Reply to the user, by verdict:
-- **READY / READY WITH RISKS:** the verdict, the worktree path and branch, the plan file path, and the top 3 risks or open questions. If no open questions change scope, end with the next step: `claude --agent implementer` → `implement <ticket-key>`; otherwise say what has to be resolved first.
+- **READY / READY WITH RISKS:** the verdict, the worktree path and branch, the plan file path, and the top 3 risks or open questions. If no open questions change scope, end with the next step: `claude --agent implementer` → `implement <ticket-key>` (for a phased plan, this runs phase 1; each later run picks up the next phase); otherwise say what has to be resolved first.
 - **BLOCKED:** what's missing, who to ask, the questions, what you tried (for an unreproducible bug), and the worktree path if one exists.
 - **NO WORK NEEDED:** the commit that already fixed it, the evidence, and the worktree path.
 

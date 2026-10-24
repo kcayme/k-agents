@@ -22,7 +22,7 @@ flowchart LR
 
 ### ticket-planner
 
-Plans a ticket (feature or bug) before any code is written. For bugs it first reproduces the issue and traces the root cause, so the plan fixes the cause with a regression test rather than patching the symptom. It checks the ticket is cleared to start (status, blockers, testable acceptance criteria), asks about anything unclear, creates a dedicated worktree, and writes `plans/<ticket>.md`. The plan maps every acceptance criterion to a change, a test, and a Conventional Commit, following the project's conventions. It brings in `system-architect` for design-heavy tickets and the QA agents to review the test plan.
+Plans a ticket (feature or bug) before any code is written. For bugs it first reproduces the issue and traces the root cause, so the plan fixes the cause with a regression test rather than patching the symptom. It checks the ticket is cleared to start (status, blockers, testable acceptance criteria), asks about anything unclear, creates a dedicated worktree, and writes `plans/<ticket>.md`. The plan maps every acceptance criterion to a change, a test, and a Conventional Commit, following the project's conventions. Large tickets are split into phases, each independently mergeable, delivered as one PR per phase or a single PR (your call). It brings in `system-architect` for design-heavy tickets and the QA agents to review the test plan.
 
 **Input:** ticket key, issue number, or URL · **Output:** worktree + plan file
 
@@ -40,7 +40,7 @@ Researches tool and library docs, known solutions, and industry standards and co
 
 ### implementer
 
-Executes a plan in its worktree, one planned commit at a time: test first, then code, then format/lint/type check/tests, then a local commit. Guards against regressions by comparing against a pre-change baseline and testing everything that depends on what it touches. Stops to ask when the plan and code disagree. Finishes with QA and an independent `pr-reviewer` pass on its branch, fixing in-scope findings (up to 2 rounds), and only pushes or opens a PR (changelog-style description) when you explicitly say so.
+Executes a plan in its worktree (one phase per run for phased plans), one planned commit at a time: test first, then code, then format/lint/type check/tests, then a local commit. Guards against regressions by comparing against a pre-change baseline and testing everything that depends on what it touches. Stops to ask when the plan and code disagree. Finishes with QA and an independent `pr-reviewer` pass on its branch, fixing in-scope findings (up to 2 rounds), and only pushes or opens a PR (changelog-style description) when you explicitly say so.
 
 **Input:** ticket key or plan file · **Output:** local commits, PR on request
 
