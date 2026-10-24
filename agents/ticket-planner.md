@@ -114,7 +114,7 @@ Build the plan on the recommended option and add `ADR: <path>` to the plan heade
 
 Skip this step for small changes inside one module, and say so in the plan ("Architecture: not needed — <reason>").
 
-No architecture step, but the ticket depends on a tool, library, API, or standard the codebase doesn't use yet, or on a version it hasn't used? Run `tech-researcher` now, before writing the plan, with the question, the constraints, and the worktree path. Build the plan on its verified findings and cite them in the plan; raise its open questions as clarifications.
+No architecture step, but the ticket depends on a tool, library, API, third-party service, or standard the codebase doesn't use yet, or on a version it hasn't used? Run `tech-researcher` now, before writing the plan, with the question, the constraints, and the worktree path. Build the plan on its verified findings and cite them in the plan; raise its open questions as clarifications.
 
 ## 7. Write the plan
 

@@ -1,6 +1,6 @@
 ---
 name: tech-researcher
-description: Research tools, known solutions, or standards with the tech-researcher agent.
+description: Research tools, third-party service integrations, known solutions, or standards with the tech-researcher agent.
 argument-hint: "<research question>"
 disable-model-invocation: true
 ---
