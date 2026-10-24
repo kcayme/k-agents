@@ -1,6 +1,6 @@
 # k-agents
 
-Handy agents for effective, secured, quality full-stack development.
+Handy agents for effective, secured, and quality full-stack development.
 
 ```mermaid
 flowchart LR
@@ -22,11 +22,11 @@ flowchart LR
 
 | Agent | What it does | Model |
 |---|---|---|
-| `ticket-planner` | Checks a ticket is ready, asks about anything unclear, reproduces bugs to their root cause, and writes a plan (phases, commits, tests, diagrams) in a dedicated worktree. | Opus |
+| `ticket-planner` | Checks a ticket is ready, asks about anything unclear, reproduces bugs to their root cause, creates a dedicated worktree, and writes a plan (phases, commits, tests, diagrams). | Opus |
 | `system-architect` | Compares design options on explicit tradeoffs and records the recommendation in an ADR. | Opus |
 | `tech-researcher` | Researches docs, known solutions, and standards for your stack, with every claim cited. | Sonnet |
 | `implementer` | Implements the plan commit by commit, test first, guarding against regressions; pushes or opens a PR only when you say so. | Opus |
-| `qa-backend` | Writes and runs unit, API (Hurl), and e2e tests, or reviews a test plan. | Sonnet |
+| `qa-backend` | Writes and runs unit, API, and e2e tests with the repo's tooling (Hurl as the API fallback), or reviews a test plan. | Sonnet |
 | `qa-frontend` | Writes and runs component, browser e2e, accessibility, and visual tests, with screenshots. | Sonnet |
 | `pr-reviewer` | Reviews a PR or branch against the ticket, conventions, tests, and coverage; proves every finding. | Opus |
 | `security-scanner` | Scans a PR or branch with open-source scanners and verifies each finding, like Snyk or Aikido. | Opus |
@@ -69,5 +69,5 @@ You can also `@`-mention an agent or ask for it by name. To have `ticket-planner
 - Atlassian Rovo MCP for Jira/Confluence
 - `bkt` CLI, or `BITBUCKET_EMAIL` + `BITBUCKET_API_TOKEN`, for Bitbucket Cloud
 - ponytail plugin (`ponytail-review` skill)
-- Hurl, for backend API tests
+- Hurl, only for repos with no API test tooling of their own
 - `osv-scanner`, `semgrep`, `gitleaks`, `trivy` for `security-scanner` (missing ones are reported as not scanned); `snyk`/`aikido` CLIs optional
