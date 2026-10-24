@@ -24,7 +24,7 @@ flowchart LR
 |---|---|---|
 | `ticket-planner` | Checks a ticket is ready, asks about anything unclear, reproduces bugs to their root cause, creates a dedicated worktree, and writes a plan (phases, commits, tests, diagrams). | Opus |
 | `system-architect` | Compares design options on explicit tradeoffs and records the recommendation in an ADR. | Opus |
-| `tech-researcher` | Researches docs, known solutions, and standards for your stack, with every claim cited. | Sonnet |
+| `tech-researcher` | Researches docs, third-party service integrations, known solutions, and standards for your stack, with every claim cited. | Sonnet |
 | `implementer` | Implements the plan commit by commit, test first, guarding against regressions; pushes or opens a PR only when you say so. | Opus |
 | `qa-backend` | Writes and runs unit, API, and e2e tests with the repo's tooling (Hurl as the API fallback), or reviews a test plan. | Sonnet |
 | `qa-frontend` | Writes and runs component, browser e2e, accessibility, and visual tests, with screenshots. | Sonnet |
