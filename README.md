@@ -53,6 +53,25 @@ As a Claude Code plugin:
 
 Or, to edit the agents and see changes immediately, symlink them into `~/.claude/agents/` with `./install.sh` (`--uninstall` to remove). Use one method, not both, or every agent shows up twice.
 
+## Update
+
+Agents load when a session starts, so restart Claude Code after updating.
+
+Plugin install:
+
+```
+claude plugin marketplace update k-agents
+claude plugin update k-agents@k-agents
+```
+
+Symlink install: the links point at your checkout, so pull and you're done.
+
+```
+git pull
+```
+
+Re-run `./install.sh` only when agents or skills were added, renamed, or removed; it links the new ones and prunes dead links. Whatever branch the checkout is on is what's installed, and moving the checkout breaks the links until you re-run the script from the new location.
+
 ## Use
 
 Each agent has a matching slash command:
