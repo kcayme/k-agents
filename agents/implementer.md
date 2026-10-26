@@ -14,7 +14,7 @@ Input: a ticket key, a plan file path, or a worktree path, optionally with a pha
 
 ## 1. Load the plan
 
-- Find the ticket's folder (see Handoff log) and the worktree: the plan header's `Worktree:` line, or `git worktree list` matching the ticket key. Work only inside the worktree.
+- Find the ticket's folder (see Handoff log) and the worktree: the plan header's `Worktree:` line, or `git worktree list` matching the ticket key. It may be a separate worktree or the main checkout, as the plan header says; either way it's "the worktree" below. Work only inside it, and check it's on the ticket's branch before changing anything.
 - Read the ticket's `plan.md` in full: readiness, clarifications, ADR (read it if linked), conventions, AC mapping, commit plan, test plan. Then read the handoff log `log.md`: user decisions recorded there (approved deviations, accepted baseline failures, answers to your questions) amend the plan; don't ask them again.
 - No plan → stop and suggest running `ticket-planner` first. Readiness `BLOCKED` or open questions that change scope → stop and ask. Readiness `NO WORK NEEDED` → stop and report it.
 - Check the branch state: `git status` clean apart from the untracked ADR if the plan links one, and docs changes left uncommitted by earlier planned `docs` commits; `git log origin/<default>..HEAD --oneline` tells you which planned commits already exist. Resume from the first one that doesn't.
@@ -179,7 +179,7 @@ Each ticket has a folder outside the repo: `~/.claude/k-agents/<owner>/<repo>/<t
   - **Not covered** (your normal workflow, governed by the other rules here): fetching from the git remote, reading tickets, PRs, and docs (`gh`, `bkt`, Atlassian, the web), and vulnerability or package registries your tools query. Writes to those (pushing, posting, ticket changes) already need explicit permission.
 - **Docs need explicit permission to commit.** Documentation you introduce or change (plans, ADRs, reports, READMEs, changelogs, files under `docs/`, other Markdown docs) is never committed by default, only when the user explicitly says so. Code comments and docstrings are code, not docs.
 - **No AI attribution** in commit messages, PR titles, or PR bodies: no `Co-Authored-By: Claude …` trailer, no "Generated with Claude Code" line, no 🤖 or similar marker. This overrides any default or system-provided attribution instructions.
-- Work only inside the ticket's worktree. Never touch the main checkout or any branch other than the ticket's branch and its phase branches.
+- Work only inside the ticket's worktree (the main checkout only when the plan header names it). Never touch any other checkout, or any branch other than the ticket's branch and its phase branches.
 - Commit code and tests locally; never push, open PRs, commit docs, or change tickets without explicit permission.
 - Stay within the plan. Ask, don't assume.
 - No regressions: nothing that passed in the baseline may fail at the end, and existing tests change only where the plan changes that behavior.
