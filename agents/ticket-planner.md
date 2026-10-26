@@ -69,7 +69,7 @@ The plan gets a **Clarifications** section listing every question, its answer, a
 Only when the verdict is READY or READY WITH RISKS, after the clarifications that change scope or behavior are answered. Work in the git repo the ticket belongs to.
 
 1. `git fetch origin`, then find the default branch: `git symbolic-ref --short refs/remotes/origin/HEAD` (strip the `origin/` prefix).
-2. Branch name: follow the repo's branch naming convention if it has one (`CONTRIBUTING.md`, existing branches in `git branch -r`). Default: `<type>/<ticket-key>-<short-slug>`, where type is `feat`, `fix` or `chore` based on the ticket type, e.g. `feat/PROJ-123-export-csv`, `fix/gh-42-null-total`. Lowercase, max ~50 chars.
+2. Branch name: follow the repo's branch naming convention if it has one (`CONTRIBUTING.md`, existing branches in `git branch -r`). Default: `<type>/<ticket-key>`, where type is `feat`, `fix` or `chore` based on the ticket type, e.g. `feat/PROJ-123`, `fix/gh-42`. Only when there's no ticket key, use `<type>/<short-slug>` instead (lowercase, max ~50 chars, e.g. `feat/export-csv`).
 3. Path: `../<repo-name>-<ticket-key>` next to the main checkout.
 4. Look before creating: `git worktree list` and `git branch -a --list '*<ticket-key>*'`.
    - Worktree for this ticket already exists → reuse it, don't create another.
