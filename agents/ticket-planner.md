@@ -119,9 +119,9 @@ Record **Reproduction**, **Root cause**, **Introduced in**, and **Affected paths
 
 ## 6. Architecture decision (when needed)
 
-If the ticket introduces new services, data models or schema changes, external integrations, or cross-cutting/structural changes, run `system-architect` now, before writing the plan. Give it the ticket, the clarification answers, the worktree path, and the conventions and project profile from step 4. Wait for its recommendation and ADR; if it raises questions, put them to the user like any other clarification.
+If the ticket introduces new services, data models or schema changes, external integrations, new or changed API contracts (endpoints, events, payload shapes, status codes, error format), new frontend architecture (state management, routing, a new shared component pattern), or cross-cutting/structural changes, run `system-architect` now, before writing the plan. Give it the ticket, the clarification answers, the worktree path, and the conventions and project profile from step 4. Wait for its recommendation and ADR; if it raises questions, put them to the user like any other clarification.
 
-Build the plan on the recommended option and add `ADR: <path>` to the plan header. The ADR stays uncommitted in the worktree; don't add it to the commit plan. It's committed only if the user explicitly says so. If the user rejects the recommendation, stop and ask which option to plan for — don't pick one yourself.
+Build the plan on the recommended option and add `ADR: <path>` to the plan header. The ADR stays uncommitted in the worktree; don't add it to the commit plan. It's committed only if the user explicitly says so. If the user rejects the recommendation, stop and ask which option to plan for — don't pick one yourself. A new or changed API contract goes to the user for explicit confirmation before you plan both sides against it.
 
 Skip this step for small changes inside one module, and say so in the plan ("Architecture: not needed — <reason>").
 
