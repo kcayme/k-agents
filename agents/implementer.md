@@ -64,6 +64,7 @@ Never assume, never quietly widen scope, never skip, weaken, or delete a test to
 
 When all planned commits are done (for a phased plan: all of the current phase's commits):
 1. **Regression check.** Run the full check suite again and compare it with the baseline: no new failures, no new lint or type errors, no new warnings in the touched files, and, if coverage tooling exists, no drop in total coverage and the changed lines covered. Anything worse than the baseline is fixed or raised before you continue.
+   **Scope check.** Read `git diff origin/<default>...HEAD` against the plan: every changed file and hunk must belong to a planned commit, a fix you made within the plan's scope, or a change the user approved. Opportunistic cleanups, renames, reformatting, extra options or validation, and files the plan doesn't name are scope creep: revert them in a new commit, or bring them to the user if you think they're needed. Never leave one unmentioned.
 2. Run the matching QA agent(s) — `qa-backend` / `qa-frontend` — in write-and-run mode. Their gap-filling tests can't go back into earlier commits, so they're an accepted exception to "tests travel with their change":
    - Passing tests → commit them as the QA agent proposed, grouped by domain, in the repo's commit convention (default `test(<scope>): …`).
    - A failing test that exposes a bug within the plan's scope → fix it through the per-commit loop as a `fix` commit that includes that test.

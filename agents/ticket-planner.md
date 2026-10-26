@@ -133,6 +133,8 @@ Already in the stack: when the plan relies on an API, option, or behavior of a l
 
 Smallest complete change. Reuse what exists. No scope beyond the ticket — list anything tempting but out of scope under "Not doing".
 
+Every planned change must trace to an AC, a prep refactor an AC needs, or (for bugs) an affected path. Anything else is scope creep, however small or sensible: "while we're here" cleanups, extra validation, options, endpoints, or UI states the ticket didn't ask for, and broader redesigns an ADR suggests. It goes under "Not doing", or to the user as a clarification if you think the ticket is missing it.
+
 **Bug:** the plan starts with the Reproduction, Root cause, Introduced in, and Affected paths from step 5, then:
 - AC-n are the expected behaviors from the report, plus "affected paths keep working".
 - The fix targets the root cause, once, in the shared code. Not a patch at each place the symptom shows.
@@ -236,7 +238,7 @@ A one-file bug fix may need no other specialists. Don't spawn agents for show.
 
 Run the `ponytail:ponytail-review` skill on the draft plan: is every commit needed, is each commit grouped by a single concern, are the phases (if any) necessary and is each one independently mergeable, is anything reinventing what the codebase already has, does every change follow the project's conventions and layering, is risky logic tested. Cut what it rightly flags.
 
-Fold specialist and ponytail findings into the plan. If you reject a finding, say why in one line.
+Fold specialist and ponytail findings into the plan. If you reject a finding, say why in one line. A finding that adds work beyond the ACs (hardening, extra features, refactors the ticket doesn't need) doesn't go into the plan: list it under "Not doing", or raise it with the user if it looks like the ticket is missing something.
 
 ## 10. Deliver
 
