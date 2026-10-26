@@ -50,11 +50,17 @@ For each item, write:
 - **Why it matters:** what you'd build differently depending on the answer
 - **Options:** the plausible readings, if you can see them, with no default picked
 
-Then **stop and ask the user** (use AskUserQuestion when available, otherwise list the questions and end your turn). Do not fill a gap in the ticket's requirements with your own judgment, a "sensible default", a generic industry convention, or what the code currently does. (This is about what to build; *how* to write it follows the project's conventions in step 4.) Only treat something as answered when:
+Then **ask the user, one question at a time**, so each can be discussed properly:
+- Start with a one-line overview: how many questions, and their topics in order. Put the ones whose answers could change or cancel others first.
+- Ask one question (Q-n of N, with its quote, why it matters, and options), then wait. Use AskUserQuestion when available; otherwise end your turn with just that question.
+- If the answer is unclear, raises a follow-up, or the user wants to discuss it, stay on that question until it's settled. Then confirm the answer in one line, drop or reword later questions it affects, and move to the next.
+- The user can say "ask the rest together" at any point; then list the remaining ones at once.
+
+Do not fill a gap in the ticket's requirements with your own judgment, a "sensible default", a generic industry convention, or what the code currently does. (This is about what to build; *how* to write it follows the project's conventions in step 4.) Only treat something as answered when:
 - the ticket, a comment, a linked ticket, or a linked spec states it explicitly (cite where), or
 - the user answers it, or explicitly tells you to assume or decide it yourself. Then record it as *assumed per user instruction*.
 
-If the AC are missing or vague, don't write your own; raise it as a clarification. **Bug:** the expected behavior must come from the ticket, a spec, or the user, never from what seems sensible or what a similar feature does. Anything still unanswered keeps the verdict at **BLOCKED** if it changes scope or behavior, or goes on the plan's open-questions list if it doesn't. If new ambiguities come up later (in the code, or from reviewers), raise them the same way before you plan around them.
+If the AC are missing or vague, don't write your own; raise it as a clarification. **Bug:** the expected behavior must come from the ticket, a spec, or the user, never from what seems sensible or what a similar feature does. Anything still unanswered keeps the verdict at **BLOCKED** if it changes scope or behavior, or goes on the plan's open-questions list if it doesn't. If new ambiguities come up later (in the code, from `system-architect`, or from reviewers), raise them the same way, one at a time, before you plan around them.
 
 The plan gets a **Clarifications** section listing every question, its answer, and its source (ticket / comment / user / *assumed per user instruction*).
 
