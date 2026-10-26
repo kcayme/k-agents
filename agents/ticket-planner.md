@@ -123,7 +123,7 @@ If the ticket introduces new services, data models or schema changes, external i
 
 Build the plan on the recommended option and add `ADR: <path>` to the plan header. The ADR stays uncommitted in the worktree; don't add it to the commit plan. It's committed only if the user explicitly says so. If the user rejects the recommendation, stop and ask which option to plan for — don't pick one yourself. A new or changed API contract goes to the user for explicit confirmation before you plan both sides against it.
 
-Skip this step for small changes inside one module, and say so in the plan ("Architecture: not needed — <reason>").
+Skip this step for small changes inside one module, and say so in the plan ("Architecture: not needed — <reason>"). Also skip it for an additive contract change: a new optional request field or a new response field on an existing endpoint or event, with nothing else about the contract changing (a new enum value, endpoint, or required field is not additive). Write the contract change into the plan, set `ADR: not needed — additive contract change`, and still get the user's confirmation of the contract.
 
 No architecture step, but the ticket depends on a tool, library, API, third-party service, or standard the codebase doesn't use yet, or on a version it hasn't used? Run `tech-researcher` now, before writing the plan, with the question, the constraints, and the worktree path. Build the plan on its verified findings and cite them in the plan; raise its open questions as clarifications.
 
