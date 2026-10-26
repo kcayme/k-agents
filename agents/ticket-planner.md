@@ -127,6 +127,8 @@ Skip this step for small changes inside one module, and say so in the plan ("Arc
 
 No architecture step, but the ticket depends on a tool, library, API, third-party service, or standard the codebase doesn't use yet, or on a version it hasn't used? Run `tech-researcher` now, before writing the plan, with the question, the constraints, and the worktree path. Build the plan on its verified findings and cite them in the plan; raise its open questions as clarifications.
 
+Already in the stack: when the plan relies on an API, option, or behavior of a library or framework the project already uses, check it against the docs for the version in the lockfile (context7, or `tech-researcher` for what that can't settle), not from memory, and cite the version and source in the plan. If the installed version lacks what the plan needs, upgrading is a clarification for the user, not a plan step.
+
 ## 7. Write the plan
 
 Smallest complete change. Reuse what exists. No scope beyond the ticket — list anything tempting but out of scope under "Not doing".
