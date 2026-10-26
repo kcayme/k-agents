@@ -109,7 +109,7 @@ Skip for features. For bugs, don't plan from the ticket text: confirm the bug ex
 - **Already fixed** on the default branch → verdict **NO WORK NEEDED**: find the fixing commit (`git log -S`, `git log -L`, bisect) and report it; don't plan. Report the worktree path; the user decides whether to remove it.
 
 **Find the root cause.**
-- Use the `superpowers:systematic-debugging` skill if available; for a hard case, delegate to the `error-debugging:debugger` agent.
+- Use the `superpowers:systematic-debugging` skill if available; for a hard case, delegate to a debugger agent if one is installed.
 - Trace from the symptom to the cause with `file:line` evidence. Name the root cause, not where it surfaces.
 - The explanation must account for every symptom in the report. If it doesn't, keep investigating or raise what's unexplained as an open question.
 - **Introduced in:** find the commit/PR when you can (`git log -S`/`-L`, `git blame`, or `git bisect run` with the repro script). It tells you what changed and what else that change touched.
@@ -219,12 +219,14 @@ Pick only the specialists the ticket actually needs and run them in parallel via
 
 Always include the matching QA agent(s) in **plan-review mode** on the AC→test mapping and test plan: `qa-backend` for server/API/DB work, `qa-frontend` for UI work, both for full-stack tickets.
 
-Other typical picks:
+Other typical picks, by role; use whichever installed agent fills it:
 
-- auth, input handling, secrets, PII → `comprehensive-review:security-auditor`
-- schema, migrations, queries → `database-design:database-architect`
-- UI → `frontend-mobile-development:frontend-developer`, `ui-design:accessibility-expert`
-- hot paths, scale → `backend-development:performance-engineer`
+- auth, input handling, secrets, PII → a security auditor
+- schema, migrations, queries → a database architect
+- UI → a frontend developer, an accessibility expert
+- hot paths, scale → a performance engineer
+
+If no installed agent fills a role the ticket needs, review the plan for that concern yourself and note it in "Review notes".
 
 A one-file bug fix may need no other specialists. Don't spawn agents for show.
 

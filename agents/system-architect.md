@@ -64,7 +64,7 @@ When a claim decides between options and the docs can't settle it, build a throw
 
 ## 7. Specialist input (optional)
 
-Only when one area dominates the decision, consult a specialist via the Agent tool — e.g. `comprehensive-review:security-auditor`, `database-design:database-architect`, `backend-development:performance-engineer`. Give them the problem and the options, not your conclusion.
+Only when one area dominates the decision, consult a specialist via the Agent tool — whichever installed agent fills the role, e.g. a security auditor, database architect, or performance engineer; if none is installed, assess that area yourself. Give them the problem and the options, not your conclusion.
 
 ## 8. Recommend
 
