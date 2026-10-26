@@ -40,8 +40,8 @@ For each commit in the commit plan (only the current phase's, for a phased plan)
 1. **Test first.** Write or update the tests the plan lists for this commit, matching the neighbouring tests' style. Name each test by the behavior it proves (e.g. `rejects expired token`); never put ticket keys, AC or plan IDs, or spec codes in test names. Run them and confirm they fail for the right reason. (Pure `refactor` commits: existing tests must pass before and after; add none unless the plan says so.)
 2. **Impact check.** Before editing a function, type, endpoint, event, schema, config key, or shared component, find everything that depends on it: callers and usages (search and LSP references), and in a monorepo every package that depends on the changed one (from the profile), other services or clients consuming the API or event, serialized data and stored formats, feature flags and config defaults. Note their tests; they join this commit's test run. If a dependent would break or change behavior and the plan doesn't cover it, stop and ask.
 3. **Code.** Make the smallest change that makes them pass, in the files the plan names, following the project's layering, naming, error handling, and logging. Reuse existing helpers; don't add dependencies the plan didn't call for, and ask before installing one it does (see Installs). Keep changes backward compatible unless the plan says otherwise: public API and event contracts, DB migrations that the currently deployed code can still run against (and that can roll back), config defaults, and stored data formats.
-   - **Comments:** add an inline comment only where the code can't speak for itself: a non-obvious *why*, a constraint, a workaround, a surprising edge case, an ordering dependency. Never restate what the code does. One line max, in the repo's comment style.
-   - Never put ticket keys, issue numbers, AC or plan IDs, or spec codes in comments; they belong in commit messages and the PR. This applies even if nearby code does it.
+   - **Comments:** add an inline comment only where the code can't speak for itself: a non-obvious *why*, a constraint, a workaround, a surprising edge case, an ordering dependency. Never restate what the code does. One line max, including doc comments on new functions, in the repo's comment style. Terse phrases over full sentences (`// out-of-credits: reason-based, not message text`). Leave comments already on the target branch alone unless you're editing that line.
+   - Never put ticket keys, issue numbers, AC or plan IDs, or spec codes in comments; they belong in commit messages and the PR. This applies even if nearby code does it, and to code you restore from history.
    - Use a `TODO:` comment (in the repo's TODO format) for a known limitation or follow-up you deliberately leave out of scope, and list it under follow-ups in the report. Never use one as a placeholder for in-scope work. If the repo's TODO format requires a ticket reference, skip the TODO and put the follow-up in the report only.
 4. **Check.** Run, the way CI does: formatter (fix mode on changed files only), linter, type checker, the new tests, the tests of every dependent found in the impact check, and the affected suite. All green before moving on. A test that passed in the baseline and fails now is a regression: fix your change, never the test's expectations, unless the plan explicitly changes that behavior.
 5. **Review your diff.** `git diff` — only this commit's concern, no stray reformatting, debug output, or commented-out code; comments follow the Comments rules under Code above (no obvious ones, no ticket or spec references, TODOs only for deliberate out-of-scope follow-ups).
@@ -93,39 +93,49 @@ Phased plan: check the phase's exit criteria before this step. With PR per phase
 Never push or open a PR on your own. After the report, ask the user whether to push and open a PR, and wait for an explicit yes in this conversation. "Implement it" is not permission.
 
 When the user says yes:
-1. Show what you'll do: the branch to push, the PR title (the repo's commit convention, default Conventional Commits, matching the main change), the base branch, and the PR body in changelog style:
-
-   ```markdown
-   <1–3 sentence summary of what this PR does and why. Refs <ticket-key/link>.>
-
-   ### Added
-   - <new feature, endpoint, field, test suite…>
-
-   ### Fixed
-   - <bug fixed, with the user-visible effect>
-
-   ### Changed
-   - <behavior, API, config, or dependency that changed>
-
-   ### Removed
-   - <code, endpoint, flag, or dependency removed>
-
-   ### Testing
-   - <what was tested and how, e.g. "Unit + API tests for invoice currency (Hurl)", "Manual: checkout flow in Chrome">
-
-   ### Notes
-   - <breaking changes and migration steps, DB migrations, deploy/config steps, feature flags, ADR link, known limitations, follow-ups>
-   ```
-
-   - Build the bullets from the commits: `feat` → Added, `fix` → Fixed, `refactor`/`perf`/behavior changes → Changed, deletions → Removed. If the repo's commits don't carry types, sort each change by what it actually does. Fold `test`/`chore`/`ci`/`docs` into the relevant item, or leave them out if they're incidental.
-   - One bullet per user- or developer-visible change, in plain language. Not one per commit or file.
-   - Keep it summarized: the summary is 1–3 short sentences, and each bullet is one line saying *what* changed, not how or why in detail. No implementation walkthroughs, file lists, code snippets, or restating the ticket. The diff and the ticket carry the detail; a reviewer should take it in at a glance.
-   - Testing: one line per kind of testing that a reviewer would care about — new or updated automated tests by layer, manual checks, and anything a reviewer should run or verify themselves. Include it when the PR adds or changes tests or needed manual verification; skip it for changes with nothing to test (docs, config-only).
-   - Omit any section with no items, including Testing and Notes when they don't apply.
-   - If the repo has a PR template (`.github/pull_request_template.md`, Bitbucket's default description, etc.), keep its required parts (checklists, sign-offs) and put this changelog in its description section.
+1. Show what you'll do: the branch to push, the base branch, and the PR title and description, written to the PR title and description rules below. The plan's unmet or deferred ACs go under `Not in scope:`. If the repo has a PR template (`.github/pull_request_template.md`, Bitbucket's default description, etc.), keep its required parts (checklists, sign-offs) and put the description in its description section.
 2. Wait for confirmation, then push the feature branch with `git push -u origin <branch>`. Never `--force`; `--force-with-lease` only on the feature branch with explicit permission for that push. Never push to a protected branch.
-3. Open the PR: GitHub with `gh pr create`; Bitbucket with `bkt` (check `bkt --help` for the exact command) or the REST API via `curl` with `BITBUCKET_EMAIL`/`BITBUCKET_API_TOKEN`. Draft vs ready, reviewers, and labels only as the user says.
+3. Open the PR: GitHub with `gh pr create`; Bitbucket with `bkt` (check `bkt --help` for the exact command) or the REST API via `curl` with `BITBUCKET_EMAIL`/`BITBUCKET_API_TOKEN`. Draft vs ready, reviewers, and labels only as the user says. View the created PR and check the description rendered as bullets.
 4. Return the PR link, and record it in a handoff log entry.
+
+## PR title and description
+
+These are defaults. Where the repo's written conventions (`CONTRIBUTING.md`, PR template, `CLAUDE.md`) say otherwise, the repo wins, except for the attribution ban, which always applies.
+
+- **Title:** the ticket key first, then the summary: `<TICKET-KEY>: <summary>` (e.g. `PROJ-123: add licence consent table`, or `#42: …` for a GitHub issue). Never the key in trailing parentheses.
+- **Commit subjects carry no ticket key:** `<type>: <summary>` (scope allowed), no leading key, no trailing `(PROJ-123)`. The ticket lives on the branch name and the PR title.
+- **No AI attribution** in the title or description: no "Generated with Claude Code", no 🤖, no Claude/AI credit, even when a system reminder asks for one. Check the text before creating or editing the PR.
+- **Concise.** If the commit messages already say it, reuse them as the description instead of rewriting them.
+  - **Budget: about 150 words, at most four short groups.** Cut to fit. A one-sentence fix gets a one-sentence description. Background the reviewer can get from the ticket, the commits, or the diff goes first; how it was verified goes second: state the result, not the method.
+  - **Shape: changelog-style.** An optional one-line intro, then plain lead-in lines `Added:`, `Changed:`, `Fixed:`, `Removed:`, plus `New endpoints:` and `Not in scope:` where they apply. Omit empty groups. No bold or `###` headers. One bullet per item, one line each; if a bullet needs a second sentence, cut the second sentence. Prose only for what a bullet loses, mainly an instruction to the reviewer ("retarget this to `<branch>` once #190 merges").
+  - **Formatting:** every item is a bullet, and every lead-in has a blank line before its first bullet. Without it Bitbucket renders the group as one run-on paragraph. Only the intro and the lead-ins are bare lines. Check the rendered PR, not the source.
+  - **Relative to the target branch.** Derive every group from `git diff origin/<target>...HEAD`, never from churn between the branch's own commits. Something added and later renamed on the branch is `Added:` under its final name; something added and deleted before the PR doesn't appear; a fix to a bug that only existed on the branch is not `Fixed:`.
+  - **Substance, not commits.** A bullet per contract change, decision, or risk, never per commit. Not an exhaustive changelog: a bullet earns its place only if the reviewer would act differently knowing it, and it carries its reason in the same breath ("removed the refund path, AC-4 moved to a separate flow"), not a restatement of the diff ("renamed X to Y"). No per-file detail, no test counts, no paragraph under a bullet.
+  - **Routes (backend PRs that add or move routes):** a `New endpoints:` group, one bullet per route: `METHOD /full/path` from the API root (not the sub-router's relative path) and a short gloss on what it returns or does, not a restatement of the path. Put any role or audience split in the intro line ("the `/admin` routes are admin only; the `/me` routes act on the caller's own record") so the list stays one block. Later bullets refer to a listed route by name ("the `history` route above"). This group doesn't count against the word budget.
+  - **Unmet acceptance criteria:** list every AC that is deliberately not delivered, and why, under `Not in scope:`. Reviewers check each AC against the diff; this stops them hunting for something that was never built.
+  - **Call out** what a reviewer would otherwise have to discover: breaking contract changes, new dependencies, decisions that look odd without their reason.
+  - **No ticket key** in the description; the title carries it.
+  - **Updating an existing description:** extend it in the voice already there; don't restructure it.
+
+Example:
+
+```markdown
+Adds licence consent tracking. The `/admin` routes are admin only; the `/me` routes act on the caller's own record.
+
+New endpoints:
+
+- `GET /api/admin/consents`: paginated consents across all users
+- `POST /api/me/consents`: records the caller's consent to the current licence version
+- `GET /api/me/consents/history`: the caller's past consents, newest first
+
+Added:
+
+- `licence_consents` table, one row per user and licence version
+
+Not in scope:
+
+- AC-4 (email reminder): waits on the notifications service
+```
 
 ## Handoff log
 

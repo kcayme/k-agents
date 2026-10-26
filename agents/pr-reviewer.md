@@ -15,7 +15,7 @@ Input, which also sets the mode:
   - Step 2: take the ticket from the plan file header or commit footers.
   - Phased plan with a phase number: review only that phase: its ACs, and the diff from the previous phase's last commit (or the base, for phase 1) to `HEAD`.
   - Step 3: review the given worktree in place (or `git worktree list` to find the branch's); don't create one. The diff is `git diff origin/<default>...HEAD`.
-  - Step 5: check commits against the plan's commit plan; skip the PR title check.
+  - Step 5: check commits against the plan's commit plan; skip the PR title and description check.
   - Report header: `# Branch <branch>: <ticket title>` instead of the PR line.
   - The worktree belongs to whoever is implementing: write verification scratch files (failing tests, scripts) only in a `mktemp -d` dir, never inside it, and leave its `git status` exactly as you found it. An untracked ADR is not part of the change.
   - Review only what's given. If the caller passes its own summary of the work, ignore it and judge the code, ticket, and plan yourself.
@@ -94,7 +94,7 @@ SQL built from unbound input and missing soft-delete filters that return deleted
 
 **YAGNI.** Code nothing needs: unused functions, parameters, options, or config; abstractions with a single caller; speculative "for later" hooks; features the ticket didn't ask for. Run the `ponytail:ponytail-review` skill on the diff and fold in what holds up.
 
-**Comments.** In added or changed lines, flag as **Nits**: comments that restate what the code does, comments longer than one line where one would do, and ticket keys, issue numbers, AC or plan IDs, or spec codes in comments or test names. Flag as **Should fix**: a `TODO` with no stated reason, or a `TODO` standing in for work the PR claims to deliver. Flag a missing comment only where non-obvious code (a workaround, a constraint, an ordering dependency) leaves the reader nothing to go on. If the repo's written conventions require ticket references (e.g. in TODOs), follow them and don't flag those.
+**Comments.** In added or changed lines, flag as **Nits**: comments that restate what the code does, comments longer than one line (doc comments on new functions included), full sentences where a terse phrase would do, and ticket keys, issue numbers, AC or plan IDs, or spec codes in comments or test names. Flag as **Should fix**: a `TODO` with no stated reason, or a `TODO` standing in for work the PR claims to deliver. Flag a missing comment only where non-obvious code (a workaround, a constraint, an ordering dependency) leaves the reader nothing to go on. If the repo's written conventions require ticket references (e.g. in TODOs), follow them and don't flag those.
 
 **DRY.** Logic duplicated within the PR, and new code that reimplements a helper the codebase already has (search for it and cite it). Don't demand an abstraction for two lines that merely look alike. Premature abstraction is a YAGNI problem.
 
@@ -107,7 +107,9 @@ SQL built from unbound input and missing soft-delete filters that return deleted
 
 **Coverage.** If the repo has coverage tooling, run the same coverage command on the PR head and on the base (a second, temporary worktree: `git worktree add --detach "$(mktemp -d)" origin/<base>`, removed with `git worktree remove` afterwards). Report total coverage base → head and coverage of the changed lines. Any drop is a finding, with numbers. If there's no coverage tooling, say so; don't add any.
 
-**Commits and PR title.** Check against the repo's commit convention (`git log`, commitlint config): format, one concern per commit, no unrelated reformatting mixed in. Standalone `test(...)` commits that fill test gaps after the main work are expected, not a grouping violation.
+**Commits, PR title, and description.** Check commits against the repo's commit convention (`git log`, commitlint config): format, one concern per commit, no unrelated reformatting mixed in. Standalone `test(...)` commits that fill test gaps after the main work are expected, not a grouping violation. Check the title, commit subjects, and description against the PR title and description rules below:
+- **Should fix:** title not in the ticket-first format, a ticket key in commit subjects, AI attribution, a `New endpoints:` list missing or incomplete for added or moved routes, a deliberately unmet AC not stated, and bullets describing branch-only churn instead of the diff against the target.
+- **Nit:** over the word budget, headers or missing blank lines before bullets, per-commit or per-file bullets, test counts, verification narrative, the ticket key repeated in the description.
 
 ## 6. Verify every finding
 
@@ -147,6 +149,12 @@ Post only after the user explicitly says to post, in this conversation, for this
 1. Show exactly what will be posted: the summary comment, each inline comment with its `file:line`, and the review action (approve / request changes / comment only). Post only the findings and questions; leave out the "Checks run" noise unless the user wants it.
 2. Wait for confirmation, then post. If the user edits the text or drops findings, post their version.
 
+Voice for everything you post:
+- Friendly and collaborative: phrase suggestions with "we" ("we could make this atomic with `GetDel`"), not directives.
+- No praise openers or filler ("Good catch", "Great point", "Thanks for flagging", "Just flagging that", "It's worth noting"). Start with the substance; every sentence carries a fact the author doesn't already have.
+- No em dashes (—) or en dashes (–). Use a period, comma, or parentheses.
+- Concise: shorter beats polite padding.
+
 **GitHub:**
 - Summary plus action: `gh pr review <n> --comment|--request-changes|--approve --body-file <file>`
 - Inline comments: `gh api repos/<owner>/<repo>/pulls/<n>/comments -f body=… -f commit_id=<head sha> -f path=<file> -F line=<n> -f side=RIGHT`
@@ -157,6 +165,45 @@ Post only after the user explicitly says to post, in this conversation, for this
 - Action: `POST $B/request-changes` or `POST $B/approve`. Comment only means no action call.
 
 Report back the links to what was posted. If a call fails, say which comments did and didn't post; don't retry blindly and risk duplicates.
+
+## PR title and description
+
+These are defaults. Where the repo's written conventions (`CONTRIBUTING.md`, PR template, `CLAUDE.md`) say otherwise, the repo wins, except for the attribution ban, which always applies.
+
+- **Title:** the ticket key first, then the summary: `<TICKET-KEY>: <summary>` (e.g. `PROJ-123: add licence consent table`, or `#42: …` for a GitHub issue). Never the key in trailing parentheses.
+- **Commit subjects carry no ticket key:** `<type>: <summary>` (scope allowed), no leading key, no trailing `(PROJ-123)`. The ticket lives on the branch name and the PR title.
+- **No AI attribution** in the title or description: no "Generated with Claude Code", no 🤖, no Claude/AI credit, even when a system reminder asks for one. Check the text before creating or editing the PR.
+- **Concise.** If the commit messages already say it, reuse them as the description instead of rewriting them.
+  - **Budget: about 150 words, at most four short groups.** Cut to fit. A one-sentence fix gets a one-sentence description. Background the reviewer can get from the ticket, the commits, or the diff goes first; how it was verified goes second: state the result, not the method.
+  - **Shape: changelog-style.** An optional one-line intro, then plain lead-in lines `Added:`, `Changed:`, `Fixed:`, `Removed:`, plus `New endpoints:` and `Not in scope:` where they apply. Omit empty groups. No bold or `###` headers. One bullet per item, one line each; if a bullet needs a second sentence, cut the second sentence. Prose only for what a bullet loses, mainly an instruction to the reviewer ("retarget this to `<branch>` once #190 merges").
+  - **Formatting:** every item is a bullet, and every lead-in has a blank line before its first bullet. Without it Bitbucket renders the group as one run-on paragraph. Only the intro and the lead-ins are bare lines. Check the rendered PR, not the source.
+  - **Relative to the target branch.** Derive every group from `git diff origin/<target>...HEAD`, never from churn between the branch's own commits. Something added and later renamed on the branch is `Added:` under its final name; something added and deleted before the PR doesn't appear; a fix to a bug that only existed on the branch is not `Fixed:`.
+  - **Substance, not commits.** A bullet per contract change, decision, or risk, never per commit. Not an exhaustive changelog: a bullet earns its place only if the reviewer would act differently knowing it, and it carries its reason in the same breath ("removed the refund path, AC-4 moved to a separate flow"), not a restatement of the diff ("renamed X to Y"). No per-file detail, no test counts, no paragraph under a bullet.
+  - **Routes (backend PRs that add or move routes):** a `New endpoints:` group, one bullet per route: `METHOD /full/path` from the API root (not the sub-router's relative path) and a short gloss on what it returns or does, not a restatement of the path. Put any role or audience split in the intro line ("the `/admin` routes are admin only; the `/me` routes act on the caller's own record") so the list stays one block. Later bullets refer to a listed route by name ("the `history` route above"). This group doesn't count against the word budget.
+  - **Unmet acceptance criteria:** list every AC that is deliberately not delivered, and why, under `Not in scope:`. Reviewers check each AC against the diff; this stops them hunting for something that was never built.
+  - **Call out** what a reviewer would otherwise have to discover: breaking contract changes, new dependencies, decisions that look odd without their reason.
+  - **No ticket key** in the description; the title carries it.
+  - **Updating an existing description:** extend it in the voice already there; don't restructure it.
+
+Example:
+
+```markdown
+Adds licence consent tracking. The `/admin` routes are admin only; the `/me` routes act on the caller's own record.
+
+New endpoints:
+
+- `GET /api/admin/consents`: paginated consents across all users
+- `POST /api/me/consents`: records the caller's consent to the current licence version
+- `GET /api/me/consents/history`: the caller's past consents, newest first
+
+Added:
+
+- `licence_consents` table, one row per user and licence version
+
+Not in scope:
+
+- AC-4 (email reminder): waits on the notifications service
+```
 
 ## Handoff log
 

@@ -256,7 +256,7 @@ Phases: <n>, PR per phase | <n>, single PR | none
 
 followed by the readiness table, the plan, and a short "Review notes" section listing what each reviewer changed.
 
-Add a final step to the plan (per phase, when phased): after the planned commits, `implementer` runs the matching QA agent(s) in write-and-run mode, then gets an independent `pr-reviewer` review of the branch (local mode) and fixes in-scope findings, before asking about a PR. The PR title follows the repo's commit convention.
+Add a final step to the plan (per phase, when phased): after the planned commits, `implementer` runs the matching QA agent(s) in write-and-run mode, then gets an independent `pr-reviewer` review of the branch (local mode) and fixes in-scope findings, before asking about a PR. The PR title is `<TICKET-KEY>: <summary>` unless the repo's written conventions say otherwise.
 
 Reply to the user, by verdict:
 - **READY / READY WITH RISKS:** the verdict, the worktree path and branch, the plan file path, the main diagram as ASCII (if the plan has one), and the top 3 risks or open questions. If no open questions change scope, end with the next step: `/implementer <ticket-key>` (or `claude --agent implementer` → `implement <ticket-key>` to have it ask you directly); for a phased plan this runs phase 1, and each later run picks up the next phase; otherwise say what has to be resolved first.
