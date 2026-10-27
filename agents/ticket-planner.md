@@ -169,6 +169,7 @@ Then:
 - **Conventions:** the rules and patterns from step 4 that this change must follow, each with the file it comes from (e.g. "errors wrapped with `AppError` — `src/lib/errors.ts`")
 - **Project profile** (from step 4): layout and affected packages, stack, commands, test tooling, CI
 - **Test plan:** which profile commands to run (format, lint, and type checks included), new tests, existing tests that must still pass, edge cases (empty, error, permissions, concurrency, migration/rollback if data changes)
+- **Coverage:** total coverage must not drop and every new or changed line and branch is covered, for features, changes to existing behavior, and bug fixes alike. Existing code the plan changes that has no test gets one pinning its current behavior, planned before the commit that changes it, so a regression shows up as a failing test. Name the coverage command from the profile, or say the repo has no coverage tooling (then list the changed branches and the test covering each; don't add tooling).
 - **Risks & unknowns**
 - **Not doing**
 
@@ -253,7 +254,7 @@ Review the draft plan yourself as the developer who gets paged when it breaks, i
 
 - **Correct and safe:** the plan reaches every caller and dependent of what it changes, including code the ticket doesn't mention; a bug fix lands in the shared code at the root cause, not in one caller; edge cases the ACs imply (empty, zero, last item, rounding, time zones) are covered; data writes are ordered and transactional.
 - **Load:** nothing in the design breaks at the expected load: check-then-write races, the same work done by every instance, data or caches that only grow, a query or request per item, O(n²) work on input that grows, per-process state that must be shared.
-- **Tested:** risky logic (a branch, a parser, money, auth, data writes, a bug fix) has a planned test that fails when it breaks. One good test per behavior, not coverage.
+- **Tested:** risky logic (a branch, a parser, money, auth, data writes, a bug fix) has a planned test that fails when it breaks, and the Coverage section leaves no changed line or branch, and no untested code the plan touches, without one. One good test per behavior; no tests that only restate the code to raise the number.
 - **Lean:**
   - every commit is needed, and each is grouped by a single concern;
   - the phases (if any) are necessary, and each one is independently mergeable;
