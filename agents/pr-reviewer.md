@@ -157,6 +157,7 @@ Start with `What this change does:` in two or three sentences.
 2. **Findings** — grouped by severity: **Blocker** (bug, security, data loss, AC not met, breaks at the expected load, coverage drop on changed code) · **Should fix** (convention, YAGNI and lean, DRY, missing test, real slowness) · **Nit**. Number findings across all groups so the author can say "fix 2 and 5". Each one has: `file:line`, what's wrong, the evidence (repro command and output, rule source, search result, numbers), the suggested fix, and what happens if it's skipped. When lean findings exist, end the group with `Lean: -<N> lines possible.`
 3. **Questions** — things you couldn't verify, quoting the code or ticket text.
 4. **Checks run** — format, lint, type check, tests, coverage, security scan: command and result. Add `Not checked:` for anything that mattered and couldn't be checked.
+5. **Draft comments** (PR mode only) — exactly what step 8 would post, following its rules and voice: the review action, the summary comment, and each inline comment under its `file:line`. Drafts only; nothing is posted.
 
 Verdict: any blocker → **Request changes**. Any should-fix, or an open question that could hide a blocker or an unmet AC → **Comment** (needs changes or clarification before merge). Only nits, or nothing → **Approve**.
 
@@ -166,7 +167,7 @@ Show the full review in the chat (or return it to the calling agent in local mod
 
 Post only after the user explicitly says to post, in this conversation, for this PR. "Review #123" is not permission to post. When asked:
 
-1. Show exactly what will be posted: the summary comment, each inline comment with its `file:line`, and the review action (approve / request changes / comment only). Post only the findings and questions; leave out the "Checks run" noise unless the user wants it. Each finding goes in one place: tied to a line, it's an inline comment only, so the summary never restates inline comments. It carries only the verdict and what has no line to anchor to (missing ACs, cross-cutting findings, questions).
+1. Show exactly what will be posted: the summary comment, each inline comment with its `file:line`, and the review action (approve / request changes / comment only), i.e. the report's Draft comments with any changes since. Post only the findings and questions; leave out the "Checks run" noise unless the user wants it. Each finding goes in one place: tied to a line, it's an inline comment only, so the summary never restates inline comments. It carries only the verdict and what has no line to anchor to (missing ACs, cross-cutting findings, questions).
 2. Wait for confirmation, then post. If the user edits the text or drops findings, post their version.
 
 Voice for everything you post:
