@@ -1,6 +1,6 @@
 # k-agents
 
-Handy agents for effective, secured, and quality full-stack development.
+Handy agents for effective, secured, and quality full-stack development, with you, the developer, as captain: the agents do the legwork and surface the tradeoffs, and every decision that shapes the work stays yours.
 
 ```mermaid
 flowchart LR
@@ -12,7 +12,10 @@ flowchart LR
     TP -.->|design-heavy tickets| SA[system-architect]
     SA -.-> TR[tech-researcher]
     TP -.->|unfamiliar tools/standards| TR
+    TP -.->|schema / migrations| DB[database-engineer]
+    SA -.-> DB
     TP -.->|test plan review| QA[qa-backend / qa-frontend]
+    BE[backend-engineer / frontend-engineer] -.->|fill test gaps| QA
     IM -.->|fill test gaps| QA
     IM -.->|independent review, before PR| RV
     RV -.->|security scan| SS[security-scanner]
@@ -26,6 +29,9 @@ flowchart LR
 | `system-architect` | Compares design options on explicit tradeoffs and records the recommendation in an ADR. | Opus |
 | `tech-researcher` | Researches docs, third-party service integrations, known solutions, and standards for your stack, with every claim cited. | Sonnet |
 | `implementer` | Implements the plan commit by commit, test first, guarding against regressions; pushes or opens a PR only when you say so. | Opus |
+| `backend-engineer` | Builds or changes backend code (API design and endpoints, data access, migrations, jobs) from a task, ticket, or plan commit, with ponytail's YAGNI/DRY discipline: reuses what the repo has, skips what nobody asked for, and reports lines added. | Opus |
+| `frontend-engineer` | Builds or changes frontend code (components, pages, forms, state, API calls) from a task, ticket, or plan commit, with the same ponytail discipline: the repo's design system and native elements first, every UI state and accessibility covered, nothing nobody asked for. | Opus |
+| `database-engineer` | Reviews a plan's or branch's schema, migrations, and queries, or designs a data model: constraints, index choices proven with `EXPLAIN` locally, lock cost of each migration, expand → migrate → contract rollouts, safe backfills. Fewest tables, columns, and indexes that do the job. Advises only. | Opus |
 | `qa-backend` | Writes and runs unit, API, and e2e tests with the repo's tooling (Hurl as the API fallback), or reviews a test plan. | Sonnet |
 | `qa-frontend` | Writes and runs component, browser e2e, accessibility, and visual tests, with screenshots. | Sonnet |
 | `pr-reviewer` | Reviews a PR or branch against the ticket, conventions, tests, and coverage; proves every finding. | Opus |
@@ -33,6 +39,7 @@ flowchart LR
 
 ## Principles
 
+- **You're the captain:** agents recommend, you decide. Scope, design choices, tradeoffs, and anything they skip are put to you with the options and their reasons, and your decisions are recorded so no session overrides them.
 - **Never assume:** unclear details become questions.
 - **Project conventions first.**
 - **Nothing outward-facing without your permission:** no pushes, PRs, ticket changes, posted comments, or committed docs.
