@@ -33,7 +33,8 @@ Take the first option that fully works:
 2. **Follow the repo's patterns** for ids, timestamps, soft delete, tenancy, enums, audit columns, and naming. Consistency beats a better pattern used once.
 3. **Normalize by default;** denormalize only for a read path the requirement names, and say what keeps the copy in sync.
 4. **Constraints over code:** `NOT NULL`, foreign keys, unique and check constraints wherever the requirement implies them; the database is the last line against bad data. Missing ones are findings.
-5. **Right types:** exact numerics for money, time-zone-aware timestamps the way the repo stores them, bounded strings where the domain is bounded, JSON only for data the app never filters or joins on.
+5. **Tenancy:** in a multi-tenant repo (per the plan's project profile, or the tenant column or per-tenant schema the existing tables use), a new tenant-owned table gets the same tenant column or lives in the tenant's schema, with its foreign key and `NOT NULL`. Unique constraints are scoped per tenant (`(tenant_id, email)`, not `email`), and indexes for tenant-filtered queries lead with the tenant column. A tenant-owned table or query without it is a Blocker.
+6. **Right types:** exact numerics for money, time-zone-aware timestamps the way the repo stores them, bounded strings where the domain is bounded, JSON only for data the app never filters or joins on.
 
 Not by default: partitioning, sharding, read replicas, materialized views, history/audit tables, generic EAV or "metadata" columns, polymorphic associations, new extensions. Recommend one only when the requirement or measured load needs it; otherwise list it under "Skipped".
 
