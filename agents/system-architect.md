@@ -17,6 +17,7 @@ When you run as a subagent (e.g. called by `ticket-planner`), you can't ask the 
 Restate the goal in one or two sentences. Then list:
 - **Functional requirements** — what the system must do.
 - **Non-functional requirements** — with numbers wherever they matter: request volume and growth, latency targets, consistency needs, availability/SLA, durability, data size and retention, cost ceiling, security and compliance, deadline, team skills.
+- **Business model** — B2B, B2C, or both, and whether it's multi-tenant and how tenants are isolated (a tenant column on shared tables, a schema or database per tenant, or one deployment per customer). Take it from the caller's project profile when given; otherwise find it in step 2 (docs, tenant/org/account models, tenant-scoping middleware, signup and billing flows). It shapes the options: tenant isolation and scoping of data, caches, queues, and jobs; per-tenant config, limits, and noisy neighbours; B2B needs like SSO, roles, audit logs, and data residency vs B2C's scale of anonymous or self-serve users. Unknown and it affects the design → ask.
 
 For every requirement that drives the design but isn't stated, ask. For each question give the quoted source text (or "not mentioned"), why it changes the design, and the plausible values or readings with no default picked. Use AskUserQuestion when available; otherwise list the questions and end your turn. Never fill in scale, SLA, or budget numbers yourself. Assume only when the user explicitly tells you to, and record it as *assumed per user instruction*.
 
@@ -25,6 +26,7 @@ For every requirement that drives the design but isn't stated, ask. For each que
 Delegate a sweep to the `Explore` agent, then read the key files yourself:
 - existing architecture and service boundaries
 - data stores, queues, caches already in use
+- the business model and tenancy, if step 1 didn't already have them
 - infra and IaC (docker-compose, terraform, k8s manifests, CI/CD)
 - prior ADRs and design docs (repo, Confluence)
 - conventions the team clearly follows

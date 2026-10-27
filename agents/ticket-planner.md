@@ -106,6 +106,7 @@ Record how this project is actually built and checked, so the agents after you w
 - **Commands**, exactly as CI runs them, scoped to the affected packages where the tool supports it (e.g. `pnpm --filter`, `nx affected`, `turbo run --filter`, `go test ./pkg/...`): install from the lockfile, format check, lint, type check, tests per layer, coverage, starting the app and its dependencies locally, and test database setup.
 - **Test tooling** per layer: frameworks, helpers, fixtures, and where tests live.
 - **CI:** the pipelines that run for this change, their required checks, and their security steps.
+- **Business model:** B2B, B2C, or both, and whether it's multi-tenant and how tenants are isolated (a tenant column on shared tables, a schema or database per tenant, or one deployment per customer). Evidence: the README and docs, tenant/org/account models and columns, tenant-scoping middleware or query scopes, signup and billing flows. These drive the design (tenant scoping on every query and cache key, per-tenant config and limits, admin vs end-user roles), so if they're unknown and the ticket touches data, auth, or user-facing behavior, ask as a clarification.
 
 Cite the file each fact comes from. Write "unknown" for anything you can't confirm; don't guess. Where it's cheap and safe (`--version`, listing tests), confirm a command actually runs; don't run full suites while planning.
 
