@@ -22,6 +22,7 @@ Input: a task description, a ticket key, or a plan file path with the commit to 
 
 - Learn the stack and its conventions from the code you'll touch and its neighbours: framework, routing, layering (handler → service → repository, or whatever the repo uses), validation library, error type and response shape, logging, auth middleware, transaction handling, migration tool, test layout. Read `CLAUDE.md`/`AGENTS.md`/`CONTRIBUTING.md` if present.
 - **Impact check.** Find everything that depends on what you'll change: callers, consumers of the endpoint or event, serialized/stored formats, config defaults, other packages in a monorepo. That list is your scope. Features nobody asked for are not.
+- **Expected load.** Find it in the repo (README, deploy config, infra): one person running a script, or many users and instances at once. Judge scale against it, not against a hypothetical.
 - Run the affected tests once now. Failures that exist before you start are pre-existing; report them, don't fix them unasked.
 
 ## 3. Pick the smallest complete change
@@ -64,7 +65,13 @@ Apply these to the code you write; don't retrofit them onto code the task doesn'
    - A shortcut with a known limit gets: `shortcut: <the limit>, <when to upgrade>`.
    - Code you move or merge keeps its error handling and validation.
 3. **Check.** Formatter (changed files only), linter, type checker, the new tests, and the tests of every dependent from the impact check, the way CI runs them. All green. A test that passed before and fails now is a regression: fix your change, never the test's expectations, unless the task changes that behavior. Never `--no-verify`, never skip or weaken a test.
-4. **Trim the diff.** Read `git diff` line by line and ask of each added line: does the task need it? Delete what it doesn't: unused parameters, defensive checks for states that can't happen past a validated boundary, wrappers, re-exports, type conversions the platform didn't need, commented-out code, debug output, reformatting of untouched lines. Then run the `ponytail:ponytail-review` skill on the diff and fold in what holds up. Note `git diff --shortstat` for the report.
+4. **Review and trim the diff.** Read `git diff` line by line as the developer who gets paged when it breaks, in this order: correct, safe, holds under the expected load, tested, fast, lean.
+   - **Correct and safe:** edge cases (empty, null, zero, last item, rounding, time zones); every caller of a changed signature, return value, or behavior still works, including ones the diff doesn't touch; a fix lands in the shared function, not in one caller; writes happen in the right order and inside a transaction; errors aren't swallowed.
+   - **Load:** against the expected load (section 2): check-then-write races, the same work done by every instance, memory, caches, or lists that only grow, O(n²) work on input that grows, per-process state that must be shared.
+   - **Tested:** risky logic (a branch, a parser, money, auth, data writes, a bug fix) has a test that fails when it breaks. One good test, not coverage.
+   - **Lean:** ask of each added line: does the task need it? Delete what it doesn't: unused parameters, defensive checks for states that can't happen past a validated boundary, wrappers, re-exports, type conversions the platform didn't need, commented-out code, debug output, reformatting of untouched lines. Replace code the standard library or framework already provides; merge near-copies that must change together; split a function doing several unrelated jobs, by job, never by line count.
+
+   Act only on problems you can name a concrete case for ("this input leads to this wrong result"), with the smallest fix, preferring fixes that delete code. Re-run the checks after any fix. Note `git diff --shortstat` for the report.
 5. **Commit locally** in the repo's commit convention (by default Conventional Commits, `<type>(<scope>): <summary>`, scope only if the repo uses them; `Refs: <ticket-key>` footer when there's a ticket). Stage files explicitly; never `git add -A`. One concern per commit. Docs stay uncommitted until the user says so.
 
 Stop and ask when: the expected behavior isn't stated; the change needs a new dependency, schema change, or public API/contract change nobody asked for; a dependent would break; or a check fails twice and you don't know why.

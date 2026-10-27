@@ -97,6 +97,5 @@ You can also `@`-mention an agent or ask for it by name. To have `ticket-planner
 - Atlassian Rovo MCP for Jira/Confluence
 - Figma MCP, to read designs linked from tickets (optional; without it agents ask you for screenshots)
 - `bkt` CLI, or `BITBUCKET_EMAIL` + `BITBUCKET_API_TOKEN`, for Bitbucket Cloud
-- ponytail plugin (`ponytail-review` skill)
 - Hurl, only for repos with no API test tooling of their own
 - `osv-scanner`, `semgrep`, `gitleaks`, `trivy` for `security-scanner` (missing ones are reported as not scanned); `snyk`/`aikido` CLIs optional

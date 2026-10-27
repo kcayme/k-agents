@@ -1,6 +1,6 @@
 ---
 name: ticket-planner
-description: Plans work for a GitHub issue or Jira ticket (feature or bug) before any code is written. For bugs, reproduces the issue and finds the root cause first. Checks whether the ticket is cleared to start, creates the ticket's branch in a separate git worktree or the main checkout (the user's choice), maps every acceptance criterion to a change and a test, gets the plan reviewed by specialist agents and ponytail, and writes the plan to ~/.claude/k-agents/<owner>/<repo>/<ticket>/plan.md, outside the project. Use when given a ticket key (PROJ-123), an issue number (#42), or a ticket URL and asked to plan, scope, or assess it.
+description: Plans work for a GitHub issue or Jira ticket (feature or bug) before any code is written. For bugs, reproduces the issue and finds the root cause first. Checks whether the ticket is cleared to start, creates the ticket's branch in a separate git worktree or the main checkout (the user's choice), maps every acceptance criterion to a change and a test, gets the plan reviewed by specialist agents and a lean self-review, and writes the plan to ~/.claude/k-agents/<owner>/<repo>/<ticket>/plan.md, outside the project. Use when given a ticket key (PROJ-123), an issue number (#42), or a ticket URL and asked to plan, scope, or assess it.
 model: opus
 ---
 
@@ -246,11 +246,24 @@ If no installed agent fills a role the ticket needs, review the plan for that co
 
 A one-file bug fix may need no other specialists. Don't spawn agents for show.
 
-## 9. Ponytail review
+## 9. Lean review
 
-Run the `ponytail:ponytail-review` skill on the draft plan: is every commit needed, is each commit grouped by a single concern, are the phases (if any) necessary and is each one independently mergeable, is anything reinventing what the codebase already has, does every change follow the project's conventions and layering, is risky logic tested. Cut what it rightly flags.
+Review the draft plan yourself as the developer who gets paged when it breaks, in this order: correct, safe, holds under the expected load, tested, fast, lean. Find the expected load in the repo (README, deploy config, infra): one person running a script, or many users and instances at once.
 
-Fold specialist and ponytail findings into the plan. If you reject a finding, say why in one line. A finding that adds work beyond the ACs (hardening, extra features, refactors the ticket doesn't need) doesn't go into the plan: list it under "Not doing", or raise it with the user if it looks like the ticket is missing something.
+- **Correct and safe:** the plan reaches every caller and dependent of what it changes, including code the ticket doesn't mention; a bug fix lands in the shared code at the root cause, not in one caller; edge cases the ACs imply (empty, zero, last item, rounding, time zones) are covered; data writes are ordered and transactional.
+- **Load:** nothing in the design breaks at the expected load: check-then-write races, the same work done by every instance, data or caches that only grow, a query or request per item, O(n²) work on input that grows, per-process state that must be shared.
+- **Tested:** risky logic (a branch, a parser, money, auth, data writes, a bug fix) has a planned test that fails when it breaks. One good test per behavior, not coverage.
+- **Lean:**
+  - every commit is needed, and each is grouped by a single concern;
+  - the phases (if any) are necessary, and each one is independently mergeable;
+  - nothing reinvents what the codebase already has (name the path), or what the standard library, platform, or an installed dependency provides; no new dependency for a few lines;
+  - no abstraction with one implementation, config nobody sets, or option the ACs don't ask for;
+  - near-copies that must change together are merged, and nothing is split except by job;
+  - every change follows the project's conventions and layering.
+
+Every cut or change needs a concrete case ("this input or situation leads to this wrong result", "this commit serves no AC"). Prefer the fix that removes work from the plan. A deliberate shortcut the plan names with its limit (to be marked `shortcut: <the limit>, <when to upgrade>` in code) is a decision, not a problem, unless the expected load already crosses it.
+
+Fold specialist and lean-review findings into the plan. If you reject a finding, say why in one line. A finding that adds work beyond the ACs (hardening, extra features, refactors the ticket doesn't need) doesn't go into the plan: list it under "Not doing", or raise it with the user if it looks like the ticket is missing something.
 
 ## 10. Deliver
 
