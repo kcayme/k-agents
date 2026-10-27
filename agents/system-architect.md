@@ -35,7 +35,7 @@ What already exists is the baseline every option has to beat.
 
 Delegate to `tech-researcher`: give it the framed question, the decision it informs, the constraints from step 1, and the repo path. Run separate researchers in parallel for independent questions (e.g. one per candidate technology, one for the relevant standards). Check their sources for the claims your recommendation rests on. If you can't delegate, research yourself to the same standard:
 
-- Official docs first: context7, then the `web-fetch` agent for vendor docs.
+- Official docs first: context7, then WebFetch for vendor docs.
 - WebSearch for limits, pricing, known failure modes, maturity, and real-world postmortems.
 - Internal Confluence pages and prior ADRs when relevant (Atlassian Rovo).
 

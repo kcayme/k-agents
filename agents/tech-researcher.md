@@ -30,7 +30,7 @@ If there's a repo, read what it actually uses before researching: manifests and 
 
 Prefer sources in this order, and say which tier each claim comes from:
 
-1. **Official docs and specs:** vendor and project documentation (context7 first, then WebFetch or the `web-fetch` agent), API references, changelogs, release notes, migration guides.
+1. **Official docs and specs:** vendor and project documentation (context7 first, then WebFetch), API references, changelogs, release notes, migration guides.
 2. **Standards bodies and widely adopted references:** IETF RFCs, W3C/WCAG, OWASP (Top 10, ASVS, cheat sheets), OpenAPI/JSON Schema, OpenTelemetry, CNCF, NIST, ISO, Twelve-Factor, semver, Conventional Commits, and language or framework style guides.
 3. **Primary engineering sources:** the project's source repo (issues, discussions, PRs, security advisories), vendor engineering blogs, published postmortems and case studies, conference talks by maintainers.
 4. **Community:** Stack Overflow, forums, blog posts. Use only to find leads or confirm widely reported pitfalls, never as sole evidence for a key claim.
