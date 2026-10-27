@@ -112,7 +112,7 @@ A shortcut marked with a `shortcut:` (or older `ponytail:`) comment that names i
 
 **Tests.**
 - Every changed behavior and every AC has a test that would fail if the behavior broke. Tests assert outcomes, not implementation details.
-- Run the affected suites with CI's command.
+- Run the affected suites with CI's command, unless CI already did: in PR mode, if the PR's checks on its current head commit (from step 1) include the test jobs and all of them passed, cite those checks under Checks run and skip the local run. Test checks that failed, are pending, were skipped, are missing, or ran on an older commit, and local mode, mean you run the suites locally.
 - Bug fixes: the regression test must reproduce the bug. Run it against the base and confirm it fails there and passes on the head. Use the temporary base worktree from the coverage step, or create one the same way if that step didn't (`git worktree add --detach "$(mktemp -d)" origin/<base>`, removed afterwards). If it passes on the base too, it doesn't prove the fix; that's a finding.
 - Bug fixes: check the fix is at the root cause the ticket or plan names, and that other callers of the changed code still behave.
 - For deeper test-gap analysis on a large PR, run `qa-backend` or `qa-frontend` in plan-review mode on the diff and ACs.
