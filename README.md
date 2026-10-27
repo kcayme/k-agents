@@ -55,7 +55,7 @@ As a Claude Code plugin:
 
 ```
 /plugin marketplace add kcayme/k-agents
-/plugin install k-agents@k-agents
+/plugin install kagents@k-agents
 ```
 
 Or, to edit the agents and see changes immediately, symlink them into `~/.claude/agents/` with `./install.sh` (`--uninstall` to remove). Use one method, not both, or every agent shows up twice.
@@ -68,8 +68,10 @@ Plugin install:
 
 ```
 claude plugin marketplace update k-agents
-claude plugin update k-agents@k-agents
+claude plugin update kagents@k-agents
 ```
+
+The plugin was renamed from `k-agents` to `kagents`. If you installed it before, `claude plugin uninstall k-agents@k-agents` once, then install `kagents@k-agents`.
 
 Symlink install: the links point at your checkout, so pull and you're done.
 
@@ -84,12 +86,12 @@ Re-run `./install.sh` only when agents or skills were added, renamed, or removed
 Each agent has a matching slash command:
 
 ```
-/k-agents:ticket-planner PROJ-123
-/k-agents:implementer PROJ-123
-/k-agents:pr-reviewer #42
+/kagents:ticket-planner PROJ-123
+/kagents:implementer PROJ-123
+/kagents:pr-reviewer #42
 ```
 
-You can also `@`-mention an agent or ask for it by name. To have `ticket-planner` or `implementer` ask you questions directly, run it as the session: `claude --agent k-agents:ticket-planner`. With the symlink install, drop the `k-agents:` prefix.
+You can also `@`-mention an agent or ask for it by name. To have `ticket-planner` or `implementer` ask you questions directly, run it as the session: `claude --agent kagents:ticket-planner`. With the symlink install, drop the `kagents:` prefix.
 
 ## Requirements
 

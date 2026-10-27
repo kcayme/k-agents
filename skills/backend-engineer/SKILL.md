@@ -5,7 +5,7 @@ argument-hint: "<task, ticket, or plan path> [commit]"
 disable-model-invocation: true
 ---
 
-Run the `k-agents:backend-engineer` agent (the bare `backend-engineer` only when no `k-agents:backend-engineer` agent exists, i.e. the symlink install) on:
+Run the `kagents:backend-engineer` agent (the bare `backend-engineer` only when no `kagents:backend-engineer` agent exists, i.e. the symlink install) on:
 
 $ARGUMENTS
 

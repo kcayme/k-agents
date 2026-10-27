@@ -5,7 +5,7 @@ argument-hint: "<ticket key or plan path> [phase N]"
 disable-model-invocation: true
 ---
 
-Run the `k-agents:implementer` agent (the bare `implementer` only when no `k-agents:implementer` agent exists, i.e. the symlink install) on:
+Run the `kagents:implementer` agent (the bare `implementer` only when no `kagents:implementer` agent exists, i.e. the symlink install) on:
 
 $ARGUMENTS
 

@@ -5,7 +5,7 @@ argument-hint: "<design question, ticket, or plan path>"
 disable-model-invocation: true
 ---
 
-Run the `k-agents:system-architect` agent (the bare `system-architect` only when no `k-agents:system-architect` agent exists, i.e. the symlink install) on:
+Run the `kagents:system-architect` agent (the bare `system-architect` only when no `kagents:system-architect` agent exists, i.e. the symlink install) on:
 
 $ARGUMENTS
 

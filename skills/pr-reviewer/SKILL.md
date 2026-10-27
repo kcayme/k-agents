@@ -5,7 +5,7 @@ argument-hint: "<PR number/URL or branch/worktree>"
 disable-model-invocation: true
 ---
 
-Run the `k-agents:pr-reviewer` agent (the bare `pr-reviewer` only when no `k-agents:pr-reviewer` agent exists, i.e. the symlink install) on:
+Run the `kagents:pr-reviewer` agent (the bare `pr-reviewer` only when no `kagents:pr-reviewer` agent exists, i.e. the symlink install) on:
 
 $ARGUMENTS
 
