@@ -5,7 +5,7 @@ argument-hint: "<plan path, branch, PR, or modeling question>"
 disable-model-invocation: true
 ---
 
-Run the `database-engineer` agent (named `k-agents:database-engineer` when installed as a plugin) on:
+Run the `k-agents:database-engineer` agent (the bare `database-engineer` only when no `k-agents:database-engineer` agent exists, i.e. the symlink install) on:
 
 $ARGUMENTS
 

@@ -5,7 +5,7 @@ argument-hint: "<research question>"
 disable-model-invocation: true
 ---
 
-Run the `tech-researcher` agent (named `k-agents:tech-researcher` when installed as a plugin) on:
+Run the `k-agents:tech-researcher` agent (the bare `tech-researcher` only when no `k-agents:tech-researcher` agent exists, i.e. the symlink install) on:
 
 $ARGUMENTS
 

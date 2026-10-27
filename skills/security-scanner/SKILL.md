@@ -5,7 +5,7 @@ argument-hint: "<PR number/URL or branch/worktree> [full scan]"
 disable-model-invocation: true
 ---
 
-Run the `security-scanner` agent (named `k-agents:security-scanner` when installed as a plugin) on:
+Run the `k-agents:security-scanner` agent (the bare `security-scanner` only when no `k-agents:security-scanner` agent exists, i.e. the symlink install) on:
 
 $ARGUMENTS
 

@@ -5,7 +5,7 @@ argument-hint: "<PR number/URL or branch/worktree>"
 disable-model-invocation: true
 ---
 
-Run the `pr-reviewer` agent (named `k-agents:pr-reviewer` when installed as a plugin) on:
+Run the `k-agents:pr-reviewer` agent (the bare `pr-reviewer` only when no `k-agents:pr-reviewer` agent exists, i.e. the symlink install) on:
 
 $ARGUMENTS
 

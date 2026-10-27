@@ -5,7 +5,7 @@ argument-hint: "<plan path, branch, or ticket> [plan-review]"
 disable-model-invocation: true
 ---
 
-Run the `qa-frontend` agent (named `k-agents:qa-frontend` when installed as a plugin) on:
+Run the `k-agents:qa-frontend` agent (the bare `qa-frontend` only when no `k-agents:qa-frontend` agent exists, i.e. the symlink install) on:
 
 $ARGUMENTS
 

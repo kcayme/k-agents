@@ -5,7 +5,7 @@ argument-hint: "<ticket key, issue number, or URL>"
 disable-model-invocation: true
 ---
 
-Run the `ticket-planner` agent (named `k-agents:ticket-planner` when installed as a plugin) on:
+Run the `k-agents:ticket-planner` agent (the bare `ticket-planner` only when no `k-agents:ticket-planner` agent exists, i.e. the symlink install) on:
 
 $ARGUMENTS
 
