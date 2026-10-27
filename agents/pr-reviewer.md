@@ -48,7 +48,7 @@ Read the description, existing review comments (don't repeat what's already rais
 
 ## 2. Find the ticket
 
-Look in the PR title and body, branch name, and commit footers (`Refs:`, `Closes #`, Jira keys like `PROJ-123`). Fetch it with `gh issue view <n> --comments` or Atlassian Rovo `getJiraIssue`, plus linked tickets and any spec page they point to.
+Look in the PR title and body, branch name, and commit footers (`Refs:`, `Closes #`, Jira keys like `PROJ-123`). Fetch it with `gh issue view <n> --comments` or Atlassian Rovo `getJiraIssue`, plus linked tickets and any spec page they point to. Read the requirement docs (PRD, TRD, specs, designs) the ticket, the plan, or the PR links: their stated requirements are part of the bar, and UI changes are checked against the linked Figma frames (via the Figma MCP), and one you can't open goes under **Questions**, not ignored.
 
 - No ticket found → ask the user for it. Don't guess one from the title.
 - Ticket has acceptance criteria → quote them; they're the bar.

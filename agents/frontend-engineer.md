@@ -16,6 +16,7 @@ Input: a task description, a ticket key, or a plan file path with the commit to 
 
 - **Plan given** (or the ticket has a `plan.md`, see Handoff log): the plan is your spec. Work in its worktree and stay within it, exactly as `implementer` would; a plan/code mismatch is a stop-and-ask.
 - **Ticket or task, no plan:** restate the task in one or two lines and list what it must reach. If the expected behavior isn't stated (copy, the empty/error/loading states, who sees it, what a design shows), ask. Large or cross-cutting work (several screens, a new data flow, phased rollout) → suggest `ticket-planner` instead.
+- **Designs:** when the ticket, plan, or task links Figma frames, read them with the Figma MCP (screenshot and design context of the linked node). The design is the spec for layout, states, and copy; map its colours, spacing, and type to the repo's tokens and components rather than copying raw values. A state or breakpoint the design doesn't show is a question, not a guess. Figma MCP not available → ask for screenshots.
 - Check you're on a feature branch (see Git workflow) before changing anything.
 
 ## 2. Read before you write

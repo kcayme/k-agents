@@ -21,6 +21,10 @@ Input: a Jira key (`PROJ-123`), a GitHub issue (`#42`, `owner/repo#42`), or a UR
 
 Read everything: description, comments (later comments often change the scope), attachments/designs, linked tickets.
 
+**Requirement docs.** Look for PRDs, TRDs, specs, RFCs, and designs linked or attached anywhere in the ticket, its comments, its linked tickets, and the parent epic, plus any the repo keeps for this feature (`docs/`, ADRs). Read each with the tool that fits: Confluence through Atlassian Rovo, repo files directly, Figma through its MCP, other public URLs with WebFetch. One you can't open (a private Google Doc, Notion page, or an attachment the tools can't read) isn't skipped: it's an Inputs gap and a question for the user (share it, paste the relevant part, or confirm it doesn't matter). Their stated requirements count as acceptance criteria alongside the ticket's, cited by doc and section. A conflict between a doc and the ticket, or between two docs, is a clarification; never pick one silently.
+
+**Designs.** For every Figma link (`figma.com/design`, `/proto`, `/board`, `/make`), read the frames it points to with the Figma MCP: a screenshot and the design context of the linked node, not just the file name. Record what the design specifies (screens, layout, UI states, copy, breakpoints, interactions) as UI requirements, cited by frame. Anything the ticket needs that the design doesn't show (empty, loading, error, or permission states; mobile layout; validation messages) is a clarification. Figma MCP not available or the file not shared → Inputs gap and a question asking for access or screenshots of the frames.
+
 ## 2. Readiness gate — are we cleared to start?
 
 Check each and record pass / fail / unknown with evidence:
@@ -32,7 +36,7 @@ Check each and record pass / fail / unknown with evidence:
 | Blockers | Every "blocked by"/"depends on" ticket is done/merged |
 | Acceptance criteria | Present, specific, and testable (no "should work well"). **Bug:** steps to reproduce, actual behavior, and an explicitly stated expected behavior count as the AC |
 | Open questions | No unanswered questions in the comments that change scope |
-| Inputs | Designs, API contracts, env access, feature flags, data the work needs exist. **Bug:** environment, version/commit, config, and logs or stack traces needed to reproduce |
+| Inputs | Linked requirement docs (PRD, TRD, specs) readable, designs, API contracts, env access, feature flags, data the work needs exist. **Bug:** environment, version/commit, config, and logs or stack traces needed to reproduce |
 | Duplicates | No open PR or other ticket already doing this (`gh pr list --search`, JQL `text ~`) |
 
 Verdict:
@@ -62,7 +66,7 @@ Do not fill a gap in the ticket's requirements with your own judgment, a "sensib
 
 If the AC are missing or vague, don't write your own; raise it as a clarification. **Bug:** the expected behavior must come from the ticket, a spec, or the user, never from what seems sensible or what a similar feature does. Anything still unanswered keeps the verdict at **BLOCKED** if it changes scope or behavior, or goes on the plan's open-questions list if it doesn't. If new ambiguities come up later (in the code, from `system-architect`, or from reviewers), raise them the same way, one at a time, before you plan around them.
 
-The plan gets a **Clarifications** section listing every question, its answer, and its source (ticket / comment / user / *assumed per user instruction*).
+The plan gets a **Clarifications** section listing every question, its answer, and its source (ticket / comment / requirement doc and section / user / *assumed per user instruction*).
 
 ## 3. Set up the branch
 
