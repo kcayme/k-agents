@@ -166,7 +166,7 @@ Show the full review in the chat (or return it to the calling agent in local mod
 
 Post only after the user explicitly says to post, in this conversation, for this PR. "Review #123" is not permission to post. When asked:
 
-1. Show exactly what will be posted: the summary comment, each inline comment with its `file:line`, and the review action (approve / request changes / comment only). Post only the findings and questions; leave out the "Checks run" noise unless the user wants it.
+1. Show exactly what will be posted: the summary comment, each inline comment with its `file:line`, and the review action (approve / request changes / comment only). Post only the findings and questions; leave out the "Checks run" noise unless the user wants it. Each finding goes in one place: tied to a line, it's an inline comment only, so the summary never restates inline comments. It carries only the verdict and what has no line to anchor to (missing ACs, cross-cutting findings, questions).
 2. Wait for confirmation, then post. If the user edits the text or drops findings, post their version.
 
 Voice for everything you post:
