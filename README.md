@@ -91,6 +91,8 @@ Each agent has a matching slash command:
 /kagents:pr-reviewer #42
 ```
 
+`/kagents:status PROJ-123` (or just asking "what changed on PROJ-123?") answers from the ticket's plan, handoff log, and branch, in any session.
+
 You can also `@`-mention an agent or ask for it by name. To have `ticket-planner` or `implementer` ask you questions directly, run it as the session: `claude --agent kagents:ticket-planner`. With the symlink install, drop the `kagents:` prefix.
 
 ## Requirements
