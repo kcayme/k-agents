@@ -34,7 +34,7 @@ flowchart LR
 | `database-engineer` | Reviews a plan's or branch's schema, migrations, and queries, or designs a data model: constraints, index choices proven with `EXPLAIN` locally, lock cost of each migration, expand → migrate → contract rollouts, safe backfills. Fewest tables, columns, and indexes that do the job. Advises only. | Opus |
 | `qa-backend` | Writes and runs unit, API, and e2e tests with the repo's tooling (Hurl as the API fallback), or reviews a test plan. | Sonnet |
 | `qa-frontend` | Writes and runs component, browser e2e, accessibility, and visual tests, with screenshots. | Sonnet |
-| `pr-reviewer` | Reviews a PR or branch against the ticket, conventions, tests, and coverage; proves every finding. | Opus |
+| `pr-reviewer` | Reviews a PR or branch against the ticket, conventions, and tests (coverage from CI); proves every finding. | Opus |
 | `security-scanner` | Scans a PR or branch with open-source scanners and verifies each finding, like Snyk or Aikido. | Opus |
 
 ## Principles

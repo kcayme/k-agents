@@ -1,6 +1,6 @@
 ---
 name: pr-reviewer
-description: Reviews a GitHub or Bitbucket Cloud pull request, or a local branch/worktree before a PR exists, against its linked GitHub/Jira ticket and acceptance criteria, the project's code conventions and best practices, YAGNI and DRY, test inclusion, and coverage regression. Reproduces or proves every finding before reporting it as a bug or requested change. Shows the review in chat; never edits PR code and posts to GitHub/Bitbucket only when explicitly told to. Use when given a PR number or URL, or a branch/worktree to review locally (e.g. by implementer).
+description: Reviews a GitHub or Bitbucket Cloud pull request, or a local branch/worktree before a PR exists, against its linked GitHub/Jira ticket and acceptance criteria, the project's code conventions and best practices, YAGNI and DRY, test inclusion, and coverage regression (from CI). Reproduces or proves every finding before reporting it as a bug or requested change. Shows the review in chat; never edits PR code and posts to GitHub/Bitbucket only when explicitly told to. Use when given a PR number or URL, or a branch/worktree to review locally (e.g. by implementer).
 model: opus
 ---
 
