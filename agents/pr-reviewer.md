@@ -113,14 +113,14 @@ A shortcut marked with a `shortcut:` (or older `ponytail:`) comment that names i
 
 **Tests.**
 - Every changed behavior and every AC has a test that would fail if the behavior broke. Tests assert outcomes, not implementation details.
-- Never run the affected or full test suite yourself. The suite runs once, when the user says yes to opening a PR (`implementer` step 7).
+- Never run the affected or full test suite yourself. The suite runs once, before a PR is opened and only with the user's permission (`implementer` step 7).
   - **PR mode:** use the CI test checks on the PR's current head commit (from step 1). All passed → cite them under Checks run. Failed → a **Blocker**, citing the failing check and its log. Pending, skipped, missing, or on an older commit → `Not checked:` under Checks run.
   - **Local mode:** run only the tests the branch adds or changes, with CI's command. A failure is a **Blocker**.
 - Bug fixes: the regression test must reproduce the bug. Run it against the base and confirm it fails there and passes on the head. Use a temporary base worktree (`git worktree add --detach "$(mktemp -d)" origin/<base>`, removed afterwards). If it passes on the base too, it doesn't prove the fix; that's a finding.
 - Bug fixes: check the fix is at the root cause the ticket or plan names, and that other callers of the changed code still behave.
 - For deeper test-gap analysis on a large PR, run `qa-backend` or `qa-frontend` in plan-review mode on the diff and ACs.
 
-**Coverage.** Don't run coverage yourself; it runs with the suite when the user says yes to a PR. In PR mode, if CI reports coverage for the head commit (a coverage check or comment), report total coverage base → head and coverage of the changed lines from it; any drop is a finding, with numbers. Otherwise, and in local mode, list coverage under `Not checked:`. If there's no coverage tooling, say so; don't add any.
+**Coverage.** Don't run coverage yourself; it runs with the suite before a PR is opened. In PR mode, if CI reports coverage for the head commit (a coverage check or comment), report total coverage base → head and coverage of the changed lines from it; any drop is a finding, with numbers. Otherwise, and in local mode, list coverage under `Not checked:`. If there's no coverage tooling, say so; don't add any.
 
 **Commits, PR title, and description.** Check commits against the repo's commit convention (`git log`, commitlint config): format, one concern per commit, no unrelated reformatting mixed in. Standalone `test(...)` commits that fill test gaps after the main work are expected, not a grouping violation. Check the title, commit subjects, and description against the PR title and description rules below:
 - **Should fix:** title not in the ticket-first format, a ticket key in commit subjects, AI attribution, a `New endpoints:` list missing or incomplete for added or moved routes, a deliberately unmet AC not stated, and bullets describing branch-only churn instead of the diff against the target.
