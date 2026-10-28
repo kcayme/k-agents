@@ -19,6 +19,12 @@ flowchart LR
     IM -.->|fill test gaps| QA
     IM -.->|independent review, before PR| RV
     RV -.->|security scan| SS[security-scanner]
+    RV -.->|test plan review, large PRs| QA
+    TP -.->|confirmed contract + UI design| RV
+
+    TP ==>|API contract + UI design: your yes; decisions shown| U([You])
+    SA ==>|options + recommendation: your pick| U
+    BE ==>|contract / wireframe when there's no plan: your yes| U
 ```
 
 ## Agents
@@ -39,7 +45,7 @@ flowchart LR
 
 ## Principles
 
-- **You're the captain:** agents recommend, you decide. Scope, design choices, tradeoffs, and anything they skip are put to you with the options and their reasons, and your decisions are recorded so no session overrides them.
+- **You're the captain:** agents propose, you approve. Every decision is shown with its reasons; nothing is built on a design you haven't confirmed.
 - **Never assume:** unclear details become questions.
 - **Project conventions first.**
 - **Nothing outward-facing without your permission:** no pushes, PRs, ticket changes, posted comments, or committed docs.
