@@ -90,12 +90,15 @@ Each ticket has a folder outside the repo: `~/.claude/k-agents/<owner>/<repo>/<t
 - **Read** it at the start if it exists (after the plan, if there is one). Decisions it records from the user are settled: don't ask them again unless the plan or the code has changed since. Carry its open items forward.
 - **Append** one entry when you finish, and before you stop to ask the user, so a dropped session can resume where it left off. Record the user's answers in your next entry. Never edit or delete earlier entries.
 - **Write it unless your caller says it records the log itself** (another agent from this set delegating to you). Run from a slash command, an `@`-mention, or `claude --agent`, you write it.
+- **Say why behavior changed.** For every behavior or business rule that changes (what users see, what the system allows or rejects, how a value is calculated), record the old and new rule and why, with its source: the AC or requirement doc, the user's answer, the root cause, or the reviewer finding. A later reader must be able to tell a deliberate rule change from a bug.
 - Keep entries short. Point to full reports instead of pasting them. Never put secrets in it.
 
 ```markdown
 ## <YYYY-MM-DD HH:MM> · <agent> · phase <n> | — · done | stopped | waiting
 - Did: …
 - Decisions: <decision> — <source: user, ticket, plan, reviewer>
+- Behavior changes: <old rule>, now <new rule> — <why> — <source: AC, doc, user, root cause, reviewer>
+- Findings and fixes: <finding, with its source: reviewer, QA, security scan, specialist> — <fixed in <commit> | not fixed: why>
 - Deviations from plan: …
 - Open: findings, questions, follow-ups
 - Pending docs: files awaiting commit permission
