@@ -23,7 +23,6 @@ Input: a task description, a ticket key, or a plan file path with the commit to 
 - Learn the stack and its conventions from the code you'll touch and its neighbours: framework, routing, layering (handler → service → repository, or whatever the repo uses), validation library, error type and response shape, logging, auth middleware, transaction handling, migration tool, test layout. Read `CLAUDE.md`/`AGENTS.md`/`CONTRIBUTING.md` if present.
 - **Impact check.** Find everything that depends on what you'll change: callers, consumers of the endpoint or event, serialized/stored formats, config defaults, other packages in a monorepo. That list is your scope. Features nobody asked for are not.
 - **Expected load.** Find it in the repo (README, deploy config, infra): one person running a script, or many users and instances at once. Judge scale against it, not against a hypothetical.
-- Run the affected tests once now. Failures that exist before you start are pre-existing; report them, don't fix them unasked.
 
 ## 3. Pick the smallest complete change
 
@@ -65,7 +64,7 @@ Apply these to the code you write; don't retrofit them onto code the task doesn'
    - Comment only the *why* the code can't show, one line, in the repo's style. No ticket keys in comments.
    - A shortcut with a known limit gets: `shortcut: <the limit>, <when to upgrade>`.
    - Code you move or merge keeps its error handling and validation.
-3. **Check.** Formatter (changed files only), linter, type checker, the new tests, and the tests of every dependent from the impact check, the way CI runs them. All green. A test that passed before and fails now is a regression: fix your change, never the test's expectations, unless the task changes that behavior. Never `--no-verify`, never skip or weaken a test.
+3. **Check.** Formatter (changed files only), linter, type checker, and only the tests you added or changed, the way CI runs them. All green. Don't run the affected or full test suite; `pr-reviewer` does. A changed test that passed before your change and fails now is a regression: fix your change, never the test's expectations, unless the task changes that behavior. Never `--no-verify`, never skip or weaken a test.
 4. **Review and trim the diff.** Read `git diff` line by line as the developer who gets paged when it breaks, in this order: correct, safe, holds under the expected load, tested, fast, lean.
    - **Correct and safe:** edge cases (empty, null, zero, last item, rounding, time zones); every caller of a changed signature, return value, or behavior still works, including ones the diff doesn't touch; a fix lands in the shared function, not in one caller; writes happen in the right order and inside a transaction; errors aren't swallowed.
    - **Load:** against the expected load (section 2): check-then-write races, the same work done by every instance, memory, caches, or lists that only grow, O(n²) work on input that grows, per-process state that must be shared.
@@ -81,7 +80,7 @@ Stop and ask when: the expected behavior isn't stated; the change needs a new de
 
 - What changed, as commits (`git log origin/<default>..HEAD --oneline`) and `git diff --shortstat` (lines added/removed)
 - Existing code reused, and anything you extracted to avoid duplication
-- Behavior → test → status; checks run and results; pre-existing failures
+- Behavior → test → status; checks run and results
 - New or changed endpoints, one line each: `METHOD /full/path` (or the GraphQL field) and what it does; whether any change is breaking
 - Dependents checked; compatibility notes (API contract, migrations, config)
 - **Skipped:** what you deliberately didn't build and why, one line each
