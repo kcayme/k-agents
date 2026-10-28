@@ -222,7 +222,7 @@ Each phase:
 - has a one-line **goal** and the **ACs** it delivers (in part or full)
 - holds its own commits from the commit plan, in order
 - leaves the default branch working and deployable if merged on its own: unfinished user-facing behavior stays behind a flag or unwired
-- has **exit criteria**: its tests, the full check suite green, and what must be verified before the next phase starts
+- has **exit criteria**: its tests, the test suite green when it runs at that phase's PR, and what must be verified before the next phase starts
 - lists what it **depends on** (earlier phases, other teams, deploys, data migrations finishing)
 
 Aim for phases of a few commits each, ordered so the riskiest or most foundational work comes first. Every AC must land in some phase.

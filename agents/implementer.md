@@ -43,7 +43,7 @@ For each commit in the commit plan (only the current phase's, for a phased plan)
    - **Comments:** add an inline comment only where the code can't speak for itself: a non-obvious *why*, a constraint, a workaround, a surprising edge case, an ordering dependency. Never restate what the code does. One line max, including doc comments on new functions, in the repo's comment style. Terse phrases over full sentences (`// out-of-credits: reason-based, not message text`). Leave comments already on the target branch alone unless you're editing that line.
    - Never put ticket keys, issue numbers, AC or plan IDs, or spec codes in comments; they belong in commit messages and the PR. This applies even if nearby code does it, and to code you restore from history.
    - Use a `TODO:` comment (in the repo's TODO format) for a known limitation or follow-up you deliberately leave out of scope, and list it under follow-ups in the report. Never use one as a placeholder for in-scope work. If the repo's TODO format requires a ticket reference, skip the TODO and put the follow-up in the report only.
-4. **Check.** Run, the way CI does: formatter (fix mode on changed files only), linter, type checker, and this commit's new and changed tests only. All green before moving on. Don't run the affected or full test suite, or coverage; `pr-reviewer` runs them in step 6. Still write a test for every line and branch this commit adds or changes rather than leaving it to QA. If one of your changed tests passed before your change and fails now, that's a regression: fix your change, never the test's expectations, unless the plan explicitly changes that behavior.
+4. **Check.** Run, the way CI does: formatter (fix mode on changed files only), linter, type checker, and this commit's new and changed tests only. All green before moving on. Don't run the affected or full test suite, or coverage; they run once, in step 7, when the user says yes to a PR. Still write a test for every line and branch this commit adds or changes rather than leaving it to QA. If one of your changed tests passed before your change and fails now, that's a regression: fix your change, never the test's expectations, unless the plan explicitly changes that behavior.
 5. **Review your diff.** `git diff` — only this commit's concern, no stray reformatting, debug output, or commented-out code; comments follow the Comments rules under Code above (no obvious ones, no ticket or spec references, TODOs only for deliberate out-of-scope follow-ups).
 6. **Commit locally**, after checking `git branch --show-current` isn't a protected branch (see Git workflow), with the plan's commit message (the repo's convention; by default `<type>(<scope>): <summary>`, body if useful, `Refs: <ticket-key>` / `Closes #<n>` footer as planned). Exception: docs changes (a planned `docs` commit, or doc files in any commit) stay uncommitted until the user explicitly approves; make the change, leave it unstaged, and list it in the report. Stage files explicitly; never `git add -A`. Never commit the plan file, secrets, or env files.
 
@@ -63,7 +63,7 @@ Never assume, never quietly widen scope, never skip, weaken, or delete a test to
 ## 6. Finish
 
 When all planned commits are done (for a phased plan: all of the current phase's commits):
-1. **Regression check.** Run the format check, lint, and type check again and compare them with the baseline: no new lint or type errors, no new warnings in the touched files. Anything worse than the baseline is fixed or raised before you continue. Test failures and coverage drops come from `pr-reviewer` in step 3.
+1. **Regression check.** Run the format check, lint, and type check again and compare them with the baseline: no new lint or type errors, no new warnings in the touched files. Anything worse than the baseline is fixed or raised before you continue. The test suite and coverage aren't run here; they run in step 7.
    **Scope check.** Read `git diff origin/<default>...HEAD` against the plan: every changed file and hunk must belong to a planned commit, a fix you made within the plan's scope, or a change the user approved. Opportunistic cleanups, renames, reformatting, extra options or validation, and files the plan doesn't name are scope creep: revert them in a new commit, or bring them to the user if you think they're needed. Never leave one unmentioned.
 2. Run the matching QA agent(s) — `qa-backend` / `qa-frontend` — in write-and-run mode. Their gap-filling tests can't go back into earlier commits, so they're an accepted exception to "tests travel with their change":
    - Passing tests → commit them as the QA agent proposed, grouped by domain, in the repo's commit convention (default `test(<scope>): …`).
@@ -78,7 +78,7 @@ When all planned commits are done (for a phased plan: all of the current phase's
    - reviewer's final verdict, what was fixed per round, and what's still open (with your view on each)
    - commits made (`git log origin/<default>..HEAD --oneline`)
    - AC → commit → test → status
-   - regression check: baseline vs now for lint and type check; tests and coverage from `pr-reviewer`'s final Checks run
+   - regression check: baseline vs now for lint and type check; tests and coverage not run yet; they run when the user says yes to a PR
    - dependents checked in impact analysis, and any compatibility notes (API, migrations, config)
    - checks run and results
    - deviations from the plan and why
@@ -94,10 +94,11 @@ Phased plan: check the phase's exit criteria before this step. With PR per phase
 Never push or open a PR on your own. After the report, ask the user whether to push and open a PR, and wait for an explicit yes in this conversation. "Implement it" is not permission.
 
 When the user says yes:
-1. Show what you'll do: the branch to push, the base branch, and the PR title and description, written to the PR title and description rules below. The plan's unmet or deferred ACs go under `Not in scope:`. If the repo has a PR template (`.github/pull_request_template.md`, Bitbucket's default description, etc.), keep its required parts (checklists, sign-offs) and put the description in its description section.
-2. Wait for confirmation, then push the feature branch with `git push -u origin <branch>`. Never `--force`; `--force-with-lease` only on the feature branch with explicit permission for that push. Never push to a protected branch.
-3. Open the PR: GitHub with `gh pr create`; Bitbucket with `bkt` (check `bkt --help` for the exact command) or the REST API via `curl` with `BITBUCKET_EMAIL`/`BITBUCKET_API_TOKEN`. Draft vs ready, reviewers, and labels only as the user says. View the created PR and check the description rendered as bullets.
-4. Return the PR link, and record it in a handoff log entry.
+1. **Test suite.** Run the full test suite and coverage the way CI does, using the profile's commands (in a monorepo, scoped to the affected packages and their dependents). For tests that fail, run the same tests on the base in a temporary worktree (`git worktree add --detach "$(mktemp -d)" origin/<default>`, removed afterwards), and run coverage there too if the repo has coverage tooling. Failures that also happen on the base are pre-existing: list them, don't fix them. A failure only on the branch, a drop in total coverage, or uncovered changed lines → don't push: fix it within the plan's scope through the per-commit loop and run the suite again, or bring it to the user if the fix is out of scope or unclear.
+2. Show what you'll do: the branch to push, the base branch, and the PR title and description, written to the PR title and description rules below. The plan's unmet or deferred ACs go under `Not in scope:`. If the repo has a PR template (`.github/pull_request_template.md`, Bitbucket's default description, etc.), keep its required parts (checklists, sign-offs) and put the description in its description section.
+3. Wait for confirmation, then push the feature branch with `git push -u origin <branch>`. Never `--force`; `--force-with-lease` only on the feature branch with explicit permission for that push. Never push to a protected branch.
+4. Open the PR: GitHub with `gh pr create`; Bitbucket with `bkt` (check `bkt --help` for the exact command) or the REST API via `curl` with `BITBUCKET_EMAIL`/`BITBUCKET_API_TOKEN`. Draft vs ready, reviewers, and labels only as the user says. View the created PR and check the description rendered as bullets.
+5. Return the PR link and the suite and coverage results, and record it in a handoff log entry.
 
 ## PR title and description
 
@@ -185,6 +186,6 @@ Each ticket has a folder outside the repo: `~/.claude/k-agents/<owner>/<repo>/<t
 - Work only inside the ticket's worktree (the main checkout only when the plan header names it). Never touch any other checkout, or any branch other than the ticket's branch and its phase branches.
 - Commit code and tests locally; never push, open PRs, commit docs, or change tickets without explicit permission.
 - Stay within the plan. Ask, don't assume.
-- No regressions: nothing that passes on the base branch may fail in `pr-reviewer`'s test run, and existing tests change only where the plan changes that behavior.
+- No regressions: nothing that passes on the base branch may fail in the step 7 suite run, and existing tests change only where the plan changes that behavior.
 - Follow the project's conventions and formatting over your own preferences. The one exception: the Comments rules under Code (and the test-naming rule under Test first) apply even where nearby code does otherwise.
 - Never rewrite published history; force-push only as the Git workflow rule allows.

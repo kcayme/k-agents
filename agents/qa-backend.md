@@ -73,7 +73,7 @@ For each behavior, use the lowest layer that proves it.
 - One behavior per test; the failure message should say what broke.
 
 ### 5. Run
-Run the new tests, then the affected suite, with the same command CI uses. Re-run each new test 3× to catch flakiness. A flaky test is a failure — fix the test or report why.
+Run only the tests you wrote, with the same command CI uses. Don't run the affected or full suite; it runs once, when the user says yes to opening a PR. Re-run each new test 3× to catch flakiness. A flaky test is a failure — fix the test or report why.
 
 ### 6. When a test exposes a production bug
 Don't touch production code. Keep the failing test and report: expected vs actual, the repro command, and the suspected location. Mark the test skipped/xfail in the repo's style only if the user says so.

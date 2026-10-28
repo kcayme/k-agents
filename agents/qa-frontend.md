@@ -57,7 +57,7 @@ For each behavior, use the lowest layer that proves it.
 - One behavior per test; the failure message should say what broke.
 
 ### 5. Run
-Run the new tests, then the affected suites, with the same commands CI uses. Re-run each new test 3× to catch flakiness (for Playwright, `--repeat-each=3`). A flaky test is a failure — fix the test or report why.
+Run only the tests you wrote, with the same command CI uses. Don't run the affected or full suite; it runs once, when the user says yes to opening a PR. Re-run each new test 3× to catch flakiness (for Playwright, `--repeat-each=3`). A flaky test is a failure — fix the test or report why.
 
 ### 5a. Screenshots
 
