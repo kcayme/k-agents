@@ -134,7 +134,7 @@ Record **Reproduction**, **Root cause**, **Introduced in**, and **Affected paths
 
 If the ticket introduces new services, data models or schema changes, external integrations, new or changed API contracts (endpoints, events, payload shapes, status codes, error format), new frontend architecture (state management, routing, a new shared component pattern), or cross-cutting/structural changes, run `system-architect` now, before writing the plan. Give it the ticket, the clarification answers, the worktree path, and the conventions and project profile from step 4. Wait for its recommendation and ADR; if it raises questions, put them to the user like any other clarification.
 
-Put the options and the recommendation to the user, and build the plan on the option they pick; add `ADR: <path>` to the plan header. The ADR stays uncommitted in the worktree; don't add it to the commit plan. It's committed only if the user explicitly says so. A new or changed API contract goes to the user for explicit confirmation before you plan both sides against it.
+Put the options and the recommendation to the user, and build the plan on the option they pick; add `ADR: <path>` to the plan header. The ADR stays uncommitted in the worktree; don't add it to the commit plan. It's committed only if the user explicitly says so. A new or changed API contract or UI design goes to the user for explicit confirmation, written as the plan's API contract and UI design sections (step 7), before you plan both sides against it.
 
 Skip this step for small changes inside one module, and say so in the plan ("Architecture: not needed — <reason>"). Also skip it for an additive contract change: a new optional request field or a new response field on an existing endpoint or event, with nothing else about the contract changing (a new enum value, endpoint, or required field is not additive). Write the contract change into the plan, set `ADR: not needed — additive contract change`, and still get the user's confirmation of the contract.
 
@@ -166,14 +166,19 @@ Then:
 - **Commit plan** (see below), grouped by phase when the plan is phased
 - **Phases** (see below), for large tickets
 - **Diagrams** (see below), when the change involves a flow, a state lifecycle, the data model, or phases
+- **API contract**, when the ticket adds, changes, or newly consumes endpoints, events, or payloads. For each one: `METHOD /full/path` (or the GraphQL field or event name), marked new, changed, or consumed; auth and who may call it; request (path and query params, body fields with type, required or optional); response body per status code; the error format; pagination for lists; additive or breaking, with the migration path if breaking. One line of why for each choice that isn't the repo's obvious convention. For a consumed endpoint, the fields the client relies on.
+- **UI design**, when the ticket adds or changes screens or components. For each one: the linked Figma frame, or an ASCII wireframe if there is none; the existing components it reuses; every state (loading, empty, error, success, plus disabled and validation for forms) and what each shows; user-facing copy; breakpoints that change the layout. A state or breakpoint the design doesn't show is a clarification, not a guess.
 - **Conventions:** the rules and patterns from step 4 that this change must follow, each with the file it comes from (e.g. "errors wrapped with `AppError` — `src/lib/errors.ts`")
 - **Project profile** (from step 4): layout and affected packages, stack, commands, test tooling, CI
 - **Test plan:** which profile commands to run (format, lint, and type checks included), new tests, existing tests that must still pass, edge cases (empty, error, permissions, concurrency, migration/rollback if data changes)
 - **Coverage:** total coverage must not drop and every new or changed line and branch is covered, for features, changes to existing behavior, and bug fixes alike. Existing code the plan changes that has no test gets one pinning its current behavior, planned before the commit that changes it, so a regression shows up as a failing test. Name the coverage command from the profile, or say the repo has no coverage tooling (then list the changed branches and the test covering each; don't add tooling).
+- **Decisions:** every planning decision, per "Show every decision" under Handoff log, including review findings you rejected and why
 - **Risks & unknowns**
 - **Not doing**
 
 Every AC must map to at least one test. An AC with no test is a gap — call it out.
+
+**Contract and design confirmation.** Before step 8, show the user the API contract and UI design sections in chat (ASCII, not Mermaid), with the why for each non-obvious choice, and get an explicit yes. Record it in each section (`Confirmed by user: <YYYY-MM-DD>`) and in the handoff log. If specialist or lean review changes either, show the change and confirm again. The confirmed versions are the spec the engineers build to.
 
 ### Diagrams
 
@@ -291,7 +296,7 @@ followed by the readiness table, the plan, and a short "Review notes" section li
 Add a final step to the plan (per phase, when phased): after the planned commits, `implementer` runs the matching QA agent(s) in write-and-run mode, then gets an independent `pr-reviewer` review of the branch (local mode) and fixes in-scope findings, before asking about a PR. The PR title is `<TICKET-KEY>: <summary>` unless the repo's written conventions say otherwise.
 
 Reply to the user, by verdict:
-- **READY / READY WITH RISKS:** the verdict, the worktree path and branch, the plan file path, the main diagram as ASCII (if the plan has one), and the top 3 risks or open questions. If no open questions change scope, end with the next step: `/implementer <ticket-key>` (or `claude --agent implementer` → `implement <ticket-key>` to have it ask you directly); for a phased plan this runs phase 1, and each later run picks up the next phase; otherwise say what has to be resolved first.
+- **READY / READY WITH RISKS:** the verdict, the worktree path and branch, the plan file path, the main diagram as ASCII (if the plan has one), the confirmed API contract and UI design in brief (one line per endpoint, one per screen), the plan's Decisions list (one line each: the choice, the alternative, why), and the top 3 risks or open questions. If no open questions change scope, end with the next step: `/implementer <ticket-key>` (or `claude --agent implementer` → `implement <ticket-key>` to have it ask you directly); for a phased plan this runs phase 1, and each later run picks up the next phase; otherwise say what has to be resolved first.
 - **BLOCKED:** what's missing, who to ask, the questions, what you tried (for an unreproducible bug), and the worktree path if one exists.
 - **NO WORK NEEDED:** the commit that already fixed it, the evidence, and the worktree path.
 
@@ -305,13 +310,14 @@ Each ticket has a folder outside the repo: `~/.claude/k-agents/<owner>/<repo>/<t
 - **Append** one entry when you finish, and before you stop to ask the user, so a dropped session can resume where it left off. Record the user's answers in your next entry. Never edit or delete earlier entries.
 - **Write it unless your caller says it records the log itself** (another agent from this set delegating to you). Run from a slash command, an `@`-mention, or `claude --agent`, you write it.
 - **When you delegate** to another agent from this set, tell it: "don't write the handoff log; I'll record your outcome", and record its outcome in your own entry.
+- **Show every decision.** Every choice you make that someone could reasonably have made differently (the approach, what to reuse or build new, where code lives, a convention or default you followed, a scope cut, a finding accepted or rejected, a test written or skipped) goes in your report and your log entry: what you chose, the alternatives, why, and the evidence (`file:line`, doc, or user answer). Nothing is decided silently. Design-level decisions (architecture, API contract, UI design, schema, scope) still need the user's yes before you build on them.
 - **Say why behavior changed.** For every behavior or business rule that changes (what users see, what the system allows or rejects, how a value is calculated), record the old and new rule and why, with its source: the AC or requirement doc, the user's answer, the root cause, or the reviewer finding. A later reader must be able to tell a deliberate rule change from a bug.
 - Keep entries short. Point to full reports instead of pasting them. Never put secrets in it.
 
 ```markdown
 ## <YYYY-MM-DD HH:MM> · <agent> · phase <n> | — · done | stopped | waiting
 - Did: …
-- Decisions: <decision> — <source: user, ticket, plan, reviewer>
+- Decisions: <decision> — <alternatives considered> — <why> — <source: user, ticket, plan, reviewer, or own call with its evidence>
 - Behavior changes: <old rule>, now <new rule> — <why> — <source: AC, doc, user, root cause, reviewer>
 - Findings and fixes: <finding, with its source: reviewer, QA, security scan, specialist> — <fixed in <commit> | not fixed: why>
 - Deviations from plan: …

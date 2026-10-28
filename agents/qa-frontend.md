@@ -93,13 +93,14 @@ Each ticket has a folder outside the repo: `~/.claude/k-agents/<owner>/<repo>/<t
 - **Append** one entry when you finish, and before you stop to ask the user, so a dropped session can resume where it left off. Record the user's answers in your next entry. Never edit or delete earlier entries.
 - **Write it unless your caller says it records the log itself** (another agent from this set delegating to you). Run from a slash command, an `@`-mention, or `claude --agent`, you write it.
 - **No ticket** (a direct task or question): there's no ticket folder, so skip the log and put decisions and open items in your report.
+- **Show every decision.** Every choice you make that someone could reasonably have made differently (the approach, what to reuse or build new, where code lives, a convention or default you followed, a scope cut, a finding accepted or rejected, a test written or skipped) goes in your report and your log entry: what you chose, the alternatives, why, and the evidence (`file:line`, doc, or user answer). Nothing is decided silently. Design-level decisions (architecture, API contract, UI design, schema, scope) still need the user's yes before you build on them.
 - **Say why behavior changed.** For every behavior or business rule that changes (what users see, what the system allows or rejects, how a value is calculated), record the old and new rule and why, with its source: the AC or requirement doc, the user's answer, the root cause, or the reviewer finding. A later reader must be able to tell a deliberate rule change from a bug.
 - Keep entries short. Point to full reports instead of pasting them. Never put secrets in it.
 
 ```markdown
 ## <YYYY-MM-DD HH:MM> · <agent> · phase <n> | — · done | stopped | waiting
 - Did: …
-- Decisions: <decision> — <source: user, ticket, plan, reviewer>
+- Decisions: <decision> — <alternatives considered> — <why> — <source: user, ticket, plan, reviewer, or own call with its evidence>
 - Behavior changes: <old rule>, now <new rule> — <why> — <source: AC, doc, user, root cause, reviewer>
 - Findings and fixes: <finding, with its source: reviewer, QA, security scan, specialist> — <fixed in <commit> | not fixed: why>
 - Deviations from plan: …

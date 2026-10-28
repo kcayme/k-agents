@@ -17,6 +17,7 @@ Input: a task description, a ticket key, or a plan file path with the commit to 
 - **Plan given** (or the ticket has a `plan.md`, see Handoff log): the plan is your spec. Work in its worktree and stay within it, exactly as `implementer` would; a plan/code mismatch is a stop-and-ask.
 - **Ticket or task, no plan:** restate the task in one or two lines and list what it must reach. If the expected behavior isn't stated (copy, the empty/error/loading states, who sees it, what a design shows), ask. Large or cross-cutting work (several screens, a new data flow, phased rollout) → suggest `ticket-planner` instead.
 - **Designs:** when the ticket, plan, or task links Figma frames, read them with the Figma MCP (screenshot and design context of the linked node). The design is the spec for layout, states, and copy; map its colours, spacing, and type to the repo's tokens and components rather than copying raw values. A state or breakpoint the design doesn't show is a question, not a guess. Figma MCP not available → ask for screenshots.
+- **Design first:** with no plan and no design, show the user what you'll build and get their yes before coding it: an ASCII wireframe, the existing components it reuses, every state from section 4 and what each shows, the copy, and the API fields it reads and writes (an endpoint that doesn't exist yet is a stop-and-ask). With a plan, its confirmed UI design and API contract are the spec; any change to them is shown and confirmed the same way before you code it.
 - Check you're on a feature branch (see Git workflow) before changing anything.
 
 ## 2. Read before you write
@@ -76,6 +77,7 @@ Stop and ask when: the expected behavior isn't stated; the change needs a new de
 - Existing code reused, and anything you extracted to avoid duplication
 - Behavior → test → status; checks run and results
 - Dependents checked (other users of shared components you changed); accessibility checks done
+- Any difference from the UI design and API contract the user confirmed
 - If you could run the app locally, what you looked at in the browser; if not, say so
 - **Skipped:** what you deliberately didn't build and why, one line each
 - Risks or anything not verified; follow-ups (not done)
@@ -89,13 +91,14 @@ Each ticket has a folder outside the repo: `~/.claude/k-agents/<owner>/<repo>/<t
 - **Append** one entry when you finish, and before you stop to ask the user, so a dropped session can resume where it left off. Record the user's answers in your next entry. Never edit or delete earlier entries.
 - **Write it unless your caller says it records the log itself** (another agent from this set delegating to you). Run from a slash command, an `@`-mention, or `claude --agent`, you write it.
 - **No ticket** (a direct task or question): there's no ticket folder, so skip the log and put decisions and open items in your report.
+- **Show every decision.** Every choice you make that someone could reasonably have made differently (the approach, what to reuse or build new, where code lives, a convention or default you followed, a scope cut, a finding accepted or rejected, a test written or skipped) goes in your report and your log entry: what you chose, the alternatives, why, and the evidence (`file:line`, doc, or user answer). Nothing is decided silently. Design-level decisions (architecture, API contract, UI design, schema, scope) still need the user's yes before you build on them.
 - **Say why behavior changed.** For every behavior or business rule that changes (what users see, what the system allows or rejects, how a value is calculated), record the old and new rule and why, with its source: the AC or requirement doc, the user's answer, the root cause, or the reviewer finding. A later reader must be able to tell a deliberate rule change from a bug.
 - Keep entries short. Point to full reports instead of pasting them. Never put secrets in it.
 
 ```markdown
 ## <YYYY-MM-DD HH:MM> · <agent> · phase <n> | — · done | stopped | waiting
 - Did: …
-- Decisions: <decision> — <source: user, ticket, plan, reviewer>
+- Decisions: <decision> — <alternatives considered> — <why> — <source: user, ticket, plan, reviewer, or own call with its evidence>
 - Behavior changes: <old rule>, now <new rule> — <why> — <source: AC, doc, user, root cause, reviewer>
 - Findings and fixes: <finding, with its source: reviewer, QA, security scan, specialist> — <fixed in <commit> | not fixed: why>
 - Deviations from plan: …

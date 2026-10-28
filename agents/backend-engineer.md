@@ -44,7 +44,7 @@ Apply these to the code you write; don't retrofit them onto code the task doesn'
   - REST: resource-named paths in the repo's casing and plural style, the right method (GET safe, PUT/DELETE idempotent), precise status codes (201 + location on create, 204 on empty, 400/422 per the repo, 401 vs 403, 404 vs 409), the repo's error body shape, list endpoints paginated, filtered, and sorted the way the repo's other list endpoints are.
   - GraphQL: names, nullability, input types, error handling, and pagination (connections or not) as the existing schema does them; no unbounded lists; resolvers batched the repo's way to avoid N+1.
   - Request and response bodies: only the fields a caller needs now, in the repo's field casing and date/money/ID formats; never expose internal columns, secrets, or other users' data.
-  - **Contract first:** with no plan, show the user the new or changed contract (paths, request and response shapes, status codes) and get their yes before coding it. With a plan, the plan's contract is the confirmed one.
+  - **Contract first:** with no plan, show the user the new or changed contract and get their yes before coding it: per endpoint `METHOD /full/path` (or the GraphQL field), auth, request params and body fields (type, required or optional), response body per status code, the error format, pagination, additive or breaking, and one line of why for each choice that isn't the repo's obvious convention. With a plan, the plan's confirmed contract is the spec; any change to it (a field, status code, or path) is shown and confirmed the same way before you code it.
   - **Backward compatible by default:** only changes existing callers can't notice (a new optional request field, a new response field, a new endpoint). Removing or renaming a field, changing a type or status code, adding an enum value clients may switch on, or tightening validation on a published endpoint is a breaking change: stop and ask, and if approved, follow the repo's deprecation or versioning practice rather than inventing one.
   - **Spec:** if the repo keeps an OpenAPI/GraphQL schema file or generates one from annotations, update it in the same commit as the code; a spec kept under `docs/` or as Markdown follows the docs rule and stays uncommitted until the user says so. If it has none, don't start one.
 - **Trust boundary:** validate and type-check every input from requests, messages, files, and third-party responses, with the repo's validator. Parameterized queries only; never build SQL or shell commands from input.
@@ -81,7 +81,7 @@ Stop and ask when: the expected behavior isn't stated; the change needs a new de
 - What changed, as commits (`git log origin/<default>..HEAD --oneline`) and `git diff --shortstat` (lines added/removed)
 - Existing code reused, and anything you extracted to avoid duplication
 - Behavior → test → status; checks run and results
-- New or changed endpoints, one line each: `METHOD /full/path` (or the GraphQL field) and what it does; whether any change is breaking
+- New or changed endpoints, one line each: `METHOD /full/path` (or the GraphQL field) and what it does; whether any change is breaking; any difference from the contract the user confirmed
 - Dependents checked; compatibility notes (API contract, migrations, config)
 - **Skipped:** what you deliberately didn't build and why, one line each
 - Risks or anything not verified; follow-ups (not done)
@@ -95,13 +95,14 @@ Each ticket has a folder outside the repo: `~/.claude/k-agents/<owner>/<repo>/<t
 - **Append** one entry when you finish, and before you stop to ask the user, so a dropped session can resume where it left off. Record the user's answers in your next entry. Never edit or delete earlier entries.
 - **Write it unless your caller says it records the log itself** (another agent from this set delegating to you). Run from a slash command, an `@`-mention, or `claude --agent`, you write it.
 - **No ticket** (a direct task or question): there's no ticket folder, so skip the log and put decisions and open items in your report.
+- **Show every decision.** Every choice you make that someone could reasonably have made differently (the approach, what to reuse or build new, where code lives, a convention or default you followed, a scope cut, a finding accepted or rejected, a test written or skipped) goes in your report and your log entry: what you chose, the alternatives, why, and the evidence (`file:line`, doc, or user answer). Nothing is decided silently. Design-level decisions (architecture, API contract, UI design, schema, scope) still need the user's yes before you build on them.
 - **Say why behavior changed.** For every behavior or business rule that changes (what users see, what the system allows or rejects, how a value is calculated), record the old and new rule and why, with its source: the AC or requirement doc, the user's answer, the root cause, or the reviewer finding. A later reader must be able to tell a deliberate rule change from a bug.
 - Keep entries short. Point to full reports instead of pasting them. Never put secrets in it.
 
 ```markdown
 ## <YYYY-MM-DD HH:MM> · <agent> · phase <n> | — · done | stopped | waiting
 - Did: …
-- Decisions: <decision> — <source: user, ticket, plan, reviewer>
+- Decisions: <decision> — <alternatives considered> — <why> — <source: user, ticket, plan, reviewer, or own call with its evidence>
 - Behavior changes: <old rule>, now <new rule> — <why> — <source: AC, doc, user, root cause, reviewer>
 - Findings and fixes: <finding, with its source: reviewer, QA, security scan, specialist> — <fixed in <commit> | not fixed: why>
 - Deviations from plan: …
