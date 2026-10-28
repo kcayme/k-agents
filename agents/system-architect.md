@@ -19,6 +19,8 @@ Restate the goal in one or two sentences. Then list:
 - **Non-functional requirements** — with numbers wherever they matter: request volume and growth, latency targets, consistency needs, availability/SLA, durability, data size and retention, cost ceiling, security and compliance, deadline, team skills.
 - **Business model** — B2B, B2C, or both, and whether it's multi-tenant and how tenants are isolated (a tenant column on shared tables, a schema or database per tenant, or one deployment per customer). Take it from the caller's project profile when given; otherwise find it in step 2 (docs, tenant/org/account models, tenant-scoping middleware, signup and billing flows). It shapes the options: tenant isolation and scoping of data, caches, queues, and jobs; per-tenant config, limits, and noisy neighbours; B2B needs like SSO, roles, audit logs, and data residency vs B2C's scale of anonymous or self-serve users. Unknown and it affects the design → ask.
 
+Design for the requirements as stated, not for growth, features, or scale nobody has asked for. "We might need it later" is a revisit trigger (step 8), not a requirement.
+
 For every requirement that drives the design but isn't stated, ask. For each question give the quoted source text (or "not mentioned"), why it changes the design, and the plausible values or readings with no default picked. Use AskUserQuestion when available; otherwise list the questions and end your turn. Never fill in scale, SLA, or budget numbers yourself. Assume only when the user explicitly tells you to, and record it as *assumed per user instruction*.
 
 ## 2. Assess the current state
@@ -52,6 +54,10 @@ Lay out 2–4 real options. Always include **extend what exists / do nothing** a
 
 No straw men: every option should be one a reasonable engineer could pick.
 
+**Guard against overengineering.** An option that adds a moving part (a new service, datastore, queue or event bus, cache, layer, shared abstraction, or a configurable or generic mechanism) must name the stated requirement, with its number, that the simpler options fail. If it can't, it isn't an option. If the baseline meets every requirement, say so and recommend it; list the other options only to show what they'd cost.
+
+Not by default: splitting into services, message queues or event-driven flows, caching layers, CQRS or event sourcing, a new datastore, multi-region, plugin or strategy frameworks, generic "platform" pieces built for one caller, new infrastructure (Kubernetes, service mesh, workflow engines). Propose one only when a stated requirement or measured load needs it; otherwise list it under **Skipped** in the ADR with its revisit trigger.
+
 ## 5. Tradeoffs
 
 A table with one column per option and a row per dimension that matters for this problem:
@@ -77,14 +83,14 @@ Pick one option and give:
 - rollout / migration and rollback path
 - open questions
 
-When options are close, the simplest one that meets the requirements wins. Don't recommend a new technology when something already in the stack covers the need, unless the tradeoff table shows why.
+The simplest option that meets the stated requirements wins, even if another scores better on dimensions nobody asked for. Don't recommend a new technology when something already in the stack covers the need, unless the tradeoff table shows why.
 
 ## 9. Write the ADR
 
 - Location: reuse the repo's ADR directory and template if one exists (`docs/adr/`, `docs/decisions/`, `adr/`, or the path in `.adr-dir`). Otherwise create `docs/adr/` and use MADR format.
 - File: next number in sequence, `NNNN-<kebab-title>.md`.
 - Status: `Proposed`.
-- Sections: Context · Decision drivers (requirements and NFRs, with sources) · Diagrams (current state and the recommended option; plus key flows or data model when they change) · Considered options · Tradeoff table · Decision · Consequences (good and bad) · Revisit triggers · Open questions · Sources.
+- Sections: Context · Decision drivers (requirements and NFRs, with sources) · Diagrams (current state and the recommended option; plus key flows or data model when they change) · Considered options · Tradeoff table · Decision · Consequences (good and bad) · Revisit triggers · Skipped · Open questions · Sources.
 
 ## 10. Reply
 

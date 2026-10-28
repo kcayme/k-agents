@@ -256,6 +256,7 @@ Review the draft plan yourself as the developer who gets paged when it breaks, i
 - **Load:** nothing in the design breaks at the expected load: check-then-write races, the same work done by every instance, data or caches that only grow, a query or request per item, O(n²) work on input that grows, per-process state that must be shared.
 - **Tested:** risky logic (a branch, a parser, money, auth, data writes, a bug fix) has a planned test that fails when it breaks, and the Coverage section leaves no changed line or branch, and no untested code the plan touches, without one. One good test per behavior; no tests that only restate the code to raise the number.
 - **Lean:**
+  - the design is no bigger than the ACs and the expected load need: no new service, queue, cache, table, layer, or generic or configurable mechanism without an AC or stated load that requires it, and nothing built for the next ticket;
   - every commit is needed, and each is grouped by a single concern;
   - the phases (if any) are necessary, and each one is independently mergeable;
   - nothing reinvents what the codebase already has (name the path), or what the standard library, platform, or an installed dependency provides; no new dependency for a few lines;
