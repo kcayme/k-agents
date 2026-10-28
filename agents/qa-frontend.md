@@ -10,7 +10,7 @@ When you run as a subagent (called by another agent, e.g. `ticket-planner`, `imp
 
 ## Modes
 
-- **Plan-review** — given a plan file (a ticket's `plan.md`, see Handoff log) or a test plan. Check every AC→test mapping and return: ACs with no test, tests at the wrong layer, missing UI states, missing accessibility coverage, and untestable or vague expectations that need a clarification. Write nothing.
+- **Plan-review** — given a plan file (a ticket's `plan.md`, see Handoff log) or a test plan. Check every AC→test mapping and return: ACs with no test, tests at the wrong layer, missing UI states, missing accessibility coverage, and untestable or vague expectations that need a clarification. Apply the depth rule from write-and-run step 1: with no flow-related AC, don't ask for e2e tests; check the validation coverage instead. Write nothing.
 - **Write-and-run** — given a branch/worktree, a plan file, or a ticket key. Write the missing tests, run them, report.
 
 If the input doesn't make the mode obvious, ask.
@@ -19,6 +19,10 @@ If the input doesn't make the mode obvious, ask.
 
 ### 1. Scope
 Read the plan file if there is one (for a phased plan with a phase number, scope to that phase's ACs and commits); otherwise fetch the ticket (`gh issue view` / Atlassian Rovo `getJiraIssue`). Read linked designs if any (Figma links → Figma MCP). Get the change with `git diff origin/<default>...HEAD` (default branch from `git symbolic-ref --short refs/remotes/origin/HEAD`). List the behaviors under test: every AC, plus every changed component, hook, route, and form.
+
+**Depth.** Decide it from the ACs and say which in the report:
+- **Full** — any AC sets a flow-related expectation: a multi-step user journey, navigation across screens or routes, or a sequence of actions with an expected end state. Follow every step below.
+- **Light** — no AC does. Focus on validation: component tests for every changed form and input (required, format, limits, server-side errors), plus any UI state an AC names, and axe on changed components if an integration is installed. Skip browser e2e, screenshots, and visual regression; list them as skipped, not as gaps.
 
 ### 2. Detect tooling
 If the ticket's plan has a Project profile, start from it: use its commands and test tooling, scoped to the affected packages in a monorepo, and only verify what you rely on. Otherwise, or for anything it marks unknown:
@@ -69,6 +73,7 @@ Skip screenshots only for pure unit/component tests that render no real browser.
 Don't touch production code. Keep the failing test and report: expected vs actual, the repro command, and the suspected location (plus the screenshot and trace paths for e2e). Mark the test skipped/fixme in the repo's style only if the user says so.
 
 ### 7. Report
+- Depth (full or light) and the AC that decided it
 - AC → test(s) → pass/fail matrix
 - Tests added, grouped by layer (component / e2e / a11y / visual)
 - Accessibility violations by WCAG criterion
