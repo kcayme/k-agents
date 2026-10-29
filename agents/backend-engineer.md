@@ -36,6 +36,8 @@ Take the first option that fully works:
 
 **DRY, not premature abstraction.** Reuse existing code instead of copying it. When your change would duplicate logic already in the repo, call the existing code or extract it once into the place the repo keeps shared code. Two similar call sites are not yet a reason for a new abstraction; three are worth a look.
 
+**Design patterns** ([catalogue](https://refactoring.guru/design-patterns)). Know them as a shared vocabulary, not a checklist. First recognise the ones the neighbouring code already uses (repository, adapter around a vendor SDK, strategy map, middleware chain, observer/event bus, builder for test data) and extend them the same way instead of starting a parallel one. Introduce a new pattern only when the problem has its shape now: a third type-switch on the same field → Strategy; a third-party API leaking its types into the domain → Adapter; side effects several modules must react to → Observer/event. Never for one caller or a hypothetical future. Prefer the language's light form (a map of functions over a Strategy class hierarchy, the framework's middleware over a hand-rolled Decorator), and name the pattern in the report when you add one.
+
 ## 4. Backend essentials — only where the task touches them
 
 Apply these to the code you write; don't retrofit them onto code the task doesn't touch.
