@@ -2,36 +2,15 @@
 
 Handy agents for effective, secured, and quality full-stack development, with you, the developer, as captain: the agents do the legwork and surface the tradeoffs, and every decision that shapes the work stays yours.
 
-**Workflow and your approvals**
-
 ```mermaid
 flowchart LR
-    T([Ticket]) --> TP[ticket-planner] --> IM[implementer] -->|push + PR, only when you say so| PR([PR]) --> RV[pr-reviewer]
-    IM -.->|independent review, before PR| RV
-    TP -.->|confirmed contract + UI design| RV
-
-    TP ==>|API contract + UI design: your yes| U([You])
-    SA[system-architect] ==>|options + recommendation: your pick| U
-    BE[backend-engineer / frontend-engineer] ==>|contract / wireframe when there's no plan: your yes| U
+    T([Ticket]) --> TP[ticket-planner] -->|you approve contract + UI design| IM[implementer] --> RV[pr-reviewer] -->|you OK the push| PR([PR])
+    TP -.->|design, research, schema| SP[system-architect<br/>tech-researcher<br/>database-engineer]
+    IM -.->|test gaps| QA[qa-backend<br/>qa-frontend]
+    RV -.->|security| SS[security-scanner]
 ```
 
-Every agent shows its decisions with their reasons, and asks questions with a small diagram when a picture explains it faster.
-
-**Specialists, called when needed**
-
-```mermaid
-flowchart LR
-    TP[ticket-planner] -->|design-heavy tickets| SA[system-architect]
-    TP -->|unfamiliar tools / standards| TR[tech-researcher]
-    TP -->|schema / migrations| DB[database-engineer]
-    TP -->|test plan review| QA[qa-backend / qa-frontend]
-    SA --> TR
-    SA --> DB
-    IM[implementer] -->|fill test gaps| QA
-    BE[backend-engineer / frontend-engineer] -->|fill test gaps| QA
-    RV[pr-reviewer] -->|test plan review, large PRs| QA
-    RV -->|security scan| SS[security-scanner]
-```
+Solid arrows are the main path; dotted ones are specialists called when needed. Every decision is shown with its reasons, and questions come with a small diagram when that's clearer. `backend-engineer` and `frontend-engineer` handle smaller work without a plan, and show you the contract or wireframe first.
 
 ## Agents
 
