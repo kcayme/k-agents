@@ -7,6 +7,7 @@ flowchart LR
     T([Ticket]) --> TP[ticket-planner] -->|you approve contract + UI design| IM[implementer] --> RV[pr-reviewer] -->|you OK the push| PR([PR])
     TP -.->|design, research, schema| SP[system-architect<br/>tech-researcher<br/>database-engineer]
     IM -.->|test gaps| QA[qa-backend<br/>qa-frontend]
+    IM -.->|missing facts| RS[tech-researcher<br/>domain-researcher]
     RV -.->|security| SS[security-scanner]
 ```
 
@@ -17,6 +18,7 @@ flowchart LR
 | `ticket-planner` | Checks a ticket is ready, asks about anything unclear, reproduces bugs to their root cause, creates the ticket's branch in a separate worktree or the main checkout (your choice), and writes a plan (project profile, phases, commits, tests, diagrams), monorepo-aware. | Opus |
 | `system-architect` | Compares design options on explicit tradeoffs and records the recommendation in an ADR. | Opus |
 | `tech-researcher` | Researches docs, third-party service integrations, known solutions, and standards for your stack, with every claim cited. | Sonnet |
+| `domain-researcher` | Researches business rules, domain terms, workflows, and regulations, and how your code already models them, with every claim cited. Implementer and the engineers call it, or `tech-researcher`, only when a task is heavy, has many gaps, or needs real research; small gaps they settle from the code and docs or ask you. | Sonnet |
 | `implementer` | Implements the plan commit by commit, test first, guarding against regressions; pushes or opens a PR only when you say so. | Opus |
 | `backend-engineer` | Builds or changes backend code (API design and endpoints, data access, migrations, jobs) from a task, ticket, or plan commit, with ponytail's YAGNI/DRY discipline: reuses what the repo has and the design patterns it already uses, skips what nobody asked for, and reports lines added. | Opus |
 | `frontend-engineer` | Builds or changes frontend code (components, pages, forms, state, API calls) from a task, ticket, or plan commit, with the same ponytail discipline: the repo's design system and native elements first, every UI state and accessibility covered, nothing nobody asked for. | Opus |
