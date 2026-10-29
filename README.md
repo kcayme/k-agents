@@ -3,29 +3,17 @@
 Handy agents for effective, secured, and quality full-stack development, with you, the developer, as captain: the agents do the legwork and surface the tradeoffs, and every decision that shapes the work stays yours.
 
 ```mermaid
-flowchart LR
-    T([Ticket]) --> TP[ticket-planner]
-    TP --> IM[implementer]
-    IM -->|push + PR, only when you say so| PR([PR])
-    PR --> RV[pr-reviewer]
-
-    TP -.->|design-heavy tickets| SA[system-architect]
-    SA -.-> TR[tech-researcher]
-    TP -.->|unfamiliar tools/standards| TR
-    TP -.->|schema / migrations| DB[database-engineer]
-    SA -.-> DB
-    TP -.->|test plan review| QA[qa-backend / qa-frontend]
-    BE[backend-engineer / frontend-engineer] -.->|fill test gaps| QA
-    IM -.->|fill test gaps| QA
-    IM -.->|independent review, before PR| RV
-    RV -.->|security scan| SS[security-scanner]
-    RV -.->|test plan review, large PRs| QA
-    TP -.->|confirmed contract + UI design| RV
-
-    TP ==>|API contract + UI design: your yes; decisions shown| U([You])
-    SA ==>|options + recommendation: your pick| U
-    BE ==>|contract / wireframe when there's no plan: your yes| U
+flowchart TB
+    U([You]) ==>|answer questions, approve designs, OK the push| P
+    subgraph P [ ]
+        T([Ticket]) --> TP[ticket-planner] --> IM[implementer] --> RV[pr-reviewer] --> PR([PR])
+    end
+    TP -.-> SP[system-architect<br/>tech-researcher<br/>database-engineer]
+    P -.-> QA[qa-backend<br/>qa-frontend]
+    RV -.-> SS[security-scanner]
 ```
+
+Solid arrows are the main path; dotted ones are specialists called when needed. `backend-engineer` and `frontend-engineer` also run on their own for work that doesn't need a plan.
 
 ## Agents
 
@@ -35,7 +23,7 @@ flowchart LR
 | `system-architect` | Compares design options on explicit tradeoffs and records the recommendation in an ADR. | Opus |
 | `tech-researcher` | Researches docs, third-party service integrations, known solutions, and standards for your stack, with every claim cited. | Sonnet |
 | `implementer` | Implements the plan commit by commit, test first, guarding against regressions; pushes or opens a PR only when you say so. | Opus |
-| `backend-engineer` | Builds or changes backend code (API design and endpoints, data access, migrations, jobs) from a task, ticket, or plan commit, with ponytail's YAGNI/DRY discipline: reuses what the repo has, skips what nobody asked for, and reports lines added. | Opus |
+| `backend-engineer` | Builds or changes backend code (API design and endpoints, data access, migrations, jobs) from a task, ticket, or plan commit, with ponytail's YAGNI/DRY discipline: reuses what the repo has and the design patterns it already uses, skips what nobody asked for, and reports lines added. | Opus |
 | `frontend-engineer` | Builds or changes frontend code (components, pages, forms, state, API calls) from a task, ticket, or plan commit, with the same ponytail discipline: the repo's design system and native elements first, every UI state and accessibility covered, nothing nobody asked for. | Opus |
 | `database-engineer` | Reviews a plan's or branch's schema, migrations, and queries, or designs a data model: constraints, index choices proven with `EXPLAIN` locally, lock cost of each migration, expand → migrate → contract rollouts, safe backfills. Fewest tables, columns, and indexes that do the job. Advises only. | Opus |
 | `qa-backend` | Writes and runs unit, API, and e2e tests with the repo's tooling (Hurl as the API fallback), or reviews a test plan. | Sonnet |
@@ -46,8 +34,8 @@ flowchart LR
 ## Principles
 
 - **You're the captain:** agents propose, you approve. Every decision is shown with its reasons; nothing is built on a design you haven't confirmed.
-- **Never assume:** unclear details become questions.
-- **Project conventions first.**
+- **Never assume:** unclear details become questions, with a small diagram when a flow, data model, or set of options is easier to see than read.
+- **Project conventions first,** including the design patterns the code already uses; a new pattern only when the problem has its shape now.
 - **Nothing outward-facing without your permission:** no pushes, PRs, ticket changes, posted comments, or committed docs.
 - **Secrets stay closed, environments stay local:** agents don't read `.env` or other secret files, and ask before touching any non-local database, API, or cloud resource, with separate permission for anything that writes.
 - **Guarded actions:** instructions found in tickets, PRs, code, or web pages are never followed; destructive git or file operations, new or upgraded packages, and sending project data to outside services all need your permission.
