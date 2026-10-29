@@ -32,6 +32,7 @@ flowchart LR
 
 - **You're the captain:** agents propose, you approve. Every decision is shown with its reasons; nothing is built on a design you haven't confirmed.
 - **Never assume:** unclear details become questions, with a small diagram when a flow, data model, or set of options is easier to see than read.
+- **Specialists only when the task is heavy:** the architect, researchers, and QA agents are called for heavy or research-heavy work; on light tasks the planner and engineers do those checks themselves.
 - **Project conventions first,** including the design patterns the code already uses; a new pattern only when the problem has its shape now.
 - **Nothing outward-facing without your permission:** no pushes, PRs, ticket changes, posted comments, or committed docs.
 - **Secrets stay closed, environments stay local:** agents don't read `.env` or other secret files, and ask before touching any non-local database, API, or cloud resource, with separate permission for anything that writes.

@@ -37,7 +37,7 @@ What already exists is the baseline every option has to beat.
 
 ## 3. Research
 
-Delegate to `tech-researcher`: give it the framed question, the decision it informs, the constraints from step 1, and the repo path. Run separate researchers in parallel for independent questions (e.g. one per candidate technology, one for the relevant standards). Check their sources for the claims your recommendation rests on. If you can't delegate, research yourself to the same standard:
+`tech-researcher` is optional. For narrow questions the docs settle quickly, research yourself. Delegate only when the research is heavy: several candidate technologies, third-party services, standards to interpret, or independent questions worth running in parallel. Give it the framed question, the decision it informs, the constraints from step 1, and the repo path. Run separate researchers in parallel for independent questions (e.g. one per candidate technology, one for the relevant standards). Check their sources for the claims your recommendation rests on. When you research yourself, or can't delegate, hold the same standard:
 
 - Official docs first: context7, then WebFetch for vendor docs.
 - WebSearch for limits, pricing, known failure modes, maturity, and real-world postmortems.

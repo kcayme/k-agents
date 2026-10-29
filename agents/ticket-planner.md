@@ -132,13 +132,13 @@ Record **Reproduction**, **Root cause**, **Introduced in**, and **Affected paths
 
 ## 6. Architecture decision (when needed)
 
-If the ticket introduces new services, data models or schema changes, external integrations, new or changed API contracts (endpoints, events, payload shapes, status codes, error format), new frontend architecture (state management, routing, a new shared component pattern), or cross-cutting/structural changes, run `system-architect` now, before writing the plan. Give it the ticket, the clarification answers, the worktree path, and the conventions and project profile from step 4. Wait for its recommendation and ADR; if it raises questions, put them to the user like any other clarification.
+The architect is optional. If the design is heavy — new services, a new data model, external integrations, new frontend architecture (state management, routing, a new shared component pattern), cross-cutting/structural changes, or a choice between real alternatives — run `system-architect` now, before writing the plan. Give it the ticket, the clarification answers, the worktree path, and the conventions and project profile from step 4. Wait for its recommendation and ADR; if it raises questions, put them to the user like any other clarification.
 
 Put the options and the recommendation to the user, and build the plan on the option they pick; add `ADR: <path>` to the plan header. The ADR stays uncommitted in the worktree; don't add it to the commit plan. It's committed only if the user explicitly says so. A new or changed API contract or UI design goes to the user for explicit confirmation, written as the plan's API contract and UI design sections (step 7), before you plan both sides against it.
 
-Skip this step for small changes inside one module, and say so in the plan ("Architecture: not needed — <reason>"). Also skip it for an additive contract change: a new optional request field or a new response field on an existing endpoint or event, with nothing else about the contract changing (a new enum value, endpoint, or required field is not additive). Write the contract change into the plan, set `ADR: not needed — additive contract change`, and still get the user's confirmation of the contract.
+Otherwise skip this step and design the change yourself in the plan: small changes inside one module, a column or index, an endpoint or screen that follows patterns the repo already has. Say so in the plan ("Architecture: not needed — <reason>"); a new or changed API contract or UI design still goes to the user for confirmation (step 7). Also skip it for an additive contract change: a new optional request field or a new response field on an existing endpoint or event, with nothing else about the contract changing (a new enum value, endpoint, or required field is not additive). Write the contract change into the plan, set `ADR: not needed — additive contract change`, and still get the user's confirmation of the contract.
 
-No architecture step, but the ticket depends on a tool, library, API, third-party service, or standard the codebase doesn't use yet, or on a version it hasn't used? Run `tech-researcher` now, before writing the plan, with the question, the constraints, and the worktree path. Build the plan on its verified findings and cite them in the plan; raise its open questions as clarifications.
+No architecture step, but the ticket depends on a tool, library, API, third-party service, or standard the codebase doesn't use yet, or on a version it hasn't used? For a narrow question the docs settle, check them yourself (context7, then the vendor docs) and cite them. Run `tech-researcher` only when the research is heavy: several candidates to compare, a third-party service integration, a standard to interpret, or questions the docs don't settle. Run it before writing the plan, with the question, the constraints, and the worktree path. Build the plan on its verified findings and cite them in the plan; raise its open questions as clarifications.
 
 Already in the stack: when the plan relies on an API, option, or behavior of a library or framework the project already uses, check it against the docs for the version in the lockfile (context7, or `tech-researcher` for what that can't settle), not from memory, and cite the version and source in the plan. If the installed version lacks what the plan needs, upgrading is a clarification for the user, not a plan step.
 
@@ -240,7 +240,7 @@ If even phased this is several tickets' worth of work (independent deliverables,
 
 Pick only the specialists the ticket actually needs and run them in parallel via the Agent tool, giving each the ticket text and the draft plan (not your conclusions about it). Ask each for concrete problems, not general advice.
 
-Always include the matching QA agent(s) in **plan-review mode** on the AC→test mapping and test plan: `qa-backend` for server/API/DB work, `qa-frontend` for UI work, both for full-stack tickets.
+QA plan review is optional. On a heavy ticket (several ACs, layers, or services; a phased plan; a new data model or integration; money, auth, or personal data), include the matching QA agent(s) in **plan-review mode** on the AC→test mapping and test plan: `qa-backend` for server/API/DB work, `qa-frontend` for UI work, both for full-stack tickets. On a light ticket, check the AC→test mapping yourself in the lean review.
 
 Other typical picks, by role; use whichever installed agent fills it:
 
@@ -251,7 +251,7 @@ Other typical picks, by role; use whichever installed agent fills it:
 
 If no installed agent fills a role the ticket needs, review the plan for that concern yourself and note it in "Review notes".
 
-A one-file bug fix may need no other specialists. Don't spawn agents for show.
+A light ticket, such as a one-file bug fix, may need no specialists at all. Don't spawn agents for show.
 
 ## 9. Lean review
 
@@ -293,7 +293,7 @@ Phases: <n>, PR per phase | <n>, single PR | none
 
 followed by the readiness table, the plan, and a short "Review notes" section listing what each reviewer changed.
 
-Add a final step to the plan (per phase, when phased): after the planned commits, `implementer` runs the matching QA agent(s) in write-and-run mode, then gets an independent `pr-reviewer` review of the branch (local mode) and fixes in-scope findings, before asking about a PR. The PR title is `<TICKET-KEY>: <summary>` unless the repo's written conventions say otherwise.
+Add a final step to the plan (per phase, when phased): after the planned commits, `implementer` runs the matching QA agent(s) in write-and-run mode if the ticket is heavy (write `QA: run — <reason>` or `QA: skip — light ticket` in that step so the implementer doesn't have to judge it again), then gets an independent `pr-reviewer` review of the branch (local mode) and fixes in-scope findings, before asking about a PR. The PR title is `<TICKET-KEY>: <summary>` unless the repo's written conventions say otherwise.
 
 Reply to the user, by verdict:
 - **READY / READY WITH RISKS:** the verdict, the worktree path and branch, the plan file path, the main diagram as ASCII (if the plan has one), the confirmed API contract and UI design in brief (one line per endpoint, one per screen), the plan's Decisions list (one line each: the choice, the alternative, why), and the top 3 risks or open questions. If no open questions change scope, end with the next step: `/implementer <ticket-key>` (or `claude --agent implementer` → `implement <ticket-key>` to have it ask you directly); for a phased plan this runs phase 1, and each later run picks up the next phase; otherwise say what has to be resolved first.
