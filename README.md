@@ -2,18 +2,36 @@
 
 Handy agents for effective, secured, and quality full-stack development, with you, the developer, as captain: the agents do the legwork and surface the tradeoffs, and every decision that shapes the work stays yours.
 
+**Workflow and your approvals**
+
 ```mermaid
-flowchart TB
-    U([You]) ==>|answer questions, approve designs, OK the push| P
-    subgraph P [ ]
-        T([Ticket]) --> TP[ticket-planner] --> IM[implementer] --> RV[pr-reviewer] --> PR([PR])
-    end
-    TP -.-> SP[system-architect<br/>tech-researcher<br/>database-engineer]
-    P -.-> QA[qa-backend<br/>qa-frontend]
-    RV -.-> SS[security-scanner]
+flowchart LR
+    T([Ticket]) --> TP[ticket-planner] --> IM[implementer] -->|push + PR, only when you say so| PR([PR]) --> RV[pr-reviewer]
+    IM -.->|independent review, before PR| RV
+    TP -.->|confirmed contract + UI design| RV
+
+    TP ==>|API contract + UI design: your yes| U([You])
+    SA[system-architect] ==>|options + recommendation: your pick| U
+    BE[backend-engineer / frontend-engineer] ==>|contract / wireframe when there's no plan: your yes| U
 ```
 
-Solid arrows are the main path; dotted ones are specialists called when needed. `backend-engineer` and `frontend-engineer` also run on their own for work that doesn't need a plan.
+Every agent shows its decisions with their reasons, and asks questions with a small diagram when a picture explains it faster.
+
+**Specialists, called when needed**
+
+```mermaid
+flowchart LR
+    TP[ticket-planner] -->|design-heavy tickets| SA[system-architect]
+    TP -->|unfamiliar tools / standards| TR[tech-researcher]
+    TP -->|schema / migrations| DB[database-engineer]
+    TP -->|test plan review| QA[qa-backend / qa-frontend]
+    SA --> TR
+    SA --> DB
+    IM[implementer] -->|fill test gaps| QA
+    BE[backend-engineer / frontend-engineer] -->|fill test gaps| QA
+    RV[pr-reviewer] -->|test plan review, large PRs| QA
+    RV -->|security scan| SS[security-scanner]
+```
 
 ## Agents
 
