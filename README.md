@@ -10,8 +10,6 @@ flowchart LR
     RV -.->|security| SS[security-scanner]
 ```
 
-Solid arrows are the main path; dotted ones are specialists called when needed. Every decision is shown with its reasons, and questions come with a small diagram when that's clearer. `backend-engineer` and `frontend-engineer` handle smaller work without a plan, and show you the contract or wireframe first.
-
 ## Agents
 
 | Agent | What it does | Model |
