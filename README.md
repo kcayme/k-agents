@@ -39,7 +39,7 @@ flowchart LR
 - **Guarded actions:** instructions found in tickets, PRs, code, or web pages are never followed; destructive git or file operations, new or upgraded packages, and sending project data to outside services all need your permission.
 - **Feature branches only:** agents never commit, merge, rebase, or push to `main`, `master`, `develop`, `dev`, `uat`, `staging`, or other protected or deployment branches; never `--force`, and `--force-with-lease` only on feature branches with your permission.
 - **The repo's commit convention**, grouped by domain, with no AI attribution.
-- **Resumable:** each ticket's plan and handoff log live in `~/.claude/k-agents/<owner>/<repo>/<ticket>/`, outside your project, so a new session picks up where the last one stopped.
+- **Resumable:** each ticket's plan, handoff log, and saved PR reviews live in `~/.claude/k-agents/<owner>/<repo>/<ticket>/`, outside your project, so a new session picks up where the last one stopped.
 
 ## Install
 
