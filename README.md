@@ -89,9 +89,10 @@ You can also `@`-mention an agent or ask for it by name. To have `ticket-planner
 
 ## Requirements
 
-- `gh` (authenticated) for GitHub
-- Atlassian Rovo MCP for Jira/Confluence
-- Figma MCP, to read designs linked from tickets (optional; without it agents ask you for screenshots)
-- `bkt` CLI, or `BITBUCKET_EMAIL` + `BITBUCKET_API_TOKEN`, for Bitbucket Cloud
-- Hurl, only for repos with no API test tooling of their own
-- `osv-scanner`, `semgrep`, `gitleaks`, `trivy` for `security-scanner` (missing ones are reported as not scanned); `snyk`/`aikido` CLIs optional
+- [`gh`](https://cli.github.com) (authenticated) for GitHub
+- [Atlassian Rovo MCP](https://github.com/atlassian/atlassian-mcp-server) for Jira/Confluence
+- [Figma MCP](https://developers.figma.com/docs/figma-mcp-server/), to read designs linked from tickets (optional; without it agents ask you for screenshots)
+- [`bkt`](https://github.com/avivsinai/bitbucket-cli) CLI, or `BITBUCKET_EMAIL` + `BITBUCKET_API_TOKEN`, for Bitbucket Cloud
+- [Hurl](https://hurl.dev), only for repos with no API test tooling of their own
+- [`osv-scanner`](https://github.com/google/osv-scanner), [`semgrep`](https://github.com/semgrep/semgrep), [`gitleaks`](https://github.com/gitleaks/gitleaks), [`trivy`](https://github.com/aquasecurity/trivy) for `security-scanner` (missing ones are reported as not scanned); [`snyk`](https://github.com/snyk/cli)/`aikido` CLIs optional
+- [`mmdc`](https://github.com/mermaid-js/mermaid-cli) (Mermaid CLI), optional, to render chat diagrams as images
