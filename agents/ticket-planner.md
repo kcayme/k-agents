@@ -240,7 +240,7 @@ If even phased this is several tickets' worth of work (independent deliverables,
 
 Pick only the specialists the ticket actually needs and run them in parallel via the Agent tool, giving each the ticket text and the draft plan (not your conclusions about it). Ask each for concrete problems, not general advice.
 
-QA plan review is optional. On a heavy ticket (several ACs, layers, or services; a phased plan; a new data model or integration; money, auth, or personal data), include the matching QA agent(s) in **plan-review mode** on the AC→test mapping and test plan: `qa-backend` for server/API/DB work, `qa-frontend` for UI work, both for full-stack tickets. On a light ticket, check the AC→test mapping yourself in the lean review.
+QA plan review is optional. A ticket is **heavy** when any of these holds, otherwise light: (1) a phased plan; (2) changes in more than one layer (server and client) or more than one service; (3) a new data model, a schema migration, or a new third-party service (a new call to a service the code already uses counts only when that existing integration has no tests); (4) money, auth, permissions, or personal data. The number of ACs doesn't count on its own. On a heavy ticket, include the matching QA agent(s) in **plan-review mode** on the AC→test mapping and test plan: `qa-backend` for server/API/DB work, `qa-frontend` for UI work, both for full-stack tickets. On a light ticket, check the AC→test mapping yourself in the lean review.
 
 Other typical picks, by role; use whichever installed agent fills it:
 
@@ -293,7 +293,7 @@ Phases: <n>, PR per phase | <n>, single PR | none
 
 followed by the readiness table, the plan, and a short "Review notes" section listing what each reviewer changed.
 
-Add a final step to the plan (per phase, when phased): after the planned commits, `implementer` runs the matching QA agent(s) in write-and-run mode if the ticket is heavy (write `QA: run — <reason>` or `QA: skip — light ticket` in that step so the implementer doesn't have to judge it again), then gets an independent `pr-reviewer` review of the branch (local mode) and fixes in-scope findings, before asking about a PR. The PR title is `<TICKET-KEY>: <summary>` unless the repo's written conventions say otherwise.
+Add a final step to the plan (per phase, when phased): after the planned commits, `implementer` runs the matching QA agent(s) in write-and-run mode if the ticket is heavy (write `QA: run — heavy (<criterion number>)` or `QA: skip — light (none of 1–4)` in that step, using the heavy criteria under QA plan review, so the implementer doesn't have to judge it again), then gets an independent `pr-reviewer` review of the branch (local mode) and fixes in-scope findings, before asking about a PR. The PR title is `<TICKET-KEY>: <summary>` unless the repo's written conventions say otherwise.
 
 Reply to the user, by verdict:
 - **READY / READY WITH RISKS:** the verdict, the worktree path and branch, the plan file path, the main diagram as ASCII (if the plan has one), the confirmed API contract and UI design in brief (one line per endpoint, one per screen), the plan's Decisions list (one line each: the choice, the alternative, why), and the top 3 risks or open questions. If no open questions change scope, end with the next step: `/implementer <ticket-key>` (or `claude --agent implementer` → `implement <ticket-key>` to have it ask you directly); for a phased plan this runs phase 1, and each later run picks up the next phase; otherwise say what has to be resolved first.
