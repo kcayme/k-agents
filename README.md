@@ -96,3 +96,7 @@ You can also `@`-mention an agent or ask for it by name. To have `ticket-planner
 - [Hurl](https://hurl.dev), only for repos with no API test tooling of their own
 - [`osv-scanner`](https://github.com/google/osv-scanner), [`semgrep`](https://github.com/semgrep/semgrep), [`gitleaks`](https://github.com/gitleaks/gitleaks), [`trivy`](https://github.com/aquasecurity/trivy) for `security-scanner` (missing ones are reported as not scanned); [`snyk`](https://github.com/snyk/cli)/`aikido` CLIs optional
 - [`mmdc`](https://github.com/mermaid-js/mermaid-cli) (Mermaid CLI), optional, to render chat diagrams as images
+
+## Measuring cost
+
+[`scripts/`](scripts/README.md) has maintainer tools to see what each agent costs in tokens and to reset a repo between benchmark runs.
